@@ -1,5 +1,5 @@
 #!/bin/bash
-
+GIT_REPO= https://gitlab.tosins-cloudlabs.com/tosin/kcli-pipelines.git
 cat >vm_vars.yaml<<EOF
 image: rhel-baseos-9.1-x86_64-kvm.qcow2 
 user: admin
@@ -14,5 +14,14 @@ reservedns: 1.1.1.1
 EOF
 
 
+if [ ! -d /opt/kcli-pipelines ];
+then 
+    git clone $GIT_REPO /opt/kcli-pipelines
+else 
+    cd /opt/kcli-pipelines
+    git pull
+fi
+
+cd /opt/kcli-pipelines
 python3 profile_generator/profile_generator.py update-yaml rhel9 rhel9/template.yaml --vars-file rhel9/vm_vars.yml
 python3 profile_generator/profile_generator.py update-yaml fedora37 fedora37/template.yaml --vars-file fedora37/vm_vars.yaml
