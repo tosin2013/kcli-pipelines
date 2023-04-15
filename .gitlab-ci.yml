@@ -1,7 +1,14 @@
 # Description: Gitlab CI/CD pipeline for FreeIPA
 # SSH_USER SSH_PASSWORD SSH_HOST will be passed through the pipeline
 stages:
+  - check_env
   - configure-kcli-profiles
+
+check_env:
+  stage: check_env
+  image: python:3.10
+  script:
+    - python3 check_env.py
 
 build:
   stage: configure-kcli-profiles
