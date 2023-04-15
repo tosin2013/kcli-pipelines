@@ -1,10 +1,10 @@
 # Description: Gitlab CI/CD pipeline for FreeIPA
 # SSH_USER SSH_PASSWORD SSH_HOST will be passed through the pipeline
 stages:
-  - freeipa
+  - configure-kcli-profiles
 
 build:
-  stage: freeipa
+  stage: configure-kcli-profiles
   image: fedora:37
   variables:
     CICD_PIPELINE: "true"
