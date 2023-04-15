@@ -23,5 +23,8 @@ else
 fi
 
 cd /opt/kcli-pipelines
-sudo python3 profile_generator/profile_generator.py update-yaml rhel9 rhel9/template.yaml --vars-file rhel9/vm_vars.yml
-sudo python3 profile_generator/profile_generator.py update-yaml fedora37 fedora37/template.yaml --vars-file fedora37/vm_vars.yaml
+sudo python3 profile_generator/profile_generator.py update_yaml rhel9 rhel9/template.yaml --vars-file rhel9/vm_vars.yml
+sudo python3 profile_generator/profile_generator.py update_yaml fedora37 fedora37/template.yaml --vars-file fedora37/vm_vars.yaml
+
+sudo cp kcli-profiles.yml ~/.kcli/profiles.yml
+sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
