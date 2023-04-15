@@ -16,7 +16,8 @@ EOF
 
 if [ ! -d /opt/kcli-pipelines ];
 then 
-    git clone $GIT_REPO /opt/kcli-pipelines || exit $?
+    cd /opt/
+    git clone $GIT_REPO  || exit $?
 else 
     cd /opt/kcli-pipelines
     git pull
