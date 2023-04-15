@@ -1,0 +1,10 @@
+image: rhel-baseos-9.1-x86_64-kvm.qcow2 
+user: admin
+user_password: secret
+disk_size: 30
+numcpus: 4
+memory: 8192
+net_name: default
+rhnorg: orgid
+rhnactivationkey: activationkey
+reservedns: 1.1.1.1
