@@ -16,7 +16,6 @@ build:
   variables:
     CICD_PIPELINE: "true"
     SSH_USER: admin
-    SSH_HOST: 192.168.1.39
   allow_failure: false
   script:
     - dnf install wget openssh-clients sshpass -y
