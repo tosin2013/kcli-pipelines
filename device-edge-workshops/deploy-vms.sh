@@ -12,8 +12,6 @@ else
   exit 1
 fi
 
-cd $KCLI_SAMPLES_DIR
-
 if [ -f /tmp/manifest.zip ]; then
   echo "manifest.zip file already exists"
 else
@@ -22,6 +20,7 @@ else
 fi
 
 function deploy_via_kcli(){
+    cd $KCLI_SAMPLES_DIR
     ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
     PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
     RHSM_PASSWORD=$(yq eval '.rhsm_password' "${ANSIBLE_VAULT_FILE}")
