@@ -80,10 +80,10 @@ EOF
     sudo sed -i "s/your-username/${RHSM_USERNAME}/g" $(pwd)/device-edge-workshops/extra_vars.yml
     sudo sed -i "s/your-token-here/${OFFLINE_TOKEN}/g" $(pwd)/device-edge-workshops/extra_vars.yml
     sudo sed -i "s/internallab.io/${DOMAIN_NAME}/g" $(pwd)/device-edge-workshops/extra_vars.yml
-    $(pwd)/device-edge-workshops/manifest-generator.sh /tmp/manifest.zip
+    #$(pwd)/device-edge-workshops/manifest-generator.sh /tmp/manifest.zip
     sudo cp $(pwd)/device-edge-workshops/extra_vars.yml  ~/.generated/vmfiles
     sudo cp $(pwd)/device-edge-workshops/extra_vars.yml /root/.generated/vmfiles
-    cat  $(pwd)/device-edge-workshops/extra_vars.yml | less
+    cat  $(pwd)/device-edge-workshops/extra_vars.yml 
     sudo cp  $(pwd)/device-edge-workshops/extra_vars.yml.bak $(pwd)/device-edge-workshops/extra_vars.yml
     #echo "Creating VM ${VM_NAME}"
     #sudo kcli create vm -p device-edge-workshops ${VM_NAME} --wait
