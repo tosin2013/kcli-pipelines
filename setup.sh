@@ -1,6 +1,5 @@
 #!/bin/bash
-export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-set -xe
+
 GIT_REPO=https://gitlab.tosins-cloudlabs.com/tosin/kcli-pipelines.git
 cat >vm_vars.yaml<<EOF
 image: rhel-baseos-9.1-x86_64-kvm.qcow2 
@@ -32,6 +31,6 @@ sudo python3 profile_generator/profile_generator.py update_yaml rhel9 rhel9/temp
 sudo python3 profile_generator/profile_generator.py update_yaml fedora37 fedora37/template.yaml --vars-file fedora37/vm_vars.yaml
 
 ./openshift-jumpbox/deploy-vm.sh
-
+./ansible-aap/deploy-vms.sh
 sudo cp kcli-profiles.yml ~/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
