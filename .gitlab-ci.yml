@@ -16,6 +16,7 @@ build:
   variables:
     CICD_PIPELINE: "true"
     SSH_USER: admin
+    TARGET_SERVER: "${TARGET_SERVER}"
   allow_failure: false
   script:
     - dnf install wget openssh-clients sshpass -y

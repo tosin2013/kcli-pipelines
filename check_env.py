@@ -8,3 +8,7 @@ if not os.environ.get('SSH_PASSWORD'):
 if not os.environ.get('SSH_HOST'):
     print("Environment variable SSH_HOST is not set. Exiting.", file=sys.stderr)
     sys.exit(1)
+
+if not os.environ.get('TARGET_SERVER'):
+    print("Environment variable TARGET_SERVER is not set. Exiting.", file=sys.stderr)
+    sys.exit(1)
