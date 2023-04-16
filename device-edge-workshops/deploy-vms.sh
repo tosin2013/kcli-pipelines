@@ -1,5 +1,6 @@
 #!/bin/bash
-#set -xe 
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -xe
 if [ -f ../helper_scripts/default.env ];
 then 
   source ../helper_scripts/default.env
@@ -105,22 +106,22 @@ else [ $DEPLOYMENT_TYPE == "aws" ];
     deploy_via_aws
 fi
 
-cd /opt/freeipa-workshop-deployer/2_ansible_config/
-IP_ADDRESS=$(sudo kcli info vm device-edge-workshops | grep ip: | awk '{print $2}')
-echo "IP Address: ${IP_ADDRESS}"
-sudo python3  dynamic_dns.py --add controller "$IP_ADDRESS" 
-sudo python3 dynamic_dns.py --add 'cockpit' "$IP_ADDRESS" 
-sudo python3 dynamic_dns.py --add 'gitea' "$IP_ADDRESS"
-sudo python3 dynamic_dns.py --add 'edge-manager' "$IP_ADDRESS"
-cd ..
-./2_ansible_config/populate-hostnames.sh || exit 1
-cd $KCLI_SAMPLES_DIR
+#cd /opt/freeipa-workshop-deployer/2_ansible_config/
+#IP_ADDRESS=$(sudo kcli info vm device-edge-workshops | grep ip: | awk '{print $2}')
+#echo "IP Address: ${IP_ADDRESS}"
+#sudo python3  dynamic_dns.py --add controller "$IP_ADDRESS" 
+#sudo python3 dynamic_dns.py --add 'cockpit' "$IP_ADDRESS" 
+#sudo python3 dynamic_dns.py --add 'gitea' "$IP_ADDRESS"
+#sudo python3 dynamic_dns.py --add 'edge-manager' "$IP_ADDRESS"
+#cd ..
+#./2_ansible_config/populate-hostnames.sh || exit 1
+#cd $KCLI_SAMPLES_DIR
 
-echo "Current Ansible Release:
---------------------------------
-Ansible Automation Platform 2.3 Setup Bundle
-Last modified: 2023-03-16 SHA-256 Checksum: eae31a1c45e057c3f5d2302c6cf497060a51baec73c86a7f95042d51e4150eb8
-URL: https://access.redhat.com/downloads/content/480/ver=2.3/rhel---9/2.3/x86_64/product-software"
-echo "--------------------------------"
-echo "sudo kcli ssh device-edge-workshops"
-echo "sudo su -"
+#echo "Current Ansible Release:
+#--------------------------------
+#Ansible Automation Platform 2.3 Setup Bundle
+#Last modified: 2023-03-16 SHA-256 Checksum: eae31a1c45e057c3f5d2302c6cf497060a51baec73c86a7f95042d51e4150eb8
+#URL: https://access.redhat.com/downloads/content/480/ver=2.3/rhel---9/2.3/x86_64/product-software"
+#echo "--------------------------------"
+#echo "sudo kcli ssh device-edge-workshops"
+#echo "sudo su -"
