@@ -6,6 +6,6 @@ then
 fi
 
 echo "Deploying VM $VM_NAME"
-VM_INSTANCE=openshift-jumpbox-$(echo $RANDOM | md5sum | head -c 5; echo;)
+VM_INSTANCE=$VM_NAME-$(echo $RANDOM | md5sum | head -c 5; echo;)
 kcli create vm -p $VM_NAME ${VM_INSTANCE} --wait
 #kcli delete vm $VM_NAME -y
