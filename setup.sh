@@ -1,4 +1,6 @@
 #!/bin/bash
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -xe
 GIT_REPO=https://gitlab.tosins-cloudlabs.com/tosin/kcli-pipelines.git
 cat >vm_vars.yaml<<EOF
 image: rhel-baseos-9.1-x86_64-kvm.qcow2 
