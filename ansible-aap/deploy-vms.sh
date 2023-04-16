@@ -1,9 +1,19 @@
 #!/bin/bash
 export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 set -xe
-cd /opt/qubinode-installer/kcli-plan-samples/
+if [ -f ../helper_scripts/default.env ];
+then 
+  source ../helper_scripts/default.env
+elif [ -f helper_scripts/default.env  ];
+then 
+  source helper_scripts/default.env 
+else
+  echo "default.env file does not exist"
+  exit 1
+fi
 
-export ANSIBLE_VAULT_FILE="$HOME/quibinode_navigator/inventories/localhost/group_vars/control/vault.yml"
+cd $KCLI_SAMPLES_DIR
+
 ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
 RHSM_ORG=$(yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
