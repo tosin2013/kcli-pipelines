@@ -3,6 +3,9 @@ set -xe
 if [ -f ../helper_scripts/default.env ];
 then 
   source ../helper_scripts/default.env
+elif [ -f helper_scripts/default.env  ];
+then 
+  source helper_scripts/default.env 
 else
   echo "default.env file does not exist"
   exit 1
