@@ -32,16 +32,26 @@ else
   sudo mkdir -p  /root/.generated/vmfiles
 fi
 
-sudo python3 profile_generator/profile_generator.py update_yaml openshift-jumpbox openshift-jumpbox/template.yaml --image ${IMAGE_NAME} --user fedora --user-password ${PASSWORD} --net-name ${NET_NAME}  --offline-token ${OFFLINE_TOKEN}   --disk-size ${DISK_SIZE} 
+cat >/tmp/vm_vars.yaml<<EOF
+image: ${IMAGE_NAME}
+user: fedora
+user_password: ${PASSWORD}
+disk_size: ${DISK_SIZE} 
+numcpus: 4
+memory: 8192
+net_name: ${NET_NAME} 
+reservedns: 1.1.1.1
+offline_token: ${OFFLINE_TOKEN}
+EOF
+
+sudo python3 profile_generator/profile_generator.py update_yaml openshift-jumpbox openshift-jumpbox/template.yaml  --vars-file /tmp/vm_vars.yaml
 sudo echo ${PULL_SECRET} | sudo tee pull-secret.json
 cat  kcli-profiles.yml
 ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
-sudo cp kcli-profiles.yml ~/.kcli/profiles.yml
-sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 sudo cp pull-secret.json  ~/.generated/vmfiles
 sudo cp pull-secret.json /root/.generated/vmfiles
 sudo cp $(pwd)/openshift-jumpbox/gitops.sh ~/.generated/vmfiles
 sudo cp $(pwd)/openshift-jumpbox/gitops.sh /root/.generated/vmfiles
 sudo rm pull-secret.json
-echo "Creating VM ${VM_NAME}"
-sudo kcli create vm -p openshift-jumpbox ${VM_NAME} --wait
+#echo "Creating VM ${VM_NAME}"
+#sudo kcli create vm -p openshift-jumpbox ${VM_NAME} --wait
