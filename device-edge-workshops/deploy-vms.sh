@@ -4,14 +4,15 @@ set -xe
 if [ -f ../helper_scripts/default.env ];
 then 
   source ../helper_scripts/default.env
-elif [ -f /opt/kcli-pipelines/helper_scripts/default.env  ];
+elif [ -f helper_scripts/default.env  ];
 then 
-  source /opt/kcli-pipelines/helper_scripts/default.env 
+  source helper_scripts/default.env 
 else
   echo "default.env file does not exist"
   exit 1
 fi
 
+cd $KCLI_SAMPLES_DIR
 if [ -f /tmp/manifest.zip ]; then
   echo "manifest.zip file already exists"
 else
@@ -20,7 +21,7 @@ else
 fi
 
 function deploy_via_kcli(){
-    cd $KCLI_SAMPLES_DIR
+
     source helper_scripts/default.env 
     ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
     PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
