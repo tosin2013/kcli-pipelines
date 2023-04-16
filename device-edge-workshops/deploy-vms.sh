@@ -21,8 +21,6 @@ else
   #exit 1
 fi
 
-cd $KCLI_SAMPLES_DIR
-
 function deploy_via_kcli(){
     ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
     PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
