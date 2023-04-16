@@ -57,11 +57,11 @@ sudo echo ${PULL_SECRET} | sudo tee pull-secret.json
 cat pull-secret.json
 cat  kcli-profiles.yml
 ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
-#sudo cp kcli-profiles.yml ~/.kcli/profiles.yml
-#sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
-#sudo cp  pull-secret.json  ~/.generated/vmfiles
-#sudo cp pull-secret.json /root/.generated/vmfiles
-#sudo rm pull-secret.json
+sudo cp kcli-profiles.yml ~/.kcli/profiles.yml
+sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
+sudo cp  pull-secret.json  ~/.generated/vmfiles
+sudo cp pull-secret.json /root/.generated/vmfiles
+sudo rm pull-secret.json
 #echo "Creating VM ${VM_NAME}"
 #echo "Creating VM ${VM_NAME}"
 #sudo kcli create vm -p microshift-demos ${VM_NAME} --wait
