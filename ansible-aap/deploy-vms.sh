@@ -35,7 +35,7 @@ offline_token: ${OFFLINE_TOKEN}
 EOF
 
 sudo python3 profile_generator/profile_generator.py update_yaml ansible-aap ansible-aap/ansible-aap.yml  --vars-file /tmp/vm_vars.yaml
-sudo python3 profile_generator/profile_generator.py update_yaml ansible-hub ansible-aap/ansible-hub.yml--vars-file /tmp/vm_vars.yaml
+sudo python3 profile_generator/profile_generator.py update_yaml ansible-hub ansible-aap/ansible-hub.yml --vars-file /tmp/vm_vars.yaml
 sudo python3 profile_generator/profile_generator.py update_yaml postgres ansible-aap/postgres.yml --vars-file /tmp/vm_vars.yaml
 cat  kcli-profiles.yml
 ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
