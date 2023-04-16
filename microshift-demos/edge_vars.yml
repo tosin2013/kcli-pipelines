@@ -1,0 +1,31 @@
+user_name: lab-user
+ip_address: hypervisor.rxc4p.dynamic.opentlc.com
+qemu_session: "qemu+ssh://{{user_name }}@{{ ip_address }}/system?keyfile=/home/{{ user_name }}/.ssh/cluster-key"
+libvirt_image_dir: /var/lib/libvirt/images
+libvirt_iso_dir:  /var/lib/libvirt/images
+libvirt_iso_name: rhel-edge-kvm.iso
+libvirt_vm_name:  rhel-edge-kvm
+template_dir: /tmp/
+libvirt_defaults:
+  edge_device:
+    cpu: 2
+    memory: 4194304 # 8388608 
+
+virtual_machines:
+  - name: "{{ libvirt_vm_name }}"
+    hostname: "{{ libvirt_vm_name }}" # there is a character limit with the hostname it will brake sysprep
+    password: "{{ libvirt_vm_name }}"
+    os: "rhel85"
+    isos:
+      - name: "{{ libvirt_iso_name }}"
+        dev: sdb
+    disk_size: 20G
+    image_index: 2
+    image_name: "RHEL Edge image"
+    disk_iso: "{{ libvirt_vm_name }}"
+    connection_type: "bridge" # "bridge" or "network" bridge is default
+    bridgename: "qubinet" 
+    bridge_mac: "{{ '52:54:00' | community.general.random_mac }}"
+    vlanid: 0 # use 503 in network mode for emulated lab or 0 in hardware bridge mode
+    subnet: "192.168.1.1/24"
+    secondary_dns: 1.1.1.1

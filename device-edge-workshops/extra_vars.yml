@@ -1,0 +1,64 @@
+---
+# where the workshop is being run
+run_in_aws: false
+run_locally: true
+
+# if local hypervisor nodes should be configured
+manage_local_hypervisor: false
+
+# region where the nodes will live
+ec2_region: us-east-2
+
+# name prefix for all the VMs
+ec2_name_prefix: lab-prefix
+
+# Set the right workshop type
+workshop_type: rhde_aw_120
+
+# Set the number of student slots
+student_total: 10
+
+# Generate offline token to authenticate the calls to Red Hat's APIs
+# Can be accessed at https://access.redhat.com/management/api
+offline_token: "your-token-here"
+
+# Required for RHSM registration and registry.redhat.io pulls - needs to be your full RHN username and password
+# https://www.redhat.com/wapps/ugc/register.html
+redhat_username: your-username
+redhat_password: your-password
+
+#####OPTIONAL VARIABLES
+
+# turn DNS on for control nodes, and set to type in valid_dns_type
+dns_type: none
+
+# password for Ansible control node
+admin_password: lab-admin-password
+
+# Sets the Route53 DNS zone to use for Amazon Web Services
+workshop_dns_zone: internallab.io
+
+# Use zeroSSL
+use_zerossl: false
+
+zerossl_account:
+  kid: your
+  key: info
+  alg: here
+
+# automatically installs Tower to control node
+controllerinstall: true
+
+# forces ansible.workshops collection to install latest edits every time
+developer_mode: false
+
+# SHA value of targeted AAP bundle setup files.
+provided_sha_value: eae31a1c45e057c3f5d2302c6cf497060a51baec73c86a7f95042d51e4150eb8
+aap_bundle_sha256_checksum: eae31a1c45e057c3f5d2302c6cf497060a51baec73c86a7f95042d51e4150eb8
+pre_build: false
+
+# Don't need automation hub
+automation_hub: false
+
+builder_pub_key: 'your-key-here'
+

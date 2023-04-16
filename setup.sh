@@ -32,5 +32,7 @@ sudo python3 profile_generator/profile_generator.py update_yaml fedora37 fedora3
 
 ./openshift-jumpbox/deploy-vm.sh
 ./ansible-aap/deploy-vms.sh
+./device-edge-workshops/deploy-vms.sh
+./microshift-demos/deploy-vm.sh
 sudo cp kcli-profiles.yml ~/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
