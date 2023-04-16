@@ -30,9 +30,9 @@ sudo sed -i 's|export INVENTORY=localhost|export INVENTORY="'${TARGET_SERVER}'"|
 sudo python3 profile_generator/profile_generator.py update_yaml rhel9 rhel9/template.yaml --vars-file rhel9/vm_vars.yml
 sudo python3 profile_generator/profile_generator.py update_yaml fedora37 fedora37/template.yaml --vars-file fedora37/vm_vars.yaml
 
-./openshift-jumpbox/deploy-vm.sh
-./ansible-aap/deploy-vms.sh
-./device-edge-workshops/deploy-vms.sh
-./microshift-demos/deploy-vm.sh
+./openshift-jumpbox/configure-kcli-profile.sh
+./ansible-aap/configure-kcli-profile.sh
+./device-edge-workshops/dconfigure-kcli-profile.sh
+./microshift-demos/configure-kcli-profile.sh
 sudo cp kcli-profiles.yml ~/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
