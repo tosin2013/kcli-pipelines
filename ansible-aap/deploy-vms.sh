@@ -8,8 +8,21 @@ PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
 RHSM_ORG=$(yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
 RHSM_ACTIVATION_KEY=$(yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
 OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
-NET_NAME=default
-sudo rm -rf kcli-profiles.yml
+
+cat >/tmp/vm_vars.yaml<<EOF
+image: rhel-baseos-9.1-x86_64-kvm.qcow2
+user: $USER
+user_password: ${PASSWORD}
+disk_size: ${DISK_SIZE} 
+numcpus: 4
+memory: 8192
+net_name: ${NET_NAME} 
+rhnorg: ${RHSM_ORG}
+rhnactivationkey: activationkey
+reservedns: 1.1.1.1
+offline_token: ${OFFLINE_TOKEN}
+EOF
+
 sudo python3 profile_generator/profile_generator.py update_yaml ansible-aap ansible-aap/ansible-aap.yml --image rhel-baseos-9.1-x86_64-kvm.qcow2 --user $USER --user-password ${PASSWORD} --rhnorg ${RHSM_ORG} --net-name ${NET_NAME}  --rhnactivationkey ${RHSM_ACTIVATION_KEY} --offline-token ${OFFLINE_TOKEN}
 sudo python3 profile_generator/profile_generator.py update_yaml ansible-hub ansible-aap/ansible-hub.yml --image rhel-baseos-9.1-x86_64-kvm.qcow2 --user $USER --user-password ${PASSWORD} --rhnorg ${RHSM_ORG} --net-name ${NET_NAME}  --rhnactivationkey ${RHSM_ACTIVATION_KEY} --offline-token ${OFFLINE_TOKEN}
 sudo python3 profile_generator/profile_generator.py update_yaml postgres ansible-aap/postgres.yml --image rhel-baseos-9.1-x86_64-kvm.qcow2 --user $USER --user-password ${PASSWORD} --rhnorg ${RHSM_ORG} --net-name ${NET_NAME} --rhnactivationkey ${RHSM_ACTIVATION_KEY} --offline-token ${OFFLINE_TOKEN}
