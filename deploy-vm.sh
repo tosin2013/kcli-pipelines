@@ -1,4 +1,5 @@
 #!/bin/bash 
+set -e 
 if [ -z "$VM_NAME" ];
 then 
     echo "Please provide the name of the VM to deploy"
