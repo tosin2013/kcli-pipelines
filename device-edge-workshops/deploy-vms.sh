@@ -21,6 +21,7 @@ fi
 
 function deploy_via_kcli(){
     cd $KCLI_SAMPLES_DIR
+    source helper_scripts/default.env 
     ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
     PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
     RHSM_PASSWORD=$(yq eval '.rhsm_password' "${ANSIBLE_VAULT_FILE}")
