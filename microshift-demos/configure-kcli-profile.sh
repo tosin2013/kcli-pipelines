@@ -20,6 +20,7 @@ RHSM_ACTIVATION_KEY=$(yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
 OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
 PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
 VM_NAME=microshift-demos-vm
+DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 IMAGE_NAME=rhel-baseos-9.1-x86_64-kvm.qcow2
 DISK_SIZE=200
 MEMORTY=32768
@@ -46,7 +47,7 @@ disk_size: ${DISK_SIZE}
 numcpus: ${CPU_NUM}
 memory: ${MEMORTY}
 net_name: ${NET_NAME} 
-reservedns: 1.1.1.1
+reservedns: ${DNS_FORWARDER}
 offline_token: ${OFFLINE_TOKEN}
 rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 

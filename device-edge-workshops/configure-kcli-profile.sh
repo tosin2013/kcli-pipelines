@@ -32,6 +32,7 @@ function deploy_via_kcli(){
     OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
     PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
     DOMAIN_NAME=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+    DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
     VM_NAME=device-edge-workshops
     IMAGE_NAME=rhel-baseos-9.1-x86_64-kvm.qcow2
     DISK_SIZE=200
@@ -58,7 +59,7 @@ disk_size: ${DISK_SIZE}
 numcpus: ${CPU_NUM}
 memory: ${MEMORTY}
 net_name: ${NET_NAME} 
-reservedns: 1.1.1.1
+reservedns: ${DNS_FORWARDER}
 offline_token: ${OFFLINE_TOKEN}
 rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 

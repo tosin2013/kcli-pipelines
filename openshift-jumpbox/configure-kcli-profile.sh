@@ -21,6 +21,7 @@ OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
 PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
 VM_NAME=openshift-jumpbox-$(echo $RANDOM | md5sum | head -c 5; echo;)
 IMAGE_NAME=Fedora-Cloud-Base-37-1.7.x86_64.qcow2
+DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50
 sudo rm -rf kcli-profiles.yml
 if [ -f ~/.kcli/profiles.yml ]; then
@@ -44,7 +45,7 @@ disk_size: ${DISK_SIZE}
 numcpus: 4
 memory: 8192
 net_name: ${NET_NAME} 
-reservedns: 1.1.1.1
+reservedns: ${DNS_FORWARDER}
 offline_token: ${OFFLINE_TOKEN}
 EOF
 
