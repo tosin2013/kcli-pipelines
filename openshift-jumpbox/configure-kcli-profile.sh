@@ -15,7 +15,7 @@ fi
 cd $KCLI_SAMPLES_DIR
 
 
-ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
+/usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
 OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
 PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
@@ -51,7 +51,7 @@ EOF
 sudo python3 profile_generator/profile_generator.py update_yaml openshift-jumpbox openshift-jumpbox/template.yaml  --vars-file /tmp/vm_vars.yaml
 sudo echo ${PULL_SECRET} | sudo tee pull-secret.json
 cat  kcli-profiles.yml
-ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
+/usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 sudo cp pull-secret.json  ~/.generated/vmfiles
 sudo cp pull-secret.json /root/.generated/vmfiles
 sudo cp $(pwd)/openshift-jumpbox/gitops.sh ~/.generated/vmfiles

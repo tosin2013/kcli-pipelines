@@ -23,7 +23,7 @@ fi
 function deploy_via_kcli(){
 
     source helper_scripts/default.env 
-    ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
+    /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
     PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
     RHSM_PASSWORD=$(yq eval '.rhsm_password' "${ANSIBLE_VAULT_FILE}")
     RHSM_USERNAME=$(yq eval '.rhsm_username' "${ANSIBLE_VAULT_FILE}")
@@ -68,7 +68,7 @@ EOF
     sudo echo ${PULL_SECRET} | sudo tee pull-secret.json
     cat pull-secret.json
     cat  kcli-profiles.yml
-    ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
+    /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
     sudo cp kcli-profiles.yml ~/.kcli/profiles.yml
     sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
     sudo cp $(pwd)/device-edge-workshops/local-inventory.yml $(pwd)/device-edge-workshops/local-inventory.yml.bak
@@ -96,9 +96,10 @@ EOF
 
 function deploy_via_aws(){
     echo "deploying via aws"
-    #export AWS_ACCESS_KEY_ID=AKIA6ABLAH1223VBD3W
-    #export AWS_SECRET_ACCESS_KEY=zh6gFREbvblahblahblahfXIC5nZr51OgdKECaSIMBi9Kc
+    #export AWS_ACCESS_KEY_ID=CHANGEME
+    #export AWS_SECRET_ACCESS_KEY=CHANGEME
 }
+
 
 DEPLOYMENT_TYPE=kcli # aws
 
