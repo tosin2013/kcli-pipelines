@@ -27,6 +27,7 @@ if [ $TARGET_SERVER == "equinix" ];
 then 
     source ~/.profile
     source ~/.bash_aliases
+    sudo pip3 install ansible-vault
 fi
 
 cd /opt/kcli-pipelines
