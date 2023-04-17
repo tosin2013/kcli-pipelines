@@ -12,3 +12,8 @@ if not os.environ.get('SSH_HOST'):
 if not os.environ.get('TARGET_SERVER'):
     print("Environment variable TARGET_SERVER is not set. Exiting.", file=sys.stderr)
     sys.exit(1)
+
+if os.environ.get('VM_NAME'):
+    if not os.environ.get('ACTION'):
+        print("Environment variable ACTION is not set. Exiting.", file=sys.stderr)
+        sys.exit(1)

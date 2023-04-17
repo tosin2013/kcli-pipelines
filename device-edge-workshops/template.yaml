@@ -39,3 +39,5 @@ files:
     origin: ~/.generated/vmfiles/extra_vars.yml
   - path: /home/{{ user }}/extra_vars.yml
     origin:  ~/.generated/vmfiles/extra_vars.yml
+  - path:  /root/setup-demo-infra.sh
+    origin:  ~/.generated/vmfiles/setup-demo-infra.sh

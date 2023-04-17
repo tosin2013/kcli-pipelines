@@ -6,7 +6,12 @@ then
     exit 1
 fi
 
-echo "Deploying VM $VM_NAME"
-VM_INSTANCE=$VM_NAME-$(echo $RANDOM | md5sum | head -c 5; echo;)
-kcli create vm -p $VM_NAME ${VM_INSTANCE} --wait
-#kcli delete vm $VM_NAME -y
+if [ $ACTION == "create" ];
+then 
+    echo "Creating VM $VM_NAME"
+    kcli create vm -p $VM_NAME $VM_NAME --wait
+elif [ $ACTION == "delete" ];
+then 
+    echo "Deleting VM $VM_NAME"
+    kcli delete vm $VM_NAME -y
+fi

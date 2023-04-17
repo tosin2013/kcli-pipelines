@@ -37,6 +37,7 @@ deploy-vm:
     SSH_USER: admin
     TARGET_SERVER: "${TARGET_SERVER}"
     VM_NAME: "${VM_NAME}"
+    ACTION: "${ACTION}"
   allow_failure: false
   script:
     - dnf install wget openssh-clients sshpass -y
