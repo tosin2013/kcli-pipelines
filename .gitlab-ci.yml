@@ -34,7 +34,7 @@ deploy-vm:
   image: fedora:37
   variables:
     CICD_PIPELINE: "true"
-    SSH_USER: admin
+    SSH_USER: "${SSH_USER}"
     TARGET_SERVER: "${TARGET_SERVER}"
     VM_NAME: "${VM_NAME}"
     ACTION: "${ACTION}"
