@@ -12,6 +12,7 @@ then
     kcli create vm -p $VM_NAME $VM_NAME --wait
 elif [ $ACTION == "delete" ];
 then 
-    echo "Deleting VM $VM_NAME"
-    kcli delete vm $VM_NAME -y
+    TARGET_VM=$(kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
+    echo "Deleting VM $TARGET_VM"
+    kcli delete vm $TARGET_VM -y
 fi
