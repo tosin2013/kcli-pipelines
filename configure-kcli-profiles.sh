@@ -1,6 +1,6 @@
 #!/bin/bash
 whoami 
-exit 0
+
 #GIT_REPO=https://gitlab.tosins-cloudlabs.com/tosin/kcli-pipelines.git
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
 cat >vm_vars.yaml<<EOF
@@ -31,6 +31,8 @@ then
     source ~/.bash_aliases
     sudo  ln -s /root/.local/bin/ansible-vault /usr/local/bin/ansible-vault
 fi
+ansible-vault --help
+exit 0
 
 cd /opt/kcli-pipelines
 sudo sed -i 's|export INVENTORY=localhost|export INVENTORY="'${TARGET_SERVER}'"|g' helper_scripts/default.env
