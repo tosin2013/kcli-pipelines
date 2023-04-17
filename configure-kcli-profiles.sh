@@ -32,7 +32,7 @@ then
     source ~/.bash_aliases
     sudo  ln -s /root/.local/bin/ansible-vault /usr/local/bin/ansible-vault
     whereis ansible-vault
-    ansible-vault --help
+    sudo ansible-vault --help
 fi
 echo "NOW EXIT!!!"
 exit 0
