@@ -31,9 +31,10 @@ then
     source ~/.profile
     source ~/.bash_aliases
     sudo  ln -s /root/.local/bin/ansible-vault /usr/local/bin/ansible-vault
+    whereis ansible-vault
+    ansible-vault --help
 fi
-whereis ansible-vault
-ansible-vault --help
+echo "NOW EXIT!!!"
 exit 0
 
 cd /opt/kcli-pipelines
