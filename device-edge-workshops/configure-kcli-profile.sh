@@ -96,8 +96,8 @@ EOF
 
 function deploy_via_aws(){
     echo "deploying via aws"
-    #export AWS_ACCESS_KEY_ID=AKIA6ABLAH1223VBD3W
-    #export AWS_SECRET_ACCESS_KEY=zh6gFREbvblahblahblahfXIC5nZr51OgdKECaSIMBi9Kc
+    #export AWS_ACCESS_KEY_ID=CHANGEME
+    #export AWS_SECRET_ACCESS_KEY=CHANGEME
 }
 
 DEPLOYMENT_TYPE=kcli # aws
