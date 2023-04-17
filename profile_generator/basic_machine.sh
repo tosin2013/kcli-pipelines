@@ -1,6 +1,6 @@
 #!/bin/bash
 # this is just a test script to test the profile_generator
-export ANSIBLE_SAFE_VERSION="0.0.4"
+export ANSIBLE_SAFE_VERSION="0.0.5"
 PROFILES_FILE="kcli-profiles.yml"
 ANSIBLE_VAULT_FILE="/home/${USER}/quibinode_navigator/inventories/localhost/group_vars/control/vault.yml"
 KCLI_CONFIG_DIR="/root/.kcli"
