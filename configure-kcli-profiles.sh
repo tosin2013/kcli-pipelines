@@ -1,4 +1,5 @@
 #!/bin/bash
+set -xe 
 whoami 
 
 #GIT_REPO=https://gitlab.tosins-cloudlabs.com/tosin/kcli-pipelines.git
@@ -31,6 +32,7 @@ then
     source ~/.bash_aliases
     sudo  ln -s /root/.local/bin/ansible-vault /usr/local/bin/ansible-vault
 fi
+whereis ansible-vault
 ansible-vault --help
 exit 0
 
