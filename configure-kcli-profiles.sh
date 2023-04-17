@@ -1,5 +1,4 @@
 #!/bin/bash
-
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
 cat >vm_vars.yaml<<EOF
 image: rhel-baseos-9.1-x86_64-kvm.qcow2 
@@ -27,7 +26,10 @@ if [ $TARGET_SERVER == "equinix" ];
 then 
     source ~/.profile
     source ~/.bash_aliases
-    sudo pip3 install ansible-vault
+    sudo  ln -s /root/.local/bin/ansible-vault /usr/bin/ansible-vault
+    whereis ansible-vault
+    sudo ansible-vault --help
+    sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' /opt/kcli-pipelines/helper_scripts/default.env
 fi
 
 cd /opt/kcli-pipelines

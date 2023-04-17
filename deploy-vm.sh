@@ -9,7 +9,7 @@ fi
 if [ $ACTION == "create" ];
 then 
     echo "Creating VM $VM_NAME"
-    kcli create vm -p $VM_NAME $VM_NAME --wait
+    sudo kcli create vm -p $VM_NAME $VM_NAME --wait
 elif [ $ACTION == "delete" ];
 then 
     TARGET_VM=$(kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')

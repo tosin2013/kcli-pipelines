@@ -3,7 +3,7 @@ numcpus: {{ numcpus }}
 memory: {{ memory }}
 nets:
   - name: {{ net_name }}
-reservedns: {{ reservedns }}
+dns: {{ reservedns }}
 disks:
   - size: {{ disk_size }}
 cmds:

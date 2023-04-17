@@ -17,7 +17,7 @@
   {% endif %}
   nets:
     - name: {{ net_name }}
-  reservedns: {{ reservedns }}
+  dns: {{ reservedns }}
   cmds:
     - echo {{ user_password }} | passwd --stdin root
     - useradd {{ user }}

@@ -13,7 +13,7 @@ rhnactivationkey: {{ rhnactivationkey }}
 {% endif %}
 nets:
   - name: {{ net_name }}
-reservedns: {{ reservedns }}
+dns: {{ reservedns }}
 disks:
   - size: {{ disk_size }}
 cmds:
