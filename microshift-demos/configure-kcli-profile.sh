@@ -13,7 +13,7 @@ fi
 
 cd $KCLI_SAMPLES_DIR
 
-ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
+/usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
 RHSM_ORG=$(yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
 RHSM_ACTIVATION_KEY=$(yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
@@ -56,7 +56,7 @@ sudo python3 profile_generator/profile_generator.py update_yaml microshift-demos
 sudo echo ${PULL_SECRET} | sudo tee pull-secret.json
 cat pull-secret.json
 cat  kcli-profiles.yml
-ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
+/usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 sudo cp kcli-profiles.yml ~/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 sudo cp  pull-secret.json  ~/.generated/vmfiles
