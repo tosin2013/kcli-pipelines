@@ -32,7 +32,7 @@ sudo python3 profile_generator/profile_generator.py update_yaml fedora37 fedora3
 
 ./openshift-jumpbox/configure-kcli-profile.sh
 ./ansible-aap/configure-kcli-profile.sh
-./device-edge-workshops/dconfigure-kcli-profile.sh
+./device-edge-workshops/configure-kcli-profile.sh
 ./microshift-demos/configure-kcli-profile.sh
 sudo cp kcli-profiles.yml ~/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
