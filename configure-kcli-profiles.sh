@@ -1,7 +1,5 @@
 #!/bin/bash
 set -x
-whoami 
-
 #GIT_REPO=https://gitlab.tosins-cloudlabs.com/tosin/kcli-pipelines.git
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
 cat >vm_vars.yaml<<EOF
@@ -33,6 +31,7 @@ then
     sudo  ln -s /root/.local/bin/ansible-vault /usr/bin/ansible-vault
     whereis ansible-vault
     sudo ansible-vault --help
+    sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' helper_scripts/default.env
 fi
 
 cd /opt/kcli-pipelines
