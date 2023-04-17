@@ -10,7 +10,10 @@ systemctl restart sshd
 
 cd /opt/device-edge-workshops/provisioner
 mkdir -p  lab-prefix.${DOMAIN}
-ssh-keygen -t rsa -b 4096 -f lab-prefix.${DOMAIN}/ssh-key -N ''
+if [ ! -f lab-prefix.${DOMAIN}/ssh-key ];
+then 
+    ssh-keygen -t rsa -b 4096 -f lab-prefix.${DOMAIN}/ssh-key -N ''
+fi
 BUILDER_KEY=$(cat lab-prefix.${DOMAIN}/ssh-key.pub)
 cd ..
 
