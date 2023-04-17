@@ -34,8 +34,6 @@ then
     whereis ansible-vault
     sudo ansible-vault --help
 fi
-echo "NOW EXIT!!!"
-exit 0
 
 cd /opt/kcli-pipelines
 sudo sed -i 's|export INVENTORY=localhost|export INVENTORY="'${TARGET_SERVER}'"|g' helper_scripts/default.env
