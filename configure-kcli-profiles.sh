@@ -1,5 +1,6 @@
 #!/bin/bash
-
+whoami 
+exit 0
 #GIT_REPO=https://gitlab.tosins-cloudlabs.com/tosin/kcli-pipelines.git
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
 cat >vm_vars.yaml<<EOF
@@ -28,7 +29,7 @@ if [ $TARGET_SERVER == "equinix" ];
 then 
     source ~/.profile
     source ~/.bash_aliases
-    sudo pip3 install ansible-vault
+    sudo  ln -s /root/.local/bin/ansible-vault /usr/local/bin/ansible-vault
 fi
 
 cd /opt/kcli-pipelines
