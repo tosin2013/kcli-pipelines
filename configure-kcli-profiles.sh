@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GIT_REPO=https://gitlab.tosins-cloudlabs.com/tosin/kcli-pipelines.git
+GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
 cat >vm_vars.yaml<<EOF
 image: rhel-baseos-9.1-x86_64-kvm.qcow2 
 user: admin
