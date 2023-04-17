@@ -30,7 +30,7 @@ if [ $TARGET_SERVER == "equinix" ];
 then 
     source ~/.profile
     source ~/.bash_aliases
-    sudo  ln -s /root/.local/bin/ansible-vault /usr/local/bin/ansible-vault
+    sudo  ln -s /root/.local/bin/ansible-vault /usr/bin/ansible-vault
     whereis ansible-vault
     sudo ansible-vault --help
 fi
