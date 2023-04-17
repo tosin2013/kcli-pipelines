@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe 
+set -x
 whoami 
 
 #GIT_REPO=https://gitlab.tosins-cloudlabs.com/tosin/kcli-pipelines.git
