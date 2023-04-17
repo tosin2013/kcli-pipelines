@@ -24,7 +24,11 @@ else
     sudo git pull
 fi
 
-
+if [ $TARGET_SERVER == "equinix" ];
+then 
+    source ~/.profile
+    source ~/.bash_aliases
+fi
 
 cd /opt/kcli-pipelines
 sudo sed -i 's|export INVENTORY=localhost|export INVENTORY="'${TARGET_SERVER}'"|g' helper_scripts/default.env
