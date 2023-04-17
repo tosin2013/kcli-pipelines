@@ -62,6 +62,8 @@ sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 sudo cp  pull-secret.json  ~/.generated/vmfiles
 sudo cp pull-secret.json /root/.generated/vmfiles
 sudo rm pull-secret.json
+sudo cp  setup-demo-infra.sh ~/.generated/vmfiles
+sudo cp setup-demo-infra.sh /root/.generated/vmfiles
 #echo "Creating VM ${VM_NAME}"
 #echo "Creating VM ${VM_NAME}"
 #sudo kcli create vm -p microshift-demos ${VM_NAME} --wait

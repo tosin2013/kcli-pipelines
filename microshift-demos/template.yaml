@@ -44,3 +44,5 @@ cmds:
 files:
   - path: /root/.pull-secret.json
     origin: ~/.generated/vmfiles/pull-secret.json
+  - path: /root/setup-demo-infra.sh
+    origin: ~/.generated/vmfiles/setup-demo-infra.sh
