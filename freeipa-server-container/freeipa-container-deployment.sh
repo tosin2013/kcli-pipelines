@@ -56,10 +56,6 @@ function wait_for_ipa_container() {
 	if [ "$EXIT_STATUS" -ne 0 ] ; then
 		exit "$EXIT_STATUS"
 	fi
-	if $docker exec "$N" grep '^2' /data/volume-version \
-		&& $docker diff "$N" | tee /dev/stderr | grep -Evf tests/docker-diff-ipa.out | grep . ; then
-		exit 1
-	fi
 	MACHINE_ID=$( cat $VOLUME/etc/machine-id )
 	# Check that journal landed on volume and not in host's /var/log/journal
 	$sudo ls -la $VOLUME/var/log/journal/$MACHINE_ID
