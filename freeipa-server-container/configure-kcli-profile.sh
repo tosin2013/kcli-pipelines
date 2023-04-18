@@ -43,6 +43,7 @@ disk_size: ${DISK_SIZE}
 numcpus: 2
 memory: 4092
 net_name: ${NET_NAME} 
+reservedns: ${DNS_FORWARDER}
 EOF
 
 sudo python3 profile_generator/profile_generator.py update_yaml freeipa-server-container freeipa-server-container/template.yaml  --vars-file /tmp/vm_vars.yaml
