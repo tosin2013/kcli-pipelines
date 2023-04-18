@@ -38,6 +38,7 @@ sudo python3 profile_generator/profile_generator.py update_yaml rhel9 rhel9/temp
 sudo python3 profile_generator/profile_generator.py update_yaml fedora37 fedora37/template.yaml --vars-file fedora37/vm_vars.yaml
 
 sudo -E ./openshift-jumpbox/configure-kcli-profile.sh
+sudo -E ./freeipa-server-container/configure-kcli-profile.sh
 sudo -E ./ansible-aap/configure-kcli-profile.sh
 sudo -E ./device-edge-workshops/configure-kcli-profile.sh
 sudo -E ./microshift-demos/configure-kcli-profile.sh
