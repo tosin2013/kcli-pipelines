@@ -15,4 +15,10 @@ then
     TARGET_VM=$(kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
     echo "Deleting VM $TARGET_VM"
     kcli delete vm $TARGET_VM -y
+elif [ $ACTION == "deploy_app" ];
+then 
+  #sudo kcli scp /tmp/manifest_tower-dev_20230325T132029Z.zip device-edge-workshops:/tmp
+  #./setup-demo-infra.sh
 fi
+
+

@@ -1,0 +1,19 @@
+image: {{ image }}
+numcpus: {{ numcpus }}
+memory: {{ memory }}
+nets:
+  - name: {{ net_name }}
+disks:
+  - size: {{ disk_size }}
+cmds:
+  - echo {{ user_password }} | passwd --stdin root
+  - useradd {{ user }}
+  - usermod -aG wheel {{ user }}
+  - echo "{{ user }} ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/{{ user }}
+  - echo {{ user_password }} | passwd --stdin {{ user }}
+  - sudo dnf update -y
+  - dnf install git vim unzip wget tar python3 python3-pip util-linux-user tmux bind-utils podman -y 
+  - mkdir -p /opt/scripts 
+  - cd /opt/scripts && curl -OL https://raw.githubusercontent.com/tosin2013/openshift-4-deployment-notes/master/aws/configure-aws-cli.sh && chmod +x configure-aws-cli.sh]
+  - sed -i 's/DNS_FORWARDER="1.1.1.1"/DNS_FORWARDER="{{ reservedns }}"/g' /opt/scripts/freeipa-container-deployment.sh
+  - /opt/scripts/freeipa-container-deployment.sh
