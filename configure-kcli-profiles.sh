@@ -1,17 +1,6 @@
 #!/bin/bash
 set -x
 
-if [ -f ../helper_scripts/default.env ];
-then 
-  source ../helper_scripts/default.env
-elif [ -f helper_scripts/default.env  ];
-then 
-  source helper_scripts/default.env 
-else
-  echo "default.env file does not exist"
-  exit 1
-fi
-
 #GIT_REPO=https://gitlab.tosins-cloudlabs.com/tosin/kcli-pipelines.git
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
 
@@ -22,8 +11,6 @@ else
     cd /opt/kcli-pipelines
     sudo git pull
 fi
-
-KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 
 if [ $TARGET_SERVER == "equinix" ];
 then 
@@ -36,6 +23,9 @@ then
 fi
 
 cd /opt/kcli-pipelines
+source helper_scripts/default.env 
+KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
+
 sudo sed -i 's|export INVENTORY=localhost|export INVENTORY="'${TARGET_SERVER}'"|g' helper_scripts/default.env
 sudo python3 profile_generator/profile_generator.py update_yaml rhel9 rhel9/template.yaml --vars-file rhel9/vm_vars.yml
 sudo python3 profile_generator/profile_generator.py update_yaml fedora37 fedora37/template.yaml --vars-file fedora37/vm_vars.yaml
