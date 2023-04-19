@@ -20,6 +20,13 @@ else
   #exit 1
 fi
 
+if [  -f /root/.vault_password ]; then
+  echo "vault password file already exists"
+else
+  echo "vault password file does not exist"
+  #exit 1
+fi
+
 function deploy_via_kcli(){
 
     source helper_scripts/default.env 
@@ -46,7 +53,7 @@ function deploy_via_kcli(){
         sudo mkdir -p /home/${KCLI_USER}/.kcli
         sudo mkdir -p /root/.kcli
     fi
-    if [ -d $HOME/.generated/vmfiles ]; then
+    if [ -d /home/${KCLI_USER}/.generated/vmfiles ]; then
       echo "generated directory already exists"
     else
       sudo mkdir -p  /home/${KCLI_USER}/.generated/vmfiles

@@ -31,7 +31,7 @@ else
     sudo mkdir -p /home/${KCLI_USER}/.kcli
     sudo mkdir -p /root/.kcli
 fi
-if [ -d $HOME/.generated/vmfiles ]; then
+if [ -d /home/${KCLI_USER}/.generated/vmfiles ]; then
   echo "generated directory already exists"
 else
   sudo mkdir -p  /home/${KCLI_USER}/.generated/vmfiles
