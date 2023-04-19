@@ -65,6 +65,20 @@ function wait_for_ipa_container() {
 	fi
 }
 
+function set_firewall_rules() {
+  firewall-cmd --zone=work --permanent --add-service=https
+  firewall-cmd --zone=work --permanent --add-service=http
+  firewall-cmd --zone=work --permanent --add-service=ldap
+  firewall-cmd --zone=work --permanent --add-service=ldaps
+  firewall-cmd --zone=work --permanent --add-port=53/udp
+  firewall-cmd --zone=work --permanent --add-port=53/tcp
+  firewall-cmd --zone=work --permanent --add-port=88
+  firewall-cmd --zone=work --permanent --add-port=88/udp
+  firewall-cmd --zone=work --permanent --add-port=464/udp
+  firewall-cmd --zone=work --permanent --add-port=464
+  firewall-cmd --zone=work --permanent --add-port=123/udp
+  firewall-cmd --reload
+}
 function run_ipa_container() {
 	set +x
 	IMAGE="$1" ; shift
@@ -151,6 +165,7 @@ if [ -f "$VOLUME/build-id" ] ; then
 	run_ipa_container $IMAGE freeipa-master exit-on-finished
 else
 	# Initial setup of the FreeIPA server
+  set_firewall_rules
 	dns_opts="--auto-reverse --allow-zone-overlap --forwarder=${DNS_FORWARDER}"
 	if [ "$replica" = 'none' ] ; then
 		dns_opts=""
