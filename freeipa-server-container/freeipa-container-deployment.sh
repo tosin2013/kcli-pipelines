@@ -3,7 +3,7 @@ export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 set -e
 set -x
 # https://github.com/freeipa/freeipa-container
-# docker='sudo podman' tests/run-master-and-replica.sh localhost/freeipa-server:${{ matrix.os }}
+# docker='sudo podman' tests/run-master-and-replica.sh quay.io/freeipa/freeipa-server:fedora-37
 # https://two-oes.medium.com/openshift-4-with-freeipa-container-as-an-identity-provider-3c25bd5fd9ee
 DOMAIN_NAME=qubinode-lab.io
 SECRET="Secret123"
