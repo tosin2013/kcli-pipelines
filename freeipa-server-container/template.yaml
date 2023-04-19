@@ -12,8 +12,11 @@ cmds:
   - echo "{{ user }} ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/{{ user }}
   - echo {{ user_password }} | passwd --stdin {{ user }}
   - sudo dnf update -y
-  - dnf install git vim unzip wget tar python3 python3-pip util-linux-user tmux bind-utils podman -y 
+  - dnf install git vim unzip wget tar python3 python3-pip util-linux-user tmux bind-utils podman firewalld -y 
   - mkdir -p /opt/scripts 
-  - cd /opt/scripts && curl -OL https://raw.githubusercontent.com/tosin2013/openshift-4-deployment-notes/master/aws/configure-aws-cli.sh && chmod +x configure-aws-cli.sh]
+  - cd /opt/scripts && curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/freeipa-server-container/freeipa-container-deployment.sh && chmod +x /opt/scripts/freeipa-container-deployment.sh
   - sed -i 's/DNS_FORWARDER="1.1.1.1"/DNS_FORWARDER="{{ reservedns }}"/g' /opt/scripts/freeipa-container-deployment.sh
-  - /opt/scripts/freeipa-container-deployment.sh
+  - sed -i 's/DOMAIN_NAME=qubinode-lab.io/DOMAIN_NAME="{{ domainname }}"/g' /opt/scripts/freeipa-container-deployment.sh
+  - systemctl stop systemd-resolved && systemctl disable systemd-resolved
+  - echo "nameserver {{ reservedns }}" > /etc/resolv.conf
+  - bash -x /opt/scripts/freeipa-container-deployment.sh quay.io/freeipa/freeipa-server:fedora-37
