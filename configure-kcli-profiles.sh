@@ -1,17 +1,19 @@
 #!/bin/bash
+set -x
+
+if [ -f ../helper_scripts/default.env ];
+then 
+  source ../helper_scripts/default.env
+elif [ -f helper_scripts/default.env  ];
+then 
+  source helper_scripts/default.env 
+else
+  echo "default.env file does not exist"
+  exit 1
+fi
+
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
-cat >vm_vars.yaml<<EOF
-image: rhel-baseos-9.1-x86_64-kvm.qcow2 
-user: admin
-user_password: secret
-disk_size: 30
-numcpus: 4
-memory: 8192
-net_name: default
-rhnorg: orgid
-rhnactivationkey: activationkey
-reservedns: 1.1.1.1
-EOF
+KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 
 
 if [ ! -d /opt/kcli-pipelines ];
@@ -42,5 +44,5 @@ sudo -E ./freeipa-server-container/configure-kcli-profile.sh
 sudo -E ./ansible-aap/configure-kcli-profile.sh
 sudo -E ./device-edge-workshops/configure-kcli-profile.sh
 sudo -E ./microshift-demos/configure-kcli-profile.sh
-sudo cp kcli-profiles.yml ~/.kcli/profiles.yml
+sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
