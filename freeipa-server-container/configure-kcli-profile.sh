@@ -22,20 +22,21 @@ IMAGE_NAME=Fedora-Cloud-Base-37-1.7.x86_64.qcow2
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50
-
+KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 sudo rm -rf kcli-profiles.yml
-if [ -f ~/.kcli/profiles.yml ]; then
-  sudo cp  ~/.kcli/profiles.yml kcli-profiles.yml
+if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
+  sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
 else 
-    sudo mkdir -p ~/.kcli
+    sudo mkdir -p /home/${KCLI_USER}/.kcli
     sudo mkdir -p /root/.kcli
 fi
 if [ -d $HOME/.generated/vmfiles ]; then
   echo "generated directory already exists"
 else
-  sudo mkdir -p  $HOME/.generated/vmfiles
+  sudo mkdir -p  /home/${KCLI_USER}/.generated/vmfiles
   sudo mkdir -p  /root/.generated/vmfiles
 fi
+
 
 cat >/tmp/vm_vars.yaml<<EOF
 image: ${IMAGE_NAME}
@@ -52,7 +53,7 @@ EOF
 sudo python3 profile_generator/profile_generator.py update_yaml freeipa-server-container freeipa-server-container/template.yaml  --vars-file /tmp/vm_vars.yaml
 cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
-sudo cp kcli-profiles.yml ~/.kcli/profiles.yml
+sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 
 #echo "Creating VM ${VM_NAME}"

@@ -38,19 +38,21 @@ function deploy_via_kcli(){
     DISK_SIZE=200
     MEMORTY=32768
     CPU_NUM=8
+    KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
     sudo rm -rf kcli-profiles.yml
-    if [ -f ~/.kcli/profiles.yml ]; then
-      sudo cp  ~/.kcli/profiles.yml kcli-profiles.yml
-    else
-        sudo mkdir -p ~/.kcli
+    if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
+      sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
+    else 
+        sudo mkdir -p /home/${KCLI_USER}/.kcli
         sudo mkdir -p /root/.kcli
     fi
     if [ -d $HOME/.generated/vmfiles ]; then
-        echo "generated directory already exists"
+      echo "generated directory already exists"
     else
-        sudo mkdir -p  $HOME/.generated/vmfiles
-        sudo mkdir -p  /root/.generated/vmfiles
+      sudo mkdir -p  /home/${KCLI_USER}/.generated/vmfiles
+      sudo mkdir -p  /root/.generated/vmfiles
     fi
+
 cat >/tmp/vm_vars.yaml<<EOF
 image: ${IMAGE_NAME}
 user: cloud-user
@@ -70,11 +72,11 @@ EOF
     cat pull-secret.json
     cat  kcli-profiles.yml
     /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
-    sudo cp kcli-profiles.yml ~/.kcli/profiles.yml
+    sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
     sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
     sudo cp $(pwd)/device-edge-workshops/local-inventory.yml $(pwd)/device-edge-workshops/local-inventory.yml.bak
     sudo sed -i "s/your-password/${PASSWORD}/g" $(pwd)/device-edge-workshops/local-inventory.yml
-    sudo cp $(pwd)/device-edge-workshops/local-inventory.yml  ~/.generated/vmfiles
+    sudo cp $(pwd)/device-edge-workshops/local-inventory.yml  /home/${KCLI_USER}/.generated/vmfiles
     sudo cp $(pwd)/device-edge-workshops/local-inventory.yml /root/.generated/vmfiles
     sudo rm -rf $(pwd)/device-edge-workshops/local-inventory.yml
     sudo cp $(pwd)/device-edge-workshops/local-inventory.yml.bak $(pwd)/device-edge-workshops/local-inventory.yml
@@ -84,10 +86,10 @@ EOF
     sudo sed -i "s/your-token-here/${OFFLINE_TOKEN}/g" $(pwd)/device-edge-workshops/extra_vars.yml
     sudo sed -i "s/internallab.io/${DOMAIN_NAME}/g" $(pwd)/device-edge-workshops/extra_vars.yml
     #$(pwd)/device-edge-workshops/manifest-generator.sh /tmp/manifest.zip
-    sudo cp $(pwd)/device-edge-workshops/extra_vars.yml  ~/.generated/vmfiles
+    sudo cp $(pwd)/device-edge-workshops/extra_vars.yml  /home/${KCLI_USER}/.generated/vmfiles
     sudo cp $(pwd)/device-edge-workshops/extra_vars.yml /root/.generated/vmfiles
     sudo sed -i "s/DOMAIN=testingdomain.io/DOMAIN=${DOMAIN_NAME}/g" $(pwd)/device-edge-workshops/setup-demo-infra.sh
-    sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh  ~/.generated/vmfiles
+    sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh  /home/${KCLI_USER}/.generated/vmfiles
     sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /root/.generated/vmfiles
     cat  $(pwd)/device-edge-workshops/extra_vars.yml 
     sudo cp  $(pwd)/device-edge-workshops/extra_vars.yml.bak $(pwd)/device-edge-workshops/extra_vars.yml
