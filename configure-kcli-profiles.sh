@@ -14,8 +14,6 @@ fi
 
 #GIT_REPO=https://gitlab.tosins-cloudlabs.com/tosin/kcli-pipelines.git
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
-KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
-
 
 if [ ! -d /opt/kcli-pipelines ];
 then 
@@ -24,6 +22,8 @@ else
     cd /opt/kcli-pipelines
     sudo git pull
 fi
+
+KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 
 if [ $TARGET_SERVER == "equinix" ];
 then 
@@ -45,5 +45,4 @@ sudo -E ./freeipa-server-container/configure-kcli-profile.sh
 sudo -E ./ansible-aap/configure-kcli-profile.sh
 sudo -E ./device-edge-workshops/configure-kcli-profile.sh
 sudo -E ./microshift-demos/configure-kcli-profile.sh
-sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
