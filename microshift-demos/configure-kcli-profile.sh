@@ -25,19 +25,21 @@ IMAGE_NAME=rhel-baseos-9.1-x86_64-kvm.qcow2
 DISK_SIZE=200
 MEMORTY=32768
 CPU_NUM=8
+KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 sudo rm -rf kcli-profiles.yml
-if [ -f ~/.kcli/profiles.yml ]; then
-  sudo cp  ~/.kcli/profiles.yml kcli-profiles.yml
+if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
+  sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
 else 
-    sudo mkdir -p ~/.kcli
+    sudo mkdir -p /home/${KCLI_USER}/.kcli
     sudo mkdir -p /root/.kcli
 fi
 if [ -d $HOME/.generated/vmfiles ]; then
   echo "generated directory already exists"
 else
-  sudo mkdir -p  $HOME/.generated/vmfiles
+  sudo mkdir -p  /home/${KCLI_USER}/.generated/vmfiles
   sudo mkdir -p  /root/.generated/vmfiles
 fi
+
 
 cat >/tmp/vm_vars.yaml<<EOF
 image: ${IMAGE_NAME}
@@ -58,12 +60,12 @@ sudo echo ${PULL_SECRET} | sudo tee pull-secret.json
 cat pull-secret.json
 cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
-sudo cp kcli-profiles.yml ~/.kcli/profiles.yml
+sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
-sudo cp  pull-secret.json  ~/.generated/vmfiles
+sudo cp  pull-secret.json  /home/${KCLI_USER}/.generated/vmfiles
 sudo cp pull-secret.json /root/.generated/vmfiles
 sudo rm pull-secret.json
-sudo cp  setup-demo-infra.sh ~/.generated/vmfiles
+sudo cp  setup-demo-infra.sh /home/${KCLI_USER}/.generated/vmfiles
 sudo cp setup-demo-infra.sh /root/.generated/vmfiles
 #echo "Creating VM ${VM_NAME}"
 #echo "Creating VM ${VM_NAME}"
@@ -71,5 +73,5 @@ sudo cp setup-demo-infra.sh /root/.generated/vmfiles
 #echo "VM ${VM_NAME} created"
 #echo "sudo kcli ssh ${VM_NAME}"
 #echo "sudo su - "
-#echo "ssh-keygen -t rsa -b 4096 -f ~/.ssh/cluster-key -N ''"
-#echo "ssh-copy-id -i ~/.ssh/cluster-key admin@192.168.1.123"
+#echo "ssh-keygen -t rsa -b 4096 -f /home/${KCLI_USER}/.ssh/cluster-key -N ''"
+#echo "ssh-copy-id -i /home/${KCLI_USER}/.ssh/cluster-key admin@192.168.1.123"

@@ -23,17 +23,18 @@ VM_NAME=openshift-jumpbox-$(echo $RANDOM | md5sum | head -c 5; echo;)
 IMAGE_NAME=Fedora-Cloud-Base-37-1.7.x86_64.qcow2
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50
+KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 sudo rm -rf kcli-profiles.yml
-if [ -f ~/.kcli/profiles.yml ]; then
-  sudo cp  ~/.kcli/profiles.yml kcli-profiles.yml
+if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
+  sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
 else 
-    sudo mkdir -p ~/.kcli
+    sudo mkdir -p /home/${KCLI_USER}/.kcli
     sudo mkdir -p /root/.kcli
 fi
 if [ -d $HOME/.generated/vmfiles ]; then
   echo "generated directory already exists"
 else
-  sudo mkdir -p  $HOME/.generated/vmfiles
+  sudo mkdir -p  /home/${KCLI_USER}/.generated/vmfiles
   sudo mkdir -p  /root/.generated/vmfiles
 fi
 
@@ -53,9 +54,9 @@ sudo python3 profile_generator/profile_generator.py update_yaml openshift-jumpbo
 sudo echo ${PULL_SECRET} | sudo tee pull-secret.json
 cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
-sudo cp pull-secret.json  ~/.generated/vmfiles
+sudo cp pull-secret.json  /home/${KCLI_USER}/.generated/vmfiles
 sudo cp pull-secret.json /root/.generated/vmfiles
-sudo cp $(pwd)/openshift-jumpbox/gitops.sh ~/.generated/vmfiles
+sudo cp $(pwd)/openshift-jumpbox/gitops.sh /home/${KCLI_USER}/.generated/vmfiles
 sudo cp $(pwd)/openshift-jumpbox/gitops.sh /root/.generated/vmfiles
 sudo rm pull-secret.json
 #echo "Creating VM ${VM_NAME}"
