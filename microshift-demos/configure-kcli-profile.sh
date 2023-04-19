@@ -65,8 +65,8 @@ sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 sudo cp  pull-secret.json  /home/${KCLI_USER}/.generated/vmfiles
 sudo cp pull-secret.json /root/.generated/vmfiles
 sudo rm pull-secret.json
-sudo cp  setup-demo-infra.sh /home/${KCLI_USER}/.generated/vmfiles
-sudo cp setup-demo-infra.sh /root/.generated/vmfiles
+sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /home/${KCLI_USER}/.generated/vmfiles
+sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /root/.generated/vmfiles
 #echo "Creating VM ${VM_NAME}"
 #echo "Creating VM ${VM_NAME}"
 #sudo kcli create vm -p microshift-demos ${VM_NAME} --wait
