@@ -24,7 +24,7 @@ configure-kcli-profiles:
     - mkdir -p ~/.ssh/
     - ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ""
     - sshpass -p "$SSH_PASSWORD" ssh-copy-id -o StrictHostKeyChecking=no "$SSH_USER"@"$SSH_HOST"
-    - ssh "$SSH_USER"@"$SSH_HOST"  'env CICD_PIPELINE="'$CICD_PIPELINE'" TARGET_SERVER="'$TARGET_SERVER'" bash -s' < configure-kcli-profiles.sh
+    - ssh "$SSH_USER"@"$SSH_HOST"  'env CICD_PIPELINE="'$CICD_PIPELINE'" TARGET_SERVER="'$TARGET_SERVER'" bash -s' < configure-kcli-profiles.sh || exit $?
   only:
     variables:
     - $JOB_TYPE == "configure-vm-profiles"
@@ -44,7 +44,7 @@ deploy-vm:
     - mkdir -p ~/.ssh/
     - ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ""
     - sshpass -p "$SSH_PASSWORD" ssh-copy-id -o StrictHostKeyChecking=no "$SSH_USER"@"$SSH_HOST"
-    - ssh "$SSH_USER"@"$SSH_HOST"  'env CICD_PIPELINE="'$CICD_PIPELINE'" TARGET_SERVER="'$TARGET_SERVER'"  VM_NAME="'$VM_NAME'" ACTION="'$ACTION'"  bash -s' < deploy-vm.sh
+    - ssh "$SSH_USER"@"$SSH_HOST"  'env CICD_PIPELINE="'$CICD_PIPELINE'" TARGET_SERVER="'$TARGET_SERVER'"  VM_NAME="'$VM_NAME'" ACTION="'$ACTION'"  bash -s' < deploy-vm.sh || exit $?
   only:
     variables:
     - $JOB_TYPE == "deploy-vm"
