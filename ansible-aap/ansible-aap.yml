@@ -22,3 +22,8 @@ cmds:
 - cd /root/{{ path_name }} && ansible-galaxy collection install  -r collections/requirements.yml
 - sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
 - systemctl restart sshd
+files:
+  - path: /root/setup-aap.sh
+    origin: ~/.generated/vmfiles/setup-aap.sh
+  - path: /home/{{ user }}/setup-aap.sh
+    origin:  ~/.generated/vmfiles/setup-aap.sh

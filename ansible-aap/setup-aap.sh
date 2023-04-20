@@ -22,16 +22,17 @@ fi
 ANSIBLE_AAP=ansible-aap
 ANSIBLE_HUB=ansible-hub
 POSTGRES=postgres
+
+#sudo kcli info vm $ANSIBLE_AAP ${ANSIBLE_HUB} ${POSTGRES} | grep ip: | awk '{print $2}'
 if [ ! -f ~/.ssh/id_rsa ]; then
     ssh-keygen -f ~/.ssh/id_rsa -t rsa -N ''
-    ssh-copy-id root@${ANSIBLE_AAP}
-    ssh-copy-id root@${ANSIBLE_HUB}
-    ssh-copy-id root@${POSTGRES}
+    for i in $ANSIBLE_AAP $ANSIBLE_HUB $POSTGRES
+    do
+        ssh-copy-id root@${i}
+    done
 fi
 
-cd $HOME/ocp4-ai-svc-universal-aap-configs
-
-
+cd $HOME/rhel-fleet-management-configurator
 
 sudo cat >inventory_dev.yml<<EOF
 ---
@@ -67,8 +68,6 @@ EOF
 
 
 ansible -i  inventory_dev.yml all  -m setup 
-ansible-playbook -i inventory_dev.yml playbooks/install_aap.yml --ask-vault-pass  -vv 
-
 
 yaml_file="vaults/dev.yml"
 offline_token=$(yq eval '.offline_token' "$yaml_file")
@@ -88,6 +87,6 @@ yaml_path="."token""
 echo "Updating $yaml_file with access token..."
 yq -i  ''$yaml_path'="'$access_token'"' "$yaml_file"
 
-
+ansible-playbook -i inventory_dev.yml playbooks/install_aap.yml --ask-vault-pass  -vv 
 ansible-playbook -i inventory_dev.yml -l dev playbooks/hub_config.yml --ask-vault-pass  -vv
 ansible-playbook -i inventory_dev.yml -l dev playbooks/controller_config.yml --ask-vault-pass -vv
