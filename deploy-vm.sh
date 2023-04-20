@@ -16,6 +16,7 @@ if [ $ACTION == "create" ];
 then 
     echo "Creating VM $VM_NAME"
     sudo kcli create vm -p $VM_NAME $VM_NAME --wait
+    IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}')
 elif [ $ACTION == "delete" ];
 then 
     TARGET_VM=$(kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
