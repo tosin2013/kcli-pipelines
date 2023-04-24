@@ -1,5 +1,6 @@
 #!/bin/bash 
-
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -xe
 # Check if user is root
 if [ "$(id -u)" != "0" ]; then
     echo "This script must be run as root!"

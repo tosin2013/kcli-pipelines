@@ -36,5 +36,8 @@ sudo -E ./ansible-aap/configure-kcli-profile.sh
 sudo -E ./device-edge-workshops/configure-kcli-profile.sh
 sudo -E ./microshift-demos/configure-kcli-profile.sh
 sudo -E ./ansible-aap/configure-kcli-profile.sh
-sudo cp kcli-profiles.yml /home/$KCLI_USER/.kcli/profiles.yml
+if [ $KCLI_USER != "root" ];
+then 
+    sudo cp kcli-profiles.yml /home/$KCLI_USER/.kcli/profiles.yml
+fi
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
