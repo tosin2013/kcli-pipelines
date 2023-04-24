@@ -1,6 +1,6 @@
 #!/bin/bash
-export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-set -xe
+#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+#set -xe
 if [ -f ../helper_scripts/default.env ];
 then 
   source ../helper_scripts/default.env
@@ -68,7 +68,6 @@ cat  kcli-profiles.yml
 #ANSIBLE_HUB=ansible-hub
 #POSTGRES=postgres
 #../helper_scripts/get-ips-by-mac.sh ${ANSIBLE_AAP} ${ANSIBLE_HUB} ${POSTGRES} setup-aap.sh
-#sudo kcli scp setup-aap.sh ansible-aap:/tmp
 
 
 #sudo kcli ssh setup-aap
