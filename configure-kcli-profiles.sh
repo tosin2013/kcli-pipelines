@@ -18,7 +18,7 @@ then
     sudo  ln -s /root/.local/bin/ansible-vault /usr/bin/ansible-vault
     whereis ansible-vault
     sudo ansible-vault --help
-    sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' /opt/kcli-pipelines/helper_scripts/default.env
+    sudo sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' /opt/kcli-pipelines/helper_scripts/default.env
 fi
 
 cd /opt/kcli-pipelines
