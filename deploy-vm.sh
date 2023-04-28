@@ -99,10 +99,10 @@ then
         IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}')
         configure_idm_container "freeipa-server-container"
     else
+        check_idm $IP_ADDRESS || exit $?
         sudo kcli create vm -p $VM_NAME $VM_NAME --wait
         IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}')
         echo "VM $VM_NAME created with IP address $IP_ADDRESS"
-        check_idm $IP_ADDRESS
         sudo -E ansible-playbook helper_scripts/add_ipa_entry.yaml \
             --vault-password-file "$HOME"/.vault_password \
             --extra-vars "@${ANSIBLE_VAULT_FILE}" \
