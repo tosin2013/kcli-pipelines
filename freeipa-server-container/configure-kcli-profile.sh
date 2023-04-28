@@ -50,7 +50,7 @@ net_name: ${NET_NAME}
 reservedns: ${DNS_FORWARDER}
 domainname: ${DOMAIN}
 EOF
-sudo kcli download image freeipa-server-container -u  
+sudo kcli download image freeipa-server-container -u  ${IMAGE_URL}
 sudo python3 profile_generator/profile_generator.py update_yaml freeipa-server-container freeipa-server-container/template.yaml  --vars-file /tmp/vm_vars.yaml
 cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
