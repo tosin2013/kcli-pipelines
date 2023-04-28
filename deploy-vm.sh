@@ -30,7 +30,7 @@ then
         --extra-vars "freeipa_server_fqdn=${VM_NAME}.${DOMAIN_NAME}" \
         --extra-vars "value=${IP_ADDRESS}" \
         --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
-        --extra-vars "state=present" 
+        --extra-vars "action=present" 
 elif [ $ACTION == "delete" ];
 then 
     TARGET_VM=$(kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
@@ -45,7 +45,7 @@ then
         --extra-vars "freeipa_server_fqdn=${VM_NAME}.${DOMAIN_NAME}" \
         --extra-vars "value=${IP_ADDRESS}" \
         --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
-        --extra-vars "state=absent" 
+        --extra-vars "action=absent" 
 elif [ $ACTION == "deploy_app" ];
 then 
   #sudo kcli scp /tmp/manifest_tower-dev_20230325T132029Z.zip device-edge-workshops:/tmp
