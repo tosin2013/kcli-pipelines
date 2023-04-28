@@ -14,11 +14,5 @@
         ipa_host: "{{ freeipa_server_fqdn }}"
         ipa_user: admin
         ipa_pass:  "{{ freeipa_server_admin_password }}"
-        state: present
+        state: "{{ action }}"
         validate_certs: false
-
-
-#ansible-playbook test.yml \
-#        --vault-password-file "$HOME"/.vault_password \
-#        -e "@/opt/qubinode_navigator/inventories/supermicro/group_vars/all.yml"
-#        -e "@tempvars.yml"

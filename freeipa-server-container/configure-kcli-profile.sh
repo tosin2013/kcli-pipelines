@@ -60,5 +60,7 @@ sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 #echo "Creating VM ${VM_NAME}"
 #sudo kcli create vm -p freeipa-server-container ${VM_NAME} --wait
 
-
-ansible-galaxy collection install community.general
+if [ ! -d .ansible/collections/ansible_collections/community ];
+then 
+  ansible-galaxy collection install community.general
+fi 
