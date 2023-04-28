@@ -12,7 +12,7 @@ if [ -z "$ACTION" ]; then
     exit 1
 fi
 
-d /opt/kcli-pipelines
+cd /opt/kcli-pipelines
 source helper_scripts/default.env 
 
 
