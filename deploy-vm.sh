@@ -27,7 +27,7 @@ then
         --extra-vars "@${ANSIBLE_VAULT_FILE}" \
         --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
         --extra-vars "key=${VM_NAME}" \
-        --extra-vars "freeipa_server_fqdn=${VM_NAME}.${DOMAIN_NAME}" \
+        --extra-vars "freeipa_server_fqdn=ipa.${DOMAIN_NAME}" \
         --extra-vars "value=${IP_ADDRESS}" \
         --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
         --extra-vars "action=present" 
@@ -42,7 +42,7 @@ then
         --extra-vars "@${ANSIBLE_VAULT_FILE}" \
         --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
         --extra-vars "key=${VM_NAME}" \
-        --extra-vars "freeipa_server_fqdn=${VM_NAME}.${DOMAIN_NAME}" \
+        --extra-vars "freeipa_server_fqdn=ipa.${DOMAIN_NAME}" \
         --extra-vars "value=${IP_ADDRESS}" \
         --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
         --extra-vars "action=absent" 
