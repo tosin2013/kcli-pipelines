@@ -22,7 +22,7 @@ then
     sudo kcli create vm -p $VM_NAME $VM_NAME --wait
     IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}')
     echo "VM $VM_NAME created with IP address $IP_ADDRESS"
-    ansible-playbook test.yml \
+    sudo -E ansible-playbook add_ipa_entry.yaml \
         --vault-password-file "$HOME"/.vault_password \
         --extra-vars "@${ANSIBLE_VAULT_FILE}" \
         --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
@@ -36,7 +36,7 @@ then
     IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}')
     echo "Deleting VM $TARGET_VM"
     kcli delete vm $TARGET_VM -y
-        ansible-playbook test.yml \
+    sudo -E ansible-playbook add_ipa_entry.yaml \
         --vault-password-file "$HOME"/.vault_password \
         --extra-vars "@${ANSIBLE_VAULT_FILE}" \
         --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
