@@ -11,6 +11,79 @@ if [ -z "$ACTION" ]; then
     echo "Example: export ACTION=deploy_app"
     exit 1
 fi
+# Define the check_idm function
+function check_idm {
+  local idm="$1"
+
+  # Make an HTTPS request to the IDM server
+  if curl --head --insecure --silent "https://$idm" > /dev/null; then
+    echo "IDM is reachable over HTTPS."
+  else
+    echo "IDM is not reachable over HTTPS. Exiting."
+    exit 1
+  fi
+}
+
+# Define the configure_vm function
+function configure_vm {
+  local vm_name="$1"
+
+  if [ "$vm_name" == "freeipa-server-container" ]; then
+    # Get the IP address of the VM
+    local ip_address=$(sudo kcli info vm "$vm_name" "$vm_name" | grep ip: | awk '{print $2}')
+
+    echo "VM $vm_name created with IP address $ip_address"
+
+    # Check if the IP address already exists in the hosts file
+    if grep -q "$ip_address" /etc/hosts; then
+      echo "$ip_address already exists in the hosts file."
+    else
+      # Add the IP address and hostname to the hosts file
+      echo "$ip_address $vm_name" >> /etc/hosts
+      echo "Added $ip_address to the hosts file."
+    fi
+
+    # Check if the DNS server already exists in the resolv.conf file
+    if grep -q "nameserver $ip_address" /etc/resolv.conf; then
+      echo "$ip_address already exists in the resolv.conf file."
+    else
+      # Add the DNS server to the resolv.conf file
+      echo "nameserver $ip_address" >> /etc/resolv.conf
+      echo "Added $ip_address to the resolv.conf file."
+    fi
+  fi
+}
+
+# Define the configure_vm function
+function configure_idm_container {
+  local vm_name="$1"
+
+  if [ "$vm_name" == "freeipa-server-container" ]; then
+    # Get the IP address of the VM
+    local ip_address=$(sudo kcli info vm "$vm_name" "$vm_name" | grep ip: | awk '{print $2}')
+
+    echo "VM $vm_name created with IP address $ip_address"
+
+    # Check if the IP address already exists in the hosts file
+    if grep -q "$ip_address" /etc/hosts; then
+      echo "$ip_address already exists in the hosts file."
+    else
+      # Add the IP address and hostname to the hosts file
+      echo "$ip_address $vm_name" >> /etc/hosts
+      echo "Added $ip_address to the hosts file."
+    fi
+
+    # Check if the DNS server already exists in the resolv.conf file
+    if grep -q "nameserver $ip_address" /etc/resolv.conf; then
+      echo "$ip_address already exists in the resolv.conf file."
+    else
+      # Add the DNS server to the resolv.conf file
+      echo "nameserver $ip_address" >> /etc/resolv.conf
+      echo "Added $ip_address to the resolv.conf file."
+    fi
+  fi
+}
+
 
 cd /opt/kcli-pipelines
 source helper_scripts/default.env 
@@ -19,19 +92,28 @@ echo "DOMAIN NAME: $DOMAIN_NAME" || exit $?
 if [ $ACTION == "create" ];
 then 
     echo "Creating VM $VM_NAME"
-    sudo kcli create vm -p $VM_NAME $VM_NAME --wait
-    IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}')
-    echo "VM $VM_NAME created with IP address $IP_ADDRESS"
-    sudo -E ansible-playbook helper_scripts/add_ipa_entry.yaml \
-        --vault-password-file "$HOME"/.vault_password \
-        --extra-vars "@${ANSIBLE_VAULT_FILE}" \
-        --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
-        --extra-vars "key=${VM_NAME}" \
-        --extra-vars "freeipa_server_fqdn=ipa.${DOMAIN_NAME}" \
-        --extra-vars "value=${IP_ADDRESS}" \
-        --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
-        --extra-vars "action=present" -vvv
-elif [ $ACTION == "delete" ];
+
+    if [[ $VM_NAME == "freeipa-server-container" ]];
+    then
+        sudo kcli create vm -p $VM_NAME $VM_NAME --wait
+        IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}')
+        configure_idm_container "freeipa-server-container"
+    else
+        sudo kcli create vm -p $VM_NAME $VM_NAME --wait
+        IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}')
+        echo "VM $VM_NAME created with IP address $IP_ADDRESS"
+        check_idm $IP_ADDRESS
+        sudo -E ansible-playbook helper_scripts/add_ipa_entry.yaml \
+            --vault-password-file "$HOME"/.vault_password \
+            --extra-vars "@${ANSIBLE_VAULT_FILE}" \
+            --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
+            --extra-vars "key=${VM_NAME}" \
+            --extra-vars "freeipa_server_fqdn=ipa.${DOMAIN_NAME}" \
+            --extra-vars "value=${IP_ADDRESS}" \
+            --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
+            --extra-vars "action=present" -vvv
+    fi
+elif [[ $ACTION == "delete" ]];
 then 
     TARGET_VM=$(kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
     IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}')
@@ -46,10 +128,9 @@ then
         --extra-vars "value=${IP_ADDRESS}" \
         --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
         --extra-vars "action=absent" -vvv
-elif [ $ACTION == "deploy_app" ];
+elif [[ $ACTION == "deploy_app" ]];
 then 
   #sudo kcli scp /tmp/manifest_tower-dev_20230325T132029Z.zip device-edge-workshops:/tmp
   #./setup-demo-infra.sh
   echo "deploy app"
 fi
-
