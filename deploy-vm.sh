@@ -14,7 +14,7 @@ fi
 
 cd /opt/kcli-pipelines
 source helper_scripts/default.env 
-
+DOMAIN_NAME=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 
 if [ $ACTION == "create" ];
 then 
@@ -27,8 +27,9 @@ then
         --extra-vars "@${ANSIBLE_VAULT_FILE}" \
         --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
         --extra-vars "key=${VM_NAME}" \
-        --extra-vars "freeipa_server_fqdn=${VM_NAME}.${DOMAIN}" \
+        --extra-vars "freeipa_server_fqdn=${VM_NAME}.${DOMAIN_NAME}" \
         --extra-vars "value=${IP_ADDRESS}" \
+        --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
         --extra-vars "state=present" 
 elif [ $ACTION == "delete" ];
 then 
@@ -41,8 +42,9 @@ then
         --extra-vars "@${ANSIBLE_VAULT_FILE}" \
         --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
         --extra-vars "key=${VM_NAME}" \
-        --extra-vars "freeipa_server_fqdn=${VM_NAME}.${DOMAIN}" \
+        --extra-vars "freeipa_server_fqdn=${VM_NAME}.${DOMAIN_NAME}" \
         --extra-vars "value=${IP_ADDRESS}" \
+        --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
         --extra-vars "state=absent" 
 elif [ $ACTION == "deploy_app" ];
 then 
