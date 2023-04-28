@@ -24,7 +24,6 @@ IMAGE_NAME=Fedora-Cloud-Base-37-1.7.x86_64.qcow2
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
-sudo rm -rf kcli-profiles.yml
 if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
   sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
 else 
@@ -54,6 +53,8 @@ sudo python3 profile_generator/profile_generator.py update_yaml openshift-jumpbo
 sudo echo ${PULL_SECRET} | sudo tee pull-secret.json
 cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
+sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
+sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 sudo cp pull-secret.json  /home/${KCLI_USER}/.generated/vmfiles
 sudo cp pull-secret.json /root/.generated/vmfiles
 sudo cp $(pwd)/openshift-jumpbox/gitops.sh /home/${KCLI_USER}/.generated/vmfiles
