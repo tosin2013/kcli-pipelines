@@ -17,8 +17,9 @@ cd $KCLI_SAMPLES_DIR
 
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
+IMAGE_URL="https://download.fedoraproject.org/pub/fedora/linux/releases/38/Server/x86_64/images/Fedora-Server-KVM-38-1.6.x86_64.qcow2"
 VM_NAME=freeipa-server-container-$(echo $RANDOM | md5sum | head -c 5; echo;)
-IMAGE_NAME=Fedora-Cloud-Base-37-1.7.x86_64.qcow2
+IMAGE_NAME=Fedora-Server-KVM-38-1.6.x86_64.qcow2
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50
@@ -49,7 +50,7 @@ net_name: ${NET_NAME}
 reservedns: ${DNS_FORWARDER}
 domainname: ${DOMAIN}
 EOF
-
+sudo kcli download image freeipa-server-container -u  
 sudo python3 profile_generator/profile_generator.py update_yaml freeipa-server-container freeipa-server-container/template.yaml  --vars-file /tmp/vm_vars.yaml
 cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
@@ -58,3 +59,8 @@ sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 
 #echo "Creating VM ${VM_NAME}"
 #sudo kcli create vm -p freeipa-server-container ${VM_NAME} --wait
+
+if [ ! -d .ansible/collections/ansible_collections/community ];
+then 
+  ansible-galaxy collection install community.general
+fi 
