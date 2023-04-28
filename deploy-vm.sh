@@ -15,7 +15,7 @@ fi
 cd /opt/kcli-pipelines
 source helper_scripts/default.env 
 DOMAIN_NAME=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
-
+echo "DOMAIN NAME: $DOMAIN_NAME" || exit $?
 if [ $ACTION == "create" ];
 then 
     echo "Creating VM $VM_NAME"
@@ -30,7 +30,7 @@ then
         --extra-vars "freeipa_server_fqdn=ipa.${DOMAIN_NAME}" \
         --extra-vars "value=${IP_ADDRESS}" \
         --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
-        --extra-vars "action=present" 
+        --extra-vars "action=present" -vvv
 elif [ $ACTION == "delete" ];
 then 
     TARGET_VM=$(kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
@@ -45,7 +45,7 @@ then
         --extra-vars "freeipa_server_fqdn=ipa.${DOMAIN_NAME}" \
         --extra-vars "value=${IP_ADDRESS}" \
         --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
-        --extra-vars "action=absent" 
+        --extra-vars "action=absent" -vvv
 elif [ $ACTION == "deploy_app" ];
 then 
   #sudo kcli scp /tmp/manifest_tower-dev_20230325T132029Z.zip device-edge-workshops:/tmp
