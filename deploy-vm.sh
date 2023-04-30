@@ -25,42 +25,9 @@ function check_idm {
 }
 
 # Define the configure_vm function
-function configure_vm {
-  local vm_name="$1"
-
-  if [ "$vm_name" == "freeipa-server-container" ]; then
-    # Get the IP address of the VM
-    local ip_address=$(sudo kcli info vm "$vm_name" "$vm_name" | grep ip: | awk '{print $2}')
-
-    echo "VM $vm_name created with IP address $ip_address"
-
-    # Check if the IP address already exists in the hosts file
-    if grep -q "$ip_address" /etc/hosts; then
-      echo "$ip_address already exists in the hosts file."
-    else
-      # Add the IP address and hostname to the hosts file
-      sudo tee -a /etc/hosts << EOF
-$ip_address $vm_name
-EOF
-      echo "Added $ip_address to the hosts file."
-    fi
-
-    # Check if the DNS server already exists in the resolv.conf file
-    if grep -q "nameserver $ip_address" /etc/resolv.conf; then
-      echo "$ip_address already exists in the resolv.conf file."
-    else
-      # Add the DNS server to the resolv.conf file
-    sudo tee -a /etc/resolv.conf << EOF
-nameserver $ip_address
-EOF
-      echo "Added $ip_address to the resolv.conf file."
-    fi
-  fi
-}
-
-# Define the configure_vm function
 function configure_idm_container {
   local vm_name="$1"
+  local dns_forwarder="$2"
 
   if [ "$vm_name" == "freeipa-server-container" ]; then
     # Get the IP address of the VM
@@ -85,8 +52,12 @@ EOF
     else
       # Add the DNS server to the resolv.conf file
           # Add the IP address and hostname to the hosts file
-    sudo tee -a /etc/resolv.conf << EOF
+    sudo tee /etc/resolv.conf << EOF
+search qubinodelab.io
+domain qubinodelab.io
 nameserver $ip_address
+nameserver $dns_forwarder
+options rotate timeout:1
 EOF
       echo "Added $ip_address to the resolv.conf file."
     fi
@@ -106,7 +77,8 @@ then
     then
         sudo kcli create vm -p $VM_NAME $VM_NAME --wait
         IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}')
-        configure_idm_container "freeipa-server-container"
+        DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
+        configure_idm_container "freeipa-server-container" $DNS_FORWARDER
     else
         check_idm $IP_ADDRESS || exit $?
         sudo kcli create vm -p $VM_NAME $VM_NAME --wait
