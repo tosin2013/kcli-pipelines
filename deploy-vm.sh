@@ -54,8 +54,8 @@ EOF
       # Add the DNS server to the resolv.conf file
           # Add the IP address and hostname to the hosts file
     sudo tee /etc/resolv.conf << EOF
-search qubinodelab.io
-domain qubinodelab.io
+search ${domain_name}
+domain ${domain_name}
 nameserver $ip_address
 nameserver $dns_forwarder
 options rotate timeout:1
