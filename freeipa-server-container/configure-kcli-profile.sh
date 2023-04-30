@@ -17,9 +17,9 @@ cd $KCLI_SAMPLES_DIR
 
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
-IMAGE_URL="https://uvermont.mm.fcix.net/fedora/linux/releases/37/Server/x86_64/images/Fedora-Server-KVM-37-1.7.x86_64.qcow2"
+IMAGE_URL="https://download.fedoraproject.org/pub/fedora/linux/releases/38/Cloud/x86_64/images/Fedora-Cloud-Base-38-1.6.x86_64.qcow2"
 VM_NAME=freeipa-server-container-$(echo $RANDOM | md5sum | head -c 5; echo;)
-IMAGE_NAME=Fedora-Server-KVM-37-1.7.x86_64.qcow2
+IMAGE_NAME=Fedora-Cloud-Base-38-1.6.x86_64.qcow2
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50
