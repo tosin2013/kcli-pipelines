@@ -28,6 +28,7 @@ function check_idm {
 function configure_idm_container {
   local vm_name="$1"
   local dns_forwarder="$2"
+  local domain_name=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 
   if [ "$vm_name" == "freeipa-server-container" ]; then
     # Get the IP address of the VM
@@ -41,7 +42,7 @@ function configure_idm_container {
     else
       # Add the IP address and hostname to the hosts file
       sudo tee -a /etc/hosts << EOF
-$ip_address $vm_name
+$ip_address ipa.${domain_name}
 EOF
       echo "Added $ip_address to the hosts file."
     fi
