@@ -57,7 +57,6 @@ EOF
 search ${domain_name}
 domain ${domain_name}
 nameserver $ip_address
-nameserver $dns_forwarder
 options rotate timeout:1
 EOF
       echo "Added $ip_address to the resolv.conf file."
