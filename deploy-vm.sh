@@ -39,7 +39,9 @@ function configure_vm {
       echo "$ip_address already exists in the hosts file."
     else
       # Add the IP address and hostname to the hosts file
-      echo "$ip_address $vm_name" >> /etc/hosts
+      sudo tee -a /etc/hosts << EOF
+$ip_address $vm_name
+EOF
       echo "Added $ip_address to the hosts file."
     fi
 
@@ -48,7 +50,9 @@ function configure_vm {
       echo "$ip_address already exists in the resolv.conf file."
     else
       # Add the DNS server to the resolv.conf file
-      echo "nameserver $ip_address" >> /etc/resolv.conf
+    sudo tee -a /etc/resolv.conf << EOF
+nameserver $ip_address
+EOF
       echo "Added $ip_address to the resolv.conf file."
     fi
   fi
@@ -69,7 +73,9 @@ function configure_idm_container {
       echo "$ip_address already exists in the hosts file."
     else
       # Add the IP address and hostname to the hosts file
-      echo "$ip_address $vm_name" >> /etc/hosts
+      sudo tee -a /etc/hosts << EOF
+$ip_address $vm_name
+EOF
       echo "Added $ip_address to the hosts file."
     fi
 
@@ -78,7 +84,10 @@ function configure_idm_container {
       echo "$ip_address already exists in the resolv.conf file."
     else
       # Add the DNS server to the resolv.conf file
-      echo "nameserver $ip_address" >> /etc/resolv.conf
+          # Add the IP address and hostname to the hosts file
+    sudo tee -a /etc/resolv.conf << EOF
+nameserver $ip_address
+EOF
       echo "Added $ip_address to the resolv.conf file."
     fi
   fi
