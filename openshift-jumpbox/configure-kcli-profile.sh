@@ -13,14 +13,15 @@ else
 fi
 
 cd $KCLI_SAMPLES_DIR
-
+IMAGE_URL="https://download.fedoraproject.org/pub/fedora/linux/releases/38/Cloud/x86_64/images/Fedora-Cloud-Base-38-1.6.x86_64.qcow2"
+IMAGE_NAME=Fedora-Cloud-Base-38-1.6.x86_64.qcow2
+sudo kcli download image ${IMAGE_NAME} -u  ${IMAGE_URL}
 
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
 OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
 PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
 VM_NAME=openshift-jumpbox-$(echo $RANDOM | md5sum | head -c 5; echo;)
-IMAGE_NAME=Fedora-Cloud-Base-37-1.7.x86_64.qcow2
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
