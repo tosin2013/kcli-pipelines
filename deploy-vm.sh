@@ -32,7 +32,7 @@ function configure_idm_container {
 
   if [ "$vm_name" == "freeipa-server-container" ]; then
     # Get the IP address of the VM
-    local ip_address=$(sudo kcli info vm "$vm_name" "$vm_name" | grep ip: | awk '{print $2}')
+    local ip_address=$(sudo kcli info vm "$vm_name" "$vm_name" | grep ip: | awk '{print $2}' | head -1)
 
     echo "VM $vm_name created with IP address $ip_address"
 
@@ -77,13 +77,13 @@ then
     if [[ $VM_NAME == "freeipa-server-container" ]];
     then
         sudo kcli create vm -p $VM_NAME $VM_NAME --wait
-        IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}')
+        IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
         DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
         configure_idm_container "freeipa-server-container" $DNS_FORWARDER
     else
         check_idm $IP_ADDRESS || exit $?
         sudo kcli create vm -p $VM_NAME $VM_NAME --wait
-        IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}')
+        IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
         echo "VM $VM_NAME created with IP address $IP_ADDRESS"
         sudo -E ansible-playbook helper_scripts/add_ipa_entry.yaml \
             --vault-password-file "$HOME"/.vault_password \
@@ -98,7 +98,7 @@ then
 elif [[ $ACTION == "delete" ]];
 then 
     TARGET_VM=$(kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
-    IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}')
+    IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
     echo "Deleting VM $TARGET_VM"
     kcli delete vm $TARGET_VM -y
     sudo -E ansible-playbook helper_scripts/add_ipa_entry.yaml \
