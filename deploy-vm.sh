@@ -81,7 +81,7 @@ then
         DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
         configure_idm_container "freeipa-server-container" $DNS_FORWARDER
     else
-        check_idm $IP_ADDRESS || exit $?
+        check_idm ipa.$DOMAIN_NAME || exit $?
         sudo kcli create vm -p $VM_NAME $VM_NAME --wait
         IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
         echo "VM $VM_NAME created with IP address $IP_ADDRESS"
