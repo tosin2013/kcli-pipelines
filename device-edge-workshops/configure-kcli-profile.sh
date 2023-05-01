@@ -41,7 +41,7 @@ function deploy_via_kcli(){
     DOMAIN_NAME=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
     DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
     VM_NAME=device-edge-workshops
-    IMAGE_NAME=rhel-baseos-9.1-x86_64-kvm.qcow2
+    IMAGE_NAME=rhel9
     DISK_SIZE=200
     MEMORTY=32768
     CPU_NUM=8
