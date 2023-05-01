@@ -11,6 +11,12 @@ if [ -z "$ACTION" ]; then
     echo "Example: export ACTION=deploy_app"
     exit 1
 fi
+
+if [ $TARGET_SERVER == "equinix" ];
+then 
+    source ~/.profile
+    source ~/.bash_aliases
+fi 
 # Define the check_idm function
 function check_idm {
   local idm="$1"
@@ -23,6 +29,7 @@ function check_idm {
     exit 1
   fi
 }
+
 
 # Define the configure_vm function
 function configure_idm_container {
