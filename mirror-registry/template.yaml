@@ -3,10 +3,10 @@ numcpus: {{ numcpus }}
 memory: {{ memory }}
 nets:
   - name: {{ net_name }}
-dns: {{ reservedns }}
 disks:
   - size: {{ disk_size }}
 cmds:
+  - nmcli connection modify eth0 ipv4.dns {{ reservedns }}
   - echo {{ user_password }} | passwd --stdin root
   - useradd {{ user }}
   - usermod -aG wheel {{ user }}
