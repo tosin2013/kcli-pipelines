@@ -102,6 +102,12 @@ then
             --extra-vars "value=${IP_ADDRESS}" \
             --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
             --extra-vars "action=present" -vvv
+        echo "[$VM_NAME]" >> helper_scripts/hosts
+        echo "$IP_ADDRESS" >> helper_scripts/hosts
+        sudo -E  ansible-playbook helper_scripts/update_dns.yaml -i helper_scripts/hosts \
+            --extra-vars "target_hosts=$VM_NAME" \
+            --extra-vars "dns_server=${DNS_ADDRESS}" \
+            --extra-vars "dns_server_two=${DNS_FORWARDER}" \
     fi
 elif [[ $ACTION == "delete" ]];
 then 

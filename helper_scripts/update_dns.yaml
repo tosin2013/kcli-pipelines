@@ -1,0 +1,11 @@
+---
+- hosts: "{{ target_hosts }}"
+  tasks:
+  - name: Update DNS
+    community.general.nmcli:
+      type: ethernet
+      conn_name: "{{ ansible_default_ipv4.interface }}"
+      dns4:
+        -  "{{ dns_server }}"
+        -  "{{ dns_server_two }}"
+      state: present
