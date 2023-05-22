@@ -13,19 +13,18 @@ else
 fi
 
 cd $KCLI_SAMPLES_DIR
-IMAGE_URL="https://download.fedoraproject.org/pub/fedora/linux/releases/38/Cloud/x86_64/images/Fedora-Cloud-Base-38-1.6.x86_64.qcow2"
-IMAGE_NAME=Fedora-Cloud-Base-38-1.6.x86_64.qcow2
-sudo kcli download image ${IMAGE_NAME} -u  ${IMAGE_URL}
+
 
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
-OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
-PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
-VM_NAME=mirror-registry-$(echo $RANDOM | md5sum | head -c 5; echo;)
+IMAGE_URL="https://download.fedoraproject.org/pub/fedora/linux/releases/38/Cloud/x86_64/images/Fedora-Cloud-Base-38-1.6.x86_64.qcow2"
+VM_NAME=freeipa-server-container-$(echo $RANDOM | md5sum | head -c 5; echo;)
+IMAGE_NAME=Fedora-Cloud-Base-38-1.6.x86_64.qcow2
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
-DISK_SIZE=300
-KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+DISK_SIZE=50
+KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
+sudo rm -rf kcli-profiles.yml
 if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
   sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
 else 
@@ -39,27 +38,29 @@ else
   sudo mkdir -p  /root/.generated/vmfiles
 fi
 
+
 cat >/tmp/vm_vars.yaml<<EOF
 image: ${IMAGE_NAME}
 user: fedora
 user_password: ${PASSWORD}
 disk_size: ${DISK_SIZE} 
-numcpus: 4
-memory: 8192
+numcpus: 2
+memory: 4092
 net_name: ${NET_NAME} 
 reservedns: ${DNS_FORWARDER}
-offline_token: ${OFFLINE_TOKEN}
-domain: ${DOMAIN}
+domainname: ${DOMAIN}
 EOF
-
-sudo python3 profile_generator/profile_generator.py update_yaml mirror-registry mirror-registry/template.yaml  --vars-file /tmp/vm_vars.yaml
-sudo echo ${PULL_SECRET} | sudo tee pull-secret.json
-#cat  kcli-profiles.yml
+sudo kcli download image ${IMAGE_NAME} -u  ${IMAGE_URL}
+sudo python3 profile_generator/profile_generator.py update_yaml freeipa-server-container freeipa-server-container/template.yaml  --vars-file /tmp/vm_vars.yaml
+cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
-sudo cp pull-secret.json  /home/${KCLI_USER}/.generated/vmfiles
-sudo cp pull-secret.json /root/.generated/vmfiles
-sudo rm pull-secret.json
+
 #echo "Creating VM ${VM_NAME}"
-#sudo kcli create vm -p mirror-registry ${VM_NAME} --wait
+#sudo kcli create vm -p freeipa-server-container ${VM_NAME} --wait
+
+if [ ! -d .ansible/collections/ansible_collections/community ];
+then 
+  ansible-galaxy collection install community.general
+fi 

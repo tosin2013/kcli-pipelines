@@ -88,7 +88,9 @@ then
         configure_idm_container "freeipa-server-container" $DNS_FORWARDER
     else
         check_idm ipa.$DOMAIN_NAME || exit $?
-        sudo kcli create vm -p $VM_NAME $VM_NAME --wait
+        DNS_ADDRESS=$(sudo kcli info vm freeipa-server-container freeipa-server-container | grep ip: | awk '{print $2}' | head -1)
+        echo "Using DNS server $DNS_ADDRESS"
+        sudo kcli create vm -p $VM_NAME $VM_NAME -P dns=${DNS_ADDRESS} --wait
         IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
         echo "VM $VM_NAME created with IP address $IP_ADDRESS"
         sudo -E ansible-playbook helper_scripts/add_ipa_entry.yaml \
@@ -100,6 +102,12 @@ then
             --extra-vars "value=${IP_ADDRESS}" \
             --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
             --extra-vars "action=present" -vvv
+        echo "[$VM_NAME]" >> helper_scripts/hosts
+        echo "$IP_ADDRESS" >> helper_scripts/hosts
+        sudo -E  ansible-playbook helper_scripts/update_dns.yaml -i helper_scripts/hosts \
+            --extra-vars "target_hosts=$VM_NAME" \
+            --extra-vars "dns_server=${DNS_ADDRESS}" \
+            --extra-vars "dns_server_two=${DNS_FORWARDER}" \
     fi
 elif [[ $ACTION == "delete" ]];
 then 
