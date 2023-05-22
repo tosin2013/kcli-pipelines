@@ -1,5 +1,5 @@
 #!/bin/bash 
-set -e 
+#set -e 
 if [ -z "$VM_NAME" ]; then
     echo "Error: Please provide the name of the VM to deploy by setting the VM_NAME environment variable."
     echo "Example: export VM_NAME=my-vm"
