@@ -6,6 +6,8 @@ nets:
 disks:
   - size: {{ disk_size }}
 cmds:
+  - nmcli connection modify  "cloud-init eth0"  ipv4.dns {{ reservedns }}
+  - nmcli connection down "cloud-init eth0" && sudo nmcli connection up "cloud-init eth0"
   - echo {{ user_password }} | passwd --stdin root
   - useradd {{ user }}
   - usermod -aG wheel {{ user }}
