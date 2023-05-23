@@ -92,6 +92,7 @@ then
     else
         check_idm ipa.$DOMAIN_NAME || exit $?
         DNS_ADDRESS=$(sudo kcli info vm freeipa-server-container freeipa-server-container | grep ip: | awk '{print $2}' | head -1)
+        DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
         echo "Using DNS server $DNS_ADDRESS"
         sudo kcli create vm -p $VM_NAME $VM_NAME -P dns=${DNS_ADDRESS} --wait
         IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
