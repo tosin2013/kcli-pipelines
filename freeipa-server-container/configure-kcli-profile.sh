@@ -17,6 +17,7 @@ cd $KCLI_SAMPLES_DIR
 
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
+FREEIPA_PASSWORD=$(yq eval '.freeipa_server_admin_password' "${ANSIBLE_VAULT_FILE}")
 IMAGE_URL="https://download.fedoraproject.org/pub/fedora/linux/releases/38/Cloud/x86_64/images/Fedora-Cloud-Base-38-1.6.x86_64.qcow2"
 VM_NAME=freeipa-server-container-$(echo $RANDOM | md5sum | head -c 5; echo;)
 IMAGE_NAME=Fedora-Cloud-Base-38-1.6.x86_64.qcow2
@@ -49,6 +50,7 @@ memory: 4092
 net_name: ${NET_NAME} 
 reservedns: ${DNS_FORWARDER}
 domainname: ${DOMAIN}
+freeipa_server_admin_password: ${FREEIPA_PASSWORD}
 EOF
 sudo kcli download image ${IMAGE_NAME} -u  ${IMAGE_URL}
 sudo python3 profile_generator/profile_generator.py update_yaml freeipa-server-container freeipa-server-container/template.yaml  --vars-file /tmp/vm_vars.yaml
