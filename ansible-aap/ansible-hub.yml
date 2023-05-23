@@ -12,6 +12,8 @@ nets:
 disks:
 - size: 200
 cmds:
+- nmcli connection modify  "cloud-init eth0"  ipv4.dns {{ reservedns }}
+- nmcli connection down "cloud-init eth0" && sudo nmcli connection up "cloud-init eth0"
 - echo {{ user_password }} | passwd --stdin root
 - echo {{ user_password }} | passwd --stdin cloud-user
 - sudo subscription-manager refresh
