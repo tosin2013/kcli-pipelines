@@ -1,5 +1,6 @@
 #!/bin/bash 
-set -e 
+#set -e 
+export ANSIBLE_HOST_KEY_CHECKING=False
 if [ -z "$VM_NAME" ]; then
     echo "Error: Please provide the name of the VM to deploy by setting the VM_NAME environment variable."
     echo "Example: export VM_NAME=my-vm"
@@ -102,12 +103,12 @@ then
             --extra-vars "value=${IP_ADDRESS}" \
             --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
             --extra-vars "action=present" -vvv
-        echo "[$VM_NAME]" >> helper_scripts/hosts
-        echo "$IP_ADDRESS" >> helper_scripts/hosts
+        echo "[$VM_NAME]" | sudo tee -a helper_scripts/hosts 
+        echo "$IP_ADDRESS" | sudo tee -a helper_scripts/hosts
         sudo -E  ansible-playbook helper_scripts/update_dns.yaml -i helper_scripts/hosts \
-            --extra-vars "target_hosts=$VM_NAME" \
+            --extra-vars "target_hosts=$VM_NAMEc" \
             --extra-vars "dns_server=${DNS_ADDRESS}" \
-            --extra-vars "dns_server_two=${DNS_FORWARDER}" \
+            --extra-vars "dns_server_two=${DNS_FORWARDER}"
     fi
 elif [[ $ACTION == "delete" ]];
 then 
@@ -124,6 +125,7 @@ then
         --extra-vars "value=${IP_ADDRESS}" \
         --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
         --extra-vars "action=absent" -vvv
+    sudo sed -i  '/\[mirror-registry\]/,+2d' helper_scripts/hosts
 elif [[ $ACTION == "deploy_app" ]];
 then 
   #sudo kcli scp /tmp/manifest_tower-dev_20230325T132029Z.zip device-edge-workshops:/tmp
