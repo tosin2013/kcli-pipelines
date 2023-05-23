@@ -17,7 +17,7 @@ docker="podman"
 sudo=sudo
 
 BASE=ipa
-VOLUME=${VOLUME:-/tmp/freeipa-test-$$/data}
+VOLUME=${VOLUME:-/opt/freeipa-test-$$/data}
 
 function wait_for_ipa_container() {
 	set +x
@@ -91,7 +91,7 @@ function run_ipa_container() {
 	HOSTNAME=ipa.${DOMAIN_NAME}
 	if [ "$N" == "freeipa-replica" ] ; then
 		HOSTNAME=replica.${DOMAIN_NAME}
-		VOLUME=/tmp/freeipa-test-$$/data-replica
+		VOLUME=/opt/freeipa-test-$$/data-replica
 	fi
 	mkdir -p $VOLUME
 	OPTS=
