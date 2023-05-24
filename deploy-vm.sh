@@ -109,7 +109,7 @@ then
         echo "[$VM_NAME]" | sudo tee -a helper_scripts/hosts 
         echo "$IP_ADDRESS" | sudo tee -a helper_scripts/hosts
         sudo -E  ansible-playbook helper_scripts/update_dns.yaml -i helper_scripts/hosts \
-            --extra-vars "target_hosts=$VM_NAME" \
+            --extra-vars "target_hosts=${VM_NAME}" \
             --extra-vars "dns_server=${DNS_ADDRESS}" \
             --extra-vars "dns_server_two=${DNS_FORWARDER}"
     fi
