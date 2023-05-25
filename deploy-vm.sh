@@ -23,7 +23,7 @@ then
     then
       pip3 install  --user ansible
     fi 
-    ANSIBLE_PLAYBOOK="/home/lab-user/.local/bin/ansible-playbook"
+    ANSIBLE_PLAYBOOK="sudo -E /home/lab-user/.local/bin/ansible-playbook"
 else 
   ANSIBLE_PLAYBOOK="sudo -E ansible-playbook"
 fi 
