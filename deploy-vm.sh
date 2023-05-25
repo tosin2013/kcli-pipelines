@@ -1,7 +1,7 @@
 #!/bin/bash 
 #set -e 
-#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-#set -x
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -x
 export ANSIBLE_HOST_KEY_CHECKING=False
 if [ -z "$VM_NAME" ]; then
     echo "Error: Please provide the name of the VM to deploy by setting the VM_NAME environment variable."
@@ -113,8 +113,25 @@ then
             --extra-vars "value=${IP_ADDRESS}" \
             --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
             --extra-vars "action=present" -vvv
-        echo "[$VM_NAME]" | sudo tee -a helper_scripts/hosts 
-        echo "$IP_ADDRESS" | sudo tee -a helper_scripts/hosts
+        #echo "[$VM_NAME]" | sudo tee -a helper_scripts/hosts 
+        #echo "$IP_ADDRESS" | sudo tee -a helper_scripts/hosts
+
+        file_path="helper_scripts/hosts"
+
+        if [ -f "$file_path" ]; then
+            if grep -q "^\[$VM_NAME\]$" "$file_path"; then
+                echo "Content already exists. Replacing ip address."
+                sudo sed -i "s/^\[$VM_NAME\]\n.*$/"'[$VM_NAME]\n'"$IP_ADDRESS"/ "$file_path"
+            else
+                echo "Content does not exist. Adding ip address."
+                echo "[$VM_NAME]" | sudo tee -a  "$file_path"
+                echo "$IP_ADDRESS" | sudo tee -a  "$file_path"
+            fi
+        else
+            echo "File does not exist. Creating file with ip address."
+            echo "[$VM_NAME]" | sudo tee  "$file_path"
+            echo "$IP_ADDRESS" | sudo tee -a  "$file_path"
+        fi
         $ANSIBLE_PLAYBOOK helper_scripts/update_dns.yaml -i helper_scripts/hosts \
             --extra-vars "target_hosts=${VM_NAME}" \
             --extra-vars "dns_server=${DNS_ADDRESS}" \
