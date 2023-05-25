@@ -139,7 +139,7 @@ then
     fi
 elif [[ $ACTION == "delete" ]];
 then 
-    TARGET_VM=$(kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
+    TARGET_VM=$(sudo kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
     IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
     echo "Deleting VM $TARGET_VM"
     kcli delete vm $TARGET_VM -y
