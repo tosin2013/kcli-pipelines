@@ -39,7 +39,22 @@ function check_idm {
     exit 1
   fi
 }
+# Define the return function
+function return_cloud_user() {
+    local vm_name=$1
 
+    case $vm_name in
+        mirror-registry)
+            echo "fedora"
+            ;;
+        microshift-demos)
+            echo "cloud-user"
+            ;;
+        *)
+            echo "Unknown VM name"
+            ;;
+    esac
+}
 
 # Define the configure_vm function
 function configure_idm_container {
@@ -74,6 +89,7 @@ EOF
 search ${domain_name}
 domain ${domain_name}
 nameserver $ip_address
+nameserver $dns_forwarder
 options rotate timeout:1
 EOF
       echo "Added $ip_address to the resolv.conf file."
@@ -125,12 +141,14 @@ then
             else
                 echo "Content does not exist. Adding ip address."
                 echo "[$VM_NAME]" | sudo tee -a  "$file_path"
-                echo "$VM_NAME ansible_host=${IP_ADDRESS} ansible_user=fedora ansible_ssh_private_key_file=/root/.ssh/id_rsa" | sudo tee -a  "$file_path"
+                target_user=$(return_cloud_user $VM_NAME)
+                echo "$VM_NAME ansible_host=${IP_ADDRESS} ansible_user=$target_user ansible_ssh_private_key_file=/root/.ssh/id_rsa" | sudo tee -a  "$file_path"
             fi
         else
             echo "File does not exist. Creating file with ip address."
             echo "[$VM_NAME]" | sudo tee  "$file_path"
-            echo "$VM_NAME ansible_host=${IP_ADDRESS} ansible_user=fedora ansible_ssh_private_key_file=/root/.ssh/id_rsa" | sudo tee -a  "$file_path"
+            target_user=$(return_cloud_user $VM_NAME)
+            echo "$VM_NAME ansible_host=${IP_ADDRESS} ansible_user=$target_user ansible_ssh_private_key_file=/root/.ssh/id_rsa" | sudo tee -a  "$file_path"
         fi
         $ANSIBLE_PLAYBOOK helper_scripts/update_dns.yaml -i helper_scripts/hosts \
             --extra-vars "target_hosts=${VM_NAME}" \
