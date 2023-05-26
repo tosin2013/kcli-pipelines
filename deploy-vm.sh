@@ -1,7 +1,7 @@
 #!/bin/bash 
 #set -e 
-#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-#set -x
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -x
 export ANSIBLE_HOST_KEY_CHECKING=False
 if [ -z "$VM_NAME" ]; then
     echo "Error: Please provide the name of the VM to deploy by setting the VM_NAME environment variable."
@@ -17,8 +17,15 @@ fi
 
 if [ $TARGET_SERVER == "equinix" ];
 then 
-    source ~/.profile
-    source ~/.bash_aliases
+    #source ~/.profile
+    #source ~/.bash_aliases
+    if [ ! -f /home/lab-user/.local/bin/ansible-playbook ];
+    then
+      pip3 install  --user ansible
+    fi 
+    ANSIBLE_PLAYBOOK="sudo -E /home/lab-user/.local/bin/ansible-playbook"
+else 
+  ANSIBLE_PLAYBOOK="sudo -E ansible-playbook"
 fi 
 # Define the check_idm function
 function check_idm {
@@ -97,7 +104,7 @@ then
         sudo kcli create vm -p $VM_NAME $VM_NAME -P dns=${DNS_ADDRESS} --wait
         IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
         echo "VM $VM_NAME created with IP address $IP_ADDRESS"
-        sudo -E ansible-playbook helper_scripts/add_ipa_entry.yaml \
+        $ANSIBLE_PLAYBOOK helper_scripts/add_ipa_entry.yaml \
             --vault-password-file "$HOME"/.vault_password \
             --extra-vars "@${ANSIBLE_VAULT_FILE}" \
             --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
@@ -106,20 +113,37 @@ then
             --extra-vars "value=${IP_ADDRESS}" \
             --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
             --extra-vars "action=present" -vvv
-        echo "[$VM_NAME]" | sudo tee -a helper_scripts/hosts 
-        echo "$IP_ADDRESS" | sudo tee -a helper_scripts/hosts
-        sudo -E  ansible-playbook helper_scripts/update_dns.yaml -i helper_scripts/hosts \
+        #echo "[$VM_NAME]" | sudo tee -a helper_scripts/hosts 
+        #echo "$IP_ADDRESS" | sudo tee -a helper_scripts/hosts
+
+        file_path="helper_scripts/hosts"
+
+        if [ -f "$file_path" ]; then
+            if grep -q "^\[$VM_NAME\]$" "$file_path"; then
+                echo "Content already exists. Replacing ip address."
+                sudo sed -i "s/^\[$VM_NAME\]\n.*$/"'[$VM_NAME]\n'"$IP_ADDRESS"/ "$file_path"
+            else
+                echo "Content does not exist. Adding ip address."
+                echo "[$VM_NAME]" | sudo tee -a  "$file_path"
+                echo "$VM_NAME ansible_host=${IP_ADDRESS} ansible_user=fedora ansible_ssh_private_key_file=/root/.ssh/id_rsa" | sudo tee -a  "$file_path"
+            fi
+        else
+            echo "File does not exist. Creating file with ip address."
+            echo "[$VM_NAME]" | sudo tee  "$file_path"
+            echo "$VM_NAME ansible_host=${IP_ADDRESS} ansible_user=fedora ansible_ssh_private_key_file=/root/.ssh/id_rsa" | sudo tee -a  "$file_path"
+        fi
+        $ANSIBLE_PLAYBOOK helper_scripts/update_dns.yaml -i helper_scripts/hosts \
             --extra-vars "target_hosts=${VM_NAME}" \
             --extra-vars "dns_server=${DNS_ADDRESS}" \
             --extra-vars "dns_server_two=${DNS_FORWARDER}"
     fi
 elif [[ $ACTION == "delete" ]];
 then 
-    TARGET_VM=$(kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
+    TARGET_VM=$(sudo kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
     IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
     echo "Deleting VM $TARGET_VM"
-    kcli delete vm $TARGET_VM -y
-    sudo -E ansible-playbook helper_scripts/add_ipa_entry.yaml \
+    sudo kcli delete vm $TARGET_VM -y
+    $ANSIBLE_PLAYBOOK helper_scripts/add_ipa_entry.yaml \
         --vault-password-file "$HOME"/.vault_password \
         --extra-vars "@${ANSIBLE_VAULT_FILE}" \
         --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
