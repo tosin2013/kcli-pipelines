@@ -23,3 +23,4 @@
         -  "{{ dns_server }}"
         -  "{{ dns_server_two }}"
       state: present
+    become: true
