@@ -125,12 +125,12 @@ then
             else
                 echo "Content does not exist. Adding ip address."
                 echo "[$VM_NAME]" | sudo tee -a  "$file_path"
-                echo "$IP_ADDRESS" | sudo tee -a  "$file_path"
+                echo "$VM_NAME ansible_host=${IP_ADDRESS} ansible_user=fedora" | sudo tee -a  "$file_path"
             fi
         else
             echo "File does not exist. Creating file with ip address."
             echo "[$VM_NAME]" | sudo tee  "$file_path"
-            echo "$IP_ADDRESS" | sudo tee -a  "$file_path"
+            echo "$VM_NAME ansible_host=${IP_ADDRESS} ansible_user=fedora" | sudo tee -a  "$file_path"
         fi
         $ANSIBLE_PLAYBOOK helper_scripts/update_dns.yaml -i helper_scripts/hosts \
             --extra-vars "target_hosts=${VM_NAME}" \
