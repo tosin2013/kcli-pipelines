@@ -50,6 +50,9 @@ function return_cloud_user() {
         microshift-demos)
             echo "cloud-user"
             ;;
+        openshift-jumpbox)
+            echo "fedora"
+            ;;
         *)
             echo "Unknown VM name"
             ;;
