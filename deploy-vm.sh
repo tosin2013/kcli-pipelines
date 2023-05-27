@@ -53,6 +53,9 @@ function return_cloud_user() {
         openshift-jumpbox)
             echo "fedora"
             ;;
+        device-edge-workshops)
+            echo "cloud-user"
+            ;;
         *)
             echo "Unknown VM name"
             ;;
