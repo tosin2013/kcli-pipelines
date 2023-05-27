@@ -170,7 +170,7 @@ then
         --extra-vars "value=${IP_ADDRESS}" \
         --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
         --extra-vars "action=absent" -vvv
-    sudo sed -i  '/\[mirror-registry\]/,+2d' helper_scripts/hosts
+    sudo sed -i  '/\['$VM_NAME'\]/,+2d' helper_scripts/hosts
 elif [[ $ACTION == "deploy_app" ]];
 then 
   #sudo kcli scp /tmp/manifest_tower-dev_20230325T132029Z.zip device-edge-workshops:/tmp
