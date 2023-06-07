@@ -20,3 +20,6 @@ Run thhe pipeline
 ```
 $ ./trigger-pipeline.sh
 ```
+
+## Running Manually 
+* [Deploy the freeipa-server-container on vm](docs/deploy-dns.md)
