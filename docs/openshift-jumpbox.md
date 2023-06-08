@@ -40,7 +40,7 @@ $ tmux attach -t deploy-vm
 ```
 
 ### Validate the openshift-jumpbox
-```
+```tmux attach -t deploy-vm
 # sudo kcli list vm 
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
 |           Name           | Status |        Ip       |                 Source                |  Plan |         Profile          |
