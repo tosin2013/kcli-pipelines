@@ -59,3 +59,11 @@ device-edge-workshops  offline_token  setup-demo-infra.sh
 $ cd device-edge-workshops/
 $ ./setup-demo-infra.sh
 ```
+
+### TroubleShooting
+If the deployment fails using tmux run the following commands
+```
+$ sudo kcli list vm
+$ sudo kcli delete vm device-edge-workshops
+$ source notouch.env  && sudo -E  ./deploy-vm.sh
+```

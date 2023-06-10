@@ -63,3 +63,11 @@ $ ls
 microshift-demos  offline_token  setup-demo-infra.sh
 $ cd microshift-demos/
 ```
+
+### TroubleShooting
+If the deployment fails using tmux run the following commands
+```
+$ sudo kcli list vm
+$ sudo kcli delete vm microshift-demos
+$ source notouch.env  && sudo -E  ./deploy-vm.sh
+```

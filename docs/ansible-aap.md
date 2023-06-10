@@ -57,3 +57,12 @@ $ tmux attach -t deploy-vm
 # sudo kcli ssh ansible-aap
 $ cat /home/cloud-user/aap_info.txt
 ```
+
+### TroubleShooting
+If the deployment fails using tmux run the following commands
+```
+$ sudo kcli list vm
+$ sudo kcli delete vm ansible-aap
+$ vim helper_scripts/hosts
+$ source notouch.env  && sudo -E  ./deploy-vm.sh
+```
