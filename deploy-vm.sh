@@ -56,6 +56,9 @@ function return_cloud_user() {
         device-edge-workshops)
             echo "cloud-user"
             ;;
+        ansible-aap)
+            echo "cloud-user"
+            ;;
         *)
             echo "Unknown VM name"
             ;;

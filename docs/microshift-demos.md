@@ -1,6 +1,11 @@
 # Deploy the microshift-demos on vm
 
-This application will allow user to easily install Quay and its required components using a simple CLI tool. The purpose is to provide a registry to hold a mirror of OpenShift images.
+This repo contains demos of various MicroShift features.
+
+hello-microshift-demo: Demonstrates a minimal RHEL for Edge with MicroShift and deploying a "Hello, MicroShift!" app on it.
+ostree-demo: Become familiar with rpm-ostree basics (image building, updates&rollbacks, etc.) and "upgrading into MicroShift".
+e2e-demo: (outdated!) Demonstrates the end-to-end process from device provisioning to management via GitOps and ACM.
+ibaas-demo: Build a RHEL for Edge ISO containing MicroShift and its dependencies in a completely automated manner using Red Hat's Hosted Image Builder service from console.redhat.com.
 
 Github: https://github.com/redhat-et/microshift-demos
 

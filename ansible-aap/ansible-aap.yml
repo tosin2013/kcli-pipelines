@@ -10,7 +10,7 @@ wait: true
 nets:
   - name: {{ net_name }}
 disks:
-- size: 100
+- size: 120
 cmds:
 - nmcli connection modify  "cloud-init eth0"  ipv4.dns {{ reservedns }}
 - nmcli connection down "cloud-init eth0" && sudo nmcli connection up "cloud-init eth0"
@@ -20,12 +20,7 @@ cmds:
 - sudo subscription-manager attach --auto
 - sudo dnf install git vim unzip wget bind-utils tar ansible-core python3 python3-pip util-linux-user tmux -y  | tee -a /root/ansible-bootup.log
 - sudo dnf update -y   | tee -a /root/ansible-bootup.log
-- cd /root && git clone {{ git_repo }}
-- cd /root/{{ path_name }} && ansible-galaxy collection install  -r collections/requirements.yml
-- sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
-- systemctl restart sshd
-files:
-  - path: /root/setup-aap.sh
-    origin: ~/.generated/vmfiles/setup-aap.sh
-  - path: /home/{{ user }}/setup-aap.sh
-    origin:  ~/.generated/vmfiles/setup-aap.sh
+- echo {{ offline_token }} > /root/offline_token
+- curl https://raw.githubusercontent.com/tosin2013/qubinode-installer/master/samples/scripts/rhel9_ansible.sh --output /tmp/rhel9_ansible.sh 
+- chmod +x /tmp/rhel9_ansible.sh 
+- bash -x /tmp/rhel9_ansible.sh RHEL_USERNAME RHEL_PASSWORD
