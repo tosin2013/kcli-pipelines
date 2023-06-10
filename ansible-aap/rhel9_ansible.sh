@@ -1,9 +1,9 @@
 #!/bin/bash 
 set -e
 
-if [ $# -ne 2 ]; then 
+if [ $# -ne 3  ]; then 
     echo "No arguments provided"
-    echo "Usage: $0 <rhel_username> <rhel_password>"
+    echo "Usage: $0 <rhel_username> <rhel_password> <provided_sha_value>"
     exit 1
 fi
 
@@ -37,11 +37,12 @@ EOF
 
 
 offline_token=$(cat /root/offline_token)
+export PROVIDED_SHA_VALUE="$3"
 # https://access.redhat.com/downloads/content/480/ver=2.3/rhel---9/2.3/x86_64/product-software
 cat >dev.yml<<EOF
 ---
 offline_token: '$(cat /root/offline_token)'
-provided_sha_value: eae31a1c45e057c3f5d2302c6cf497060a51baec73c86a7f95042d51e4150eb8
+provided_sha_value: ${PROVIDED_SHA_VALUE}
 EOF
 
 ansible-playbook -i hosts run_me.yaml --extra-vars @dev.yml
@@ -51,6 +52,7 @@ cd ansible-automation-platform-setup-bundle-*/
 
 export REGISTRY_USERNAME="$1"
 export REGISTRY_PASSWORD="$2"
+
 VM_IP_ADDRESS=$(hostname -I | awk '{print $1}')
 
 cat >inventory<<EOF

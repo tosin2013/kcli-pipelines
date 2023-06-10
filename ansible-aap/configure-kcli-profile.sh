@@ -1,6 +1,6 @@
 #!/bin/bash
-#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-#set -xe
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -xe
 if [ -f ../helper_scripts/default.env ];
 then 
   source ../helper_scripts/default.env
@@ -10,6 +10,7 @@ then
 else
   echo "default.env file does not exist"
   exit 1
+fi
 
 cd $KCLI_SAMPLES_DIR
 
@@ -17,6 +18,8 @@ cd $KCLI_SAMPLES_DIR
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
 RHSM_ORG=$(yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
 RHSM_ACTIVATION_KEY=$(yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
+RHEL_USERNAME=$(yq eval '.rhel_username' "${ANSIBLE_VAULT_FILE}")
+RHEL_PASSWORD=$(yq eval '.rhel_password' "${ANSIBLE_VAULT_FILE}")
 OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
@@ -46,8 +49,8 @@ rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
 reservedns: ${DNS_FORWARDER}
 offline_token: ${OFFLINE_TOKEN}
-git_repo: ${GIT_REPO}
-path_name: ${PATH_NAME}
+rhel_username: ${RHEL_USERNAME}
+rhel_password: ${RHEL_PASSWORD}
 EOF
 
 sudo python3 profile_generator/profile_generator.py update_yaml ansible-aap ansible-aap/ansible-aap.yml  --vars-file /tmp/vm_vars.yaml

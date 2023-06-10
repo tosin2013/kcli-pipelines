@@ -37,7 +37,6 @@ sudo -E ./freeipa-server-container/configure-kcli-profile.sh
 sudo -E ./ansible-aap/configure-kcli-profile.sh
 sudo -E ./device-edge-workshops/configure-kcli-profile.sh
 sudo -E ./microshift-demos/configure-kcli-profile.sh
-sudo -E ./ansible-aap/configure-kcli-profile.sh
 sudo -E ./mirror-registry/configure-kcli-profile.sh
 if [ $KCLI_USER != "root" ];
 then 

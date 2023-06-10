@@ -21,6 +21,6 @@ cmds:
 - sudo dnf install git vim unzip wget bind-utils tar ansible-core python3 python3-pip util-linux-user tmux -y  | tee -a /root/ansible-bootup.log
 - sudo dnf update -y   | tee -a /root/ansible-bootup.log
 - echo {{ offline_token }} > /root/offline_token
-- curl https://raw.githubusercontent.com/tosin2013/qubinode-installer/master/samples/scripts/rhel9_ansible.sh --output /tmp/rhel9_ansible.sh 
+- curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/ansible-aap/rhel9_ansible.sh --output /tmp/rhel9_ansible.sh 
 - chmod +x /tmp/rhel9_ansible.sh 
-- bash -x /tmp/rhel9_ansible.sh RHEL_USERNAME RHEL_PASSWORD
+- bash -x /tmp/rhel9_ansible.sh {{ rhel_username }} {{ rhel_password }} {{ provided_sha_value }}
