@@ -58,6 +58,12 @@ $ tmux attach -t deploy-vm
 $ cat  /opt/aap_info.txt
 ```
 
+### Delete Deployment 
+```
+$ export  ACTION="delete" 
+$ sudo -E  ./deploy-vm.sh
+```
+
 ### Troubleshooting Deployment
 ```
 $ sudo kcli list vm

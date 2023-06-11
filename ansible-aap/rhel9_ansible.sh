@@ -1,5 +1,5 @@
 #!/bin/bash 
-#catset -e
+#set -e
 
 if [ $# -ne 3  ]; then 
     echo "No arguments provided"
@@ -49,7 +49,7 @@ offline_token: '$(cat /root/offline_token)'
 provided_sha_value: ${PROVIDED_SHA_VALUE}
 EOF
 
-ansible-playbook -i hosts run_me.yaml --extra-vars @dev.yml -vv || exit $?
+ansible-playbook -i hosts run_me.yaml --extra-vars @dev.yml -vv | tee /tmp/install.log || exit $?
 
 tar -zxvf aap.tar.gz 
 cd ansible-automation-platform-setup-bundle-*/
@@ -80,7 +80,7 @@ registry_username='${REGISTRY_USERNAME}'
 registry_password='${REGISTRY_PASSWORD}'
 EOF
 
-sudo ./setup.sh
+sudo ./setup.sh | tee -a /tmp/install.log
 
 echo "https://$VM_IP_ADDRESS" > /opt/aap_info.txt
 echo "Username: admin" | tee -a /opt/aap_info.txt
