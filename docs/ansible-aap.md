@@ -30,7 +30,7 @@ $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh
 ```
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
-export TARGET_SERVER="machine_name" # equinix 
+export TARGET_SERVER="supermicro" # equinix 
 export VM_NAME="ansible-aap"
 export  ACTION="create" # create, delete
 EOF
@@ -55,14 +55,22 @@ $ tmux attach -t deploy-vm
 |     mirror-registry      |   up   |  192.168.122.92 | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt |     mirror-registry      |
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
 # sudo kcli ssh ansible-aap
-$ cat /home/cloud-user/aap_info.txt
+$ cat  /opt/aap_info.txt
 ```
 
-### TroubleShooting
-If the deployment fails using tmux run the following commands
+### Delete Deployment 
+```
+$ export  ACTION="delete" 
+$ sudo -E  ./deploy-vm.sh
+```
+
+### Troubleshooting Deployment
 ```
 $ sudo kcli list vm
+$ sudo kcli ssh ansible-aap
+$ cat  /tmp/install.log
+$ sudo vim /opt/kcli-pipelines/helper_scripts/hosts
 $ sudo kcli delete vm ansible-aap
-$ vim helper_scripts/hosts
-$ source notouch.env  && sudo -E  ./deploy-vm.sh
-```
+``` 
+
+https://access.redhat.com/downloads/content/480/ver=2.3/rhel---9/2.3/x86_64/product-software
