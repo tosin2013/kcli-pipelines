@@ -1,5 +1,5 @@
 #!/bin/bash 
-set -e
+#catset -e
 
 if [ $# -ne 3  ]; then 
     echo "No arguments provided"
@@ -14,9 +14,13 @@ sudo dnf install git vim unzip wget bind-utils tar ansible-core python3 python3-
 sudo dnf install ncurses-devel curl -y
 curl 'https://vim-bootstrap.com/generate.vim' --data 'editor=vim&langs=javascript&langs=go&langs=html&langs=ruby&langs=python' > ~/.vimrc
 
-cd /home/cloud-user/
+
+if [ -d /opt/agnosticd/ansible ]; then
+    sudo rm -rf /opt/agnosticd
+fi
+cd /opt/
 git clone https://github.com/redhat-cop/agnosticd.git
-cd /home/cloud-user/agnosticd/ansible
+cd /opt/agnosticd/ansible
 git checkout development
 
 cat >hosts<<EOF
@@ -45,7 +49,7 @@ offline_token: '$(cat /root/offline_token)'
 provided_sha_value: ${PROVIDED_SHA_VALUE}
 EOF
 
-ansible-playbook -i hosts run_me.yaml --extra-vars @dev.yml
+ansible-playbook -i hosts run_me.yaml --extra-vars @dev.yml -vv || exit $?
 
 tar -zxvf aap.tar.gz 
 cd ansible-automation-platform-setup-bundle-*/
@@ -78,8 +82,8 @@ EOF
 
 sudo ./setup.sh
 
-echo "https://$VM_IP_ADDRESS" | tee -a /home/cloud-user/aap_info.txt
-echo "Username: admin" | tee -a /home/cloud-user/aap_info.txt
-echo "Password: $(cat inventory | grep admin_password | awk -F"'" '{print $2}')" | tee -a /home/cloud-user/aap_info.txt
+echo "https://$VM_IP_ADDRESS" > /opt/aap_info.txt
+echo "Username: admin" | tee -a /opt/aap_info.txt
+echo "Password: $(cat inventory | grep admin_password | awk -F"'" '{print $2}')" | tee -a /opt/aap_info.txt
 
-cat /home/cloud-user/aap_info.txt
+cat /opt/aap_info.txt
