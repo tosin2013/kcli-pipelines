@@ -52,3 +52,6 @@ $ tmux attach -t deploy-vm
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
 # sudo kcli ssh mirror-registry
 ```
+
+### Default DNS Endpoint
+* https://mirror-registry.your-domainname.com:8443

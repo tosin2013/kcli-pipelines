@@ -45,3 +45,6 @@ $ tmux attach -t deploy-vm
 
 # sudo kcli ssh freeipa-server-container
 ```
+
+### Default DNS Endpoint
+* https://ipa.your-domainname.com
