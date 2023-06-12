@@ -46,7 +46,7 @@ function deploy_via_kcli(){
     MEMORTY=32768
     CPU_NUM=8
     KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
-    sudo rm -rf kcli-profiles.yml
+    #sudo rm -rf kcli-profiles.yml
     if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
       sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
     else 

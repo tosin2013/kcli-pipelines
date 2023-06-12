@@ -24,6 +24,12 @@ $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/confi
 $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh 
 ```
 
+### Configure rhel9 
+![20230612121808](https://i.imgur.com/ho68kF9.png)
+```
+sudo kcli download image rhel9
+```
+
 ### Deploy the device-edge-workshops source notouch.env 
 ```
 $ cat >notouch.env<<EOF

@@ -26,6 +26,12 @@ $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/confi
 $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh 
 ```
 
+### Configure rhel9 
+![20230612121808](https://i.imgur.com/ho68kF9.png)
+```
+sudo kcli download image rhel9
+```
+
 ### Deploy the ansible-aap source notouch.env 
 ```
 $ cat >notouch.env<<EOF
@@ -72,5 +78,10 @@ $ cat  /tmp/install.log
 $ sudo vim /opt/kcli-pipelines/helper_scripts/hosts
 $ sudo kcli delete vm ansible-aap
 ``` 
+
+**You can also run with out tumx using the command below**
+```
+source notouch.env  && sudo -E  ./deploy-vm.sh
+``
 
 https://access.redhat.com/downloads/content/480/ver=2.3/rhel---9/2.3/x86_64/product-software
