@@ -59,3 +59,4 @@ sudo python3 profile_generator/profile_generator.py update_yaml ansible-aap ansi
 cat  kcli-profiles.yml
 sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
+/usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
