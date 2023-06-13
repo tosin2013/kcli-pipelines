@@ -26,7 +26,7 @@ DISK_SIZE=200
 MEMORTY=32768
 CPU_NUM=8
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
-sudo rm -rf kcli-profiles.yml
+#sudo rm -rf kcli-profiles.yml
 if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
   sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
 else 
@@ -67,6 +67,9 @@ sudo cp pull-secret.json /root/.generated/vmfiles
 sudo rm pull-secret.json
 sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /home/${KCLI_USER}/.generated/vmfiles
 sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /root/.generated/vmfiles
+cat  kcli-profiles.yml
+sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
+sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 #echo "Creating VM ${VM_NAME}"
 #echo "Creating VM ${VM_NAME}"
 #sudo kcli create vm -p microshift-demos ${VM_NAME} --wait

@@ -77,7 +77,6 @@ EOF
     sudo python3 profile_generator/profile_generator.py update_yaml device-edge-workshops device-edge-workshops/template.yaml   --vars-file /tmp/vm_vars.yaml
     sudo echo ${PULL_SECRET} | sudo tee pull-secret.json
     cat pull-secret.json
-    cat  kcli-profiles.yml
     /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
     sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
     sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
@@ -102,6 +101,9 @@ EOF
     sudo cp  $(pwd)/device-edge-workshops/extra_vars.yml.bak $(pwd)/device-edge-workshops/extra_vars.yml
     #echo "Creating VM ${VM_NAME}"
     #sudo kcli create vm -p device-edge-workshops ${VM_NAME} --wait
+    cat  kcli-profiles.yml
+    sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
+    sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 }
 
 function deploy_via_aws(){

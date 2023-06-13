@@ -62,5 +62,12 @@ $ source notouch.env  && sudo -E  ./deploy-vm.sh
 # cat /tmp/mirrot-registry-offline.log
 ```
 
+### Delete Deployment 
+```
+$ source notouch.env
+$ export  ACTION="delete" 
+$ sudo -E  ./deploy-vm.sh
+```
+
 ### Default DNS Endpoint
 * https://mirror-registry.your-domainname.com:8443

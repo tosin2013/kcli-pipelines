@@ -58,3 +58,10 @@ $ sudo kcli list vm
 $ sudo kcli delete vm openshift-jumpbox 
 $ source notouch.env  && sudo -E  ./deploy-vm.sh
 ```
+
+### Delete Deployment 
+```
+$ source notouch.env
+$ export  ACTION="delete" 
+$ sudo -E  ./deploy-vm.sh
+```

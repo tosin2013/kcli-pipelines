@@ -30,7 +30,7 @@ $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh
 ```
 
 ### Configure rhel9 
-![20230612121808](https://i.imgur.com/ho68kF9.png)
+![20230613003134](https://i.imgur.com/F5WRBU4.png)
 ```
 sudo kcli download image rhel9
 ```
@@ -69,7 +69,6 @@ microshift-demos  offline_token  setup-demo-infra.sh
 $ cd microshift-demos/
 ```
 
-<<<<<<< HEAD
 ### TroubleShooting
 If the deployment fails using tmux run the following commands
 ```
@@ -78,6 +77,13 @@ $ sudo kcli delete vm microshift-demos
 $ source notouch.env  && sudo -E  ./deploy-vm.sh
 ```
 =======
+=======
+### Delete Deployment 
+```
+$ source notouch.env
+$ export  ACTION="delete" 
+$ sudo -E  ./deploy-vm.sh
+```
+
 ### Default DNS Endpoint
 * https:/microshift-demos.your-domainname.com:9090
->>>>>>> gitlab/main

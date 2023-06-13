@@ -66,6 +66,7 @@ $ cat  /opt/aap_info.txt
 
 ### Delete Deployment 
 ```
+$ source notouch.env
 $ export  ACTION="delete" 
 $ sudo -E  ./deploy-vm.sh
 ```

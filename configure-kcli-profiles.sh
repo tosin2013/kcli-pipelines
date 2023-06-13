@@ -1,5 +1,9 @@
 #!/bin/bash
+<<<<<<< HEAD
 ##set -xe
+=======
+#set -xe
+>>>>>>> gitlab/main
 
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
 
@@ -22,22 +26,46 @@ then
 fi
 
 cd /opt/kcli-pipelines
+sudo sed -i 's|export INVENTORY=localhost|export INVENTORY="'${TARGET_SERVER}'"|g' helper_scripts/default.env
 source helper_scripts/default.env 
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 echo "KCLI USER: $KCLI_USER" || exit $?
 rm -rf ~/.kcli/profiles.yml
 rm -f /root/.kcli/profiles.yml
-sudo sed -i 's|export INVENTORY=localhost|export INVENTORY="'${TARGET_SERVER}'"|g' helper_scripts/default.env
 sudo python3 profile_generator/profile_generator.py update_yaml rhel9 rhel9/template.yaml --vars-file rhel9/vm_vars.yml
 sudo python3 profile_generator/profile_generator.py update_yaml fedora37 fedora37/template.yaml --vars-file fedora37/vm_vars.yaml
 
-sudo -E ./openshift-jumpbox/configure-kcli-profile.sh
-sudo -E ./freeipa-server-container/configure-kcli-profile.sh
-sudo -E ./ansible-aap/configure-kcli-profile.sh
-sudo -E ./device-edge-workshops/configure-kcli-profile.sh
-sudo -E ./microshift-demos/configure-kcli-profile.sh
-sudo -E ./mirror-registry/configure-kcli-profile.sh
 
+sudo -E ./freeipa-server-container/configure-kcli-profile.sh
+echo "*********************************************"
+cat ~/.kcli/profiles.yml
+echo "*********************************************"
+sleep 10s
+sudo -E ./openshift-jumpbox/configure-kcli-profile.sh
+echo "*********************************************"
+cat ~/.kcli/profiles.yml
+echo "*********************************************"
+sleep 10s
+sudo -E ./ansible-aap/configure-kcli-profile.sh
+echo "*********************************************"
+cat ~/.kcli/profiles.yml
+echo "*********************************************"
+sleep 10s
+sudo -E ./device-edge-workshops/configure-kcli-profile.sh
+echo "*********************************************"
+cat ~/.kcli/profiles.yml
+echo "*********************************************"
+sleep 10s
+sudo -E ./microshift-demos/configure-kcli-profile.sh
+echo "*********************************************"
+cat ~/.kcli/profiles.yml
+echo "*********************************************"
+sleep 10s
+sudo -E ./mirror-registry/configure-kcli-profile.sh
+echo "*********************************************"
+cat ~/.kcli/profiles.yml
+echo "*********************************************"
+sleep 10s
 if [ $KCLI_USER != "root" ];
 then 
     sudo cp kcli-profiles.yml /home/$KCLI_USER/.kcli/profiles.yml
