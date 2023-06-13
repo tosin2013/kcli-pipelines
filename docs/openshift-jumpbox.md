@@ -50,3 +50,10 @@ $ tmux attach -t deploy-vm
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
 # sudo kcli ssh openshift-jumpbox
 ```
+
+### Delete Deployment 
+```
+$ source notouch.env
+$ export  ACTION="delete" 
+$ sudo -E  ./deploy-vm.sh
+```

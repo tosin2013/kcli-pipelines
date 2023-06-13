@@ -54,5 +54,12 @@ $ tmux attach -t deploy-vm
 # cat /tmp/mirrot-registry-offline.log
 ```
 
+### Delete Deployment 
+```
+$ source notouch.env
+$ export  ACTION="delete" 
+$ sudo -E  ./deploy-vm.sh
+```
+
 ### Default DNS Endpoint
 * https://mirror-registry.your-domainname.com:8443

@@ -30,7 +30,7 @@ $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh
 ```
 
 ### Configure rhel9 
-![20230612121808](https://i.imgur.com/ho68kF9.png)
+![20230613003134](https://i.imgur.com/F5WRBU4.png)
 ```
 sudo kcli download image rhel9
 ```
@@ -67,6 +67,13 @@ $ sudo su -
 $ ls
 microshift-demos  offline_token  setup-demo-infra.sh
 $ cd microshift-demos/
+```
+
+### Delete Deployment 
+```
+$ source notouch.env
+$ export  ACTION="delete" 
+$ sudo -E  ./deploy-vm.sh
 ```
 
 ### Default DNS Endpoint
