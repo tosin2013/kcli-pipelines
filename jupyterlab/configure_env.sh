@@ -6,8 +6,6 @@ sudo dnf install ncurses-devel curl -y
 curl 'https://vim-bootstrap.com/generate.vim' --data 'editor=vim&langs=javascript&langs=go&langs=html&langs=ruby&langs=python' > ~/.vimrc
 sudo python3 -m pip install --user --upgrade pip
 python3 -m pip install --user jupyterlab
-sudo systemctl enable firewalld
-sudo systemctl start firewalld
 sudo firewall-cmd --add-port=8888/tcp --permanent
 sudo firewall-cmd --reload
 jupyter notebook --generate-config
