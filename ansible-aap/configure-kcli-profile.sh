@@ -10,7 +10,6 @@ then
 else
   echo "default.env file does not exist"
   exit 1
-<<<<<<< HEAD
 fi 
 
 if [  -f /root/.vault_password ]; then
@@ -18,8 +17,6 @@ if [  -f /root/.vault_password ]; then
 else
   echo "vault password file does not exist"
   #exit 1
-=======
->>>>>>> gitlab/main
 fi
 
 cd $KCLI_SAMPLES_DIR
