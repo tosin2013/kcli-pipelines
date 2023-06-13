@@ -13,7 +13,7 @@ cmds:
   - usermod -aG wheel {{ user }}
   - echo "{{ user }} ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/{{ user }}
   - echo {{ user_password }} | passwd --stdin {{ user }}
-  - hostnamectl set-hostname mirror-vm.{{ domain }}
+  - hostnamectl set-hostname mirror-registry.{{ domain }}
   - dnf update -y
   - dnf install curl wget tar jq podman skopeo httpd-tools openssl nano nfs-utils bash-completion bind-utils ansible vim libvirt firewalld acl policycoreutils-python-utils -y
   - echo 0 > /proc/sys/net/ipv4/ip_unprivileged_port_start
