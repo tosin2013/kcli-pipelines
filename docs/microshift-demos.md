@@ -68,3 +68,6 @@ $ ls
 microshift-demos  offline_token  setup-demo-infra.sh
 $ cd microshift-demos/
 ```
+
+### Default DNS Endpoint
+* https:/microshift-demos.your-domainname.com:9090
