@@ -51,6 +51,7 @@ $ tmux attach -t deploy-vm
 |     mirror-registry      |   up   |  192.168.122.92 | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt |     mirror-registry      |
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
 # sudo kcli ssh mirror-registry
+# cat /tmp/mirrot-registry-offline.log
 ```
 
 ### Default DNS Endpoint
