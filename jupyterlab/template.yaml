@@ -14,6 +14,6 @@ cmds:
   - usermod -aG wheel {{ user }}
   - echo "{{ user }} ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/{{ user }}
   - echo {{ user_password }} | passwd --stdin {{ user }}
-  - curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/ansible-aap/rhel9_ansible.sh --output /tmp/rhel9_ansible.sh 
-  - chmod +x /tmp/rhel9_ansible.sh 
-  - bash -x /tmp/rhel9_ansible.sh {{ jupyterlab_password }} | tee /tmp/install.log
+  - curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/jupyterlab/configure_env.sh --output /tmp/configure_env.sh
+  - chmod +x /tmp/configure_env.sh
+  - bash -x /tmp/configure_env.sh {{ jupyterlab_password }} | tee /tmp/install.log
