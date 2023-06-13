@@ -12,6 +12,14 @@ else
   exit 1
 fi
 
+if [ $TARGET_SERVER == "equinix" ];
+then 
+  source ~/.profile 
+  ANSIBLE_GALAXY=/root/.local/bin/ansible-galaxy
+else 
+  ANSIBLE_GALAXY=ansible-galaxy
+fi
+
 cd $KCLI_SAMPLES_DIR
 
 
@@ -26,18 +34,6 @@ DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 sudo rm -rf kcli-profiles.yml
-if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
-  sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
-else 
-    sudo mkdir -p /home/${KCLI_USER}/.kcli
-    sudo mkdir -p /root/.kcli
-fi
-if [ -d /home/${KCLI_USER}/.generated/vmfiles ]; then
-  echo "generated directory already exists"
-else
-  sudo mkdir -p  /home/${KCLI_USER}/.generated/vmfiles
-  sudo mkdir -p  /root/.generated/vmfiles
-fi
 
 
 cat >/tmp/vm_vars.yaml<<EOF
@@ -64,5 +60,5 @@ sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 
 if [ ! -d .ansible/collections/ansible_collections/community ];
 then 
-  ansible-galaxy collection install community.general
+  ${ANSIBLE_GALAXY} collection install community.general
 fi 

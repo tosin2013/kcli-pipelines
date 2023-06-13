@@ -59,6 +59,7 @@ If the deployment fails using tmux run the following commands
 $ sudo kcli list vm
 $ sudo kcli delete vm mirror-registry 
 $ source notouch.env  && sudo -E  ./deploy-vm.sh
+# cat /tmp/mirrot-registry-offline.log
 ```
 
 ### Default DNS Endpoint
