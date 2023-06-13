@@ -22,8 +22,9 @@ PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
 JUPYTERLAB_PASSWORD=$(yq eval '.jupyterlab_password' "${ANSIBLE_VAULT_FILE}")
 VM_NAME=jupyterlab-$(echo $RANDOM | md5sum | head -c 5; echo;)
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
-DISK_SIZE=50
+DISK_SIZE=120
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
+DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
   sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
 else 
@@ -48,6 +49,7 @@ net_name: ${NET_NAME}
 reservedns: ${DNS_FORWARDER}
 offline_token: ${OFFLINE_TOKEN}
 jupyterlab_password: ${JUPYTERLAB_PASSWORD}
+domain: ${DOMAIN}
 EOF
 
 sudo python3 profile_generator/profile_generator.py update_yaml jupyterlab jupyterlab/template.yaml  --vars-file /tmp/vm_vars.yaml
