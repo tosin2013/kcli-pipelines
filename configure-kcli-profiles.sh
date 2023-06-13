@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+#set -xe
 
 #GIT_REPO=https://gitlab.tosins-cloudlabs.com/tosin/kcli-pipelines.git
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
