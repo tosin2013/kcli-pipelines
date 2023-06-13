@@ -37,35 +37,20 @@ sudo python3 profile_generator/profile_generator.py update_yaml fedora37 fedora3
 
 
 sudo -E ./freeipa-server-container/configure-kcli-profile.sh
-echo "*********************************************"
-cat ~/.kcli/profiles.yml
-echo "*********************************************"
-sleep 10s
+#echo "*********************************************"
+#cat ~/.kcli/profiles.yml
+#echo "*********************************************"
+#read -n 1 -s -r -p "Press any key to continue"
 sudo -E ./openshift-jumpbox/configure-kcli-profile.sh
-echo "*********************************************"
-cat ~/.kcli/profiles.yml
-echo "*********************************************"
-sleep 10s
 sudo -E ./ansible-aap/configure-kcli-profile.sh
-echo "*********************************************"
-cat ~/.kcli/profiles.yml
-echo "*********************************************"
-sleep 10s
 sudo -E ./device-edge-workshops/configure-kcli-profile.sh
-echo "*********************************************"
-cat ~/.kcli/profiles.yml
-echo "*********************************************"
-sleep 10s
 sudo -E ./microshift-demos/configure-kcli-profile.sh
-echo "*********************************************"
-cat ~/.kcli/profiles.yml
-echo "*********************************************"
-sleep 10s
 sudo -E ./mirror-registry/configure-kcli-profile.sh
+sudo -E ./jupyterlab/configure-kcli-profile.sh
 echo "*********************************************"
 cat ~/.kcli/profiles.yml
 echo "*********************************************"
-sleep 10s
+read -n 1 -s -r -p "Press any key to continue"
 if [ $KCLI_USER != "root" ];
 then 
     sudo cp kcli-profiles.yml /home/$KCLI_USER/.kcli/profiles.yml
