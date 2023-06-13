@@ -53,3 +53,5 @@ $ sudo kcli list vm
 $ sudo kcli delete vm freeipa-server-container
 $ source notouch.env  && sudo -E  ./deploy-vm.sh
 ```
+### Default DNS Endpoint
+* https://ipa.your-domainname.com

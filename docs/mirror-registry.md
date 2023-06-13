@@ -60,3 +60,6 @@ $ sudo kcli list vm
 $ sudo kcli delete vm mirror-registry 
 $ source notouch.env  && sudo -E  ./deploy-vm.sh
 ```
+
+### Default DNS Endpoint
+* https://mirror-registry.your-domainname.com:8443
