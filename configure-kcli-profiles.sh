@@ -32,12 +32,37 @@ rm -f /root/.kcli/profiles.yml
 sudo python3 profile_generator/profile_generator.py update_yaml rhel9 rhel9/template.yaml --vars-file rhel9/vm_vars.yml
 sudo python3 profile_generator/profile_generator.py update_yaml fedora37 fedora37/template.yaml --vars-file fedora37/vm_vars.yaml
 
-sudo -E ./openshift-jumpbox/configure-kcli-profile.sh
+
 sudo -E ./freeipa-server-container/configure-kcli-profile.sh
+echo "*********************************************"
+cat ~/.kcli/profiles.yml
+echo "*********************************************"
+sleep 10s
+sudo -E ./openshift-jumpbox/configure-kcli-profile.sh
+echo "*********************************************"
+cat ~/.kcli/profiles.yml
+echo "*********************************************"
+sleep 10s
 sudo -E ./ansible-aap/configure-kcli-profile.sh
+echo "*********************************************"
+cat ~/.kcli/profiles.yml
+echo "*********************************************"
+sleep 10s
 sudo -E ./device-edge-workshops/configure-kcli-profile.sh
+echo "*********************************************"
+cat ~/.kcli/profiles.yml
+echo "*********************************************"
+sleep 10s
 sudo -E ./microshift-demos/configure-kcli-profile.sh
+echo "*********************************************"
+cat ~/.kcli/profiles.yml
+echo "*********************************************"
+sleep 10s
 sudo -E ./mirror-registry/configure-kcli-profile.sh
+echo "*********************************************"
+cat ~/.kcli/profiles.yml
+echo "*********************************************"
+sleep 10s
 if [ $KCLI_USER != "root" ];
 then 
     sudo cp kcli-profiles.yml /home/$KCLI_USER/.kcli/profiles.yml

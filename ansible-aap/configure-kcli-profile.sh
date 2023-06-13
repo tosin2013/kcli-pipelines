@@ -57,3 +57,5 @@ EOF
 
 sudo python3 profile_generator/profile_generator.py update_yaml ansible-aap ansible-aap/ansible-aap.yml  --vars-file /tmp/vm_vars.yaml
 cat  kcli-profiles.yml
+sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
+sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
