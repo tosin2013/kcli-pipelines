@@ -58,10 +58,5 @@ cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
-sudo cp pull-secret.json  /home/${KCLI_USER}/.generated/vmfiles
-sudo cp pull-secret.json /root/.generated/vmfiles
-sudo cp $(pwd)/jupyterlab/gitops.sh /home/${KCLI_USER}/.generated/vmfiles
-sudo cp $(pwd)/jupyterlab/gitops.sh /root/.generated/vmfiles
-sudo rm pull-secret.json
-#echo "Creating VM ${VM_NAME}"
-#sudo kcli create vm -p jupyterlab ${VM_NAME} --wait
+sudo cp $(pwd)/jupyterlab/configure_env.sh /home/${KCLI_USER}/.generated/vmfiles
+sudo cp $(pwd)/jupyterlab/configure_env.sh /root/.generated/vmfiles
