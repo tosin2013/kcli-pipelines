@@ -16,8 +16,14 @@ cmds:
   - echo "{{ user }} ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/{{ user }}
   - echo {{ user_password }} | passwd --stdin {{ user }}
   - curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/jupyterlab/configure_env.sh --output /tmp/configure_env.sh
-  - chmod +x /tmp/configure_env.sh
-  - bash -x /tmp/configure_env.sh {{ jupyterlab_password }} | tee /tmp/install.log
+  - dnf update -y 
+  - dnf install git vim unzip wget tar python3 python3-pip util-linux-user tmux firewalld -y 
+  - dnf install ncurses-devel curl -y
+  - curl 'https://vim-bootstrap.com/generate.vim' --data 'editor=vim&langs=javascript&langs=go&langs=html&langs=ruby&langs=python' > ~/.vimrc
+  - python3 -m pip install --user --upgrade pip
+  - python3 -m pip install --user jupyterlab
+  - jupyter notebook --generate-config
+  - nohup jupyter-lab --no-browser --ip=0.0.0.0 --port=8888  | sudo tee /var/log/jupyter-lab.log 
   - sudo firewall-cmd --add-port=8888/tcp --permanent
   - sudo firewall-cmd --reload
   - sudo semanage port  -a 8888 -t http_port_t -p tcp
