@@ -1,9 +1,5 @@
 #!/bin/bash
-<<<<<<< HEAD
-##set -xe
-=======
 #set -xe
->>>>>>> gitlab/main
 
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
 
