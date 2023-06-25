@@ -47,7 +47,8 @@ sudo -E ./jupyterlab/configure-kcli-profile.sh
 echo "*********************************************"
 cat ~/.kcli/profiles.yml
 echo "*********************************************"
-read -n 1 -s -r -p "Press any key to continue"
+#read -n 1 -s -r -p "Press any key to continue"
+sleep 15s
 if [ $KCLI_USER != "root" ];
 then 
     sudo cp kcli-profiles.yml /home/$KCLI_USER/.kcli/profiles.yml

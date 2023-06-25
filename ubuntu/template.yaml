@@ -1,0 +1,10 @@
+image: {{ image }}
+numcpus: {{ numcpus }}
+memory: {{ memory }}
+nets:
+  - name: {{ net_name }}
+reservedns: {{ reservedns }}
+disks:
+  - size: {{ disk_size }}
+cmds:
+  - echo {{ user_password }} | passwd --stdin root

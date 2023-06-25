@@ -23,3 +23,10 @@ cmds:
   - systemctl stop systemd-resolved && systemctl disable systemd-resolved
   - echo "nameserver {{ reservedns }}" > /etc/resolv.conf
   - bash -x /opt/scripts/freeipa-container-deployment.sh quay.io/freeipa/freeipa-server:fedora-37
+  - podman generate systemd --new --name freeipa-master --files
+  - mv -v container-freeipa-master.service /etc/systemd/system/
+  - chown root:root  /etc/systemd/system/container-freeipa-master.service 
+  - chmod 0644 /etc/systemd/system/container-freeipa-master.service 
+  - sudo systemctl daemon-reload 
+  - sudo systemctl enable container-freeipa-master.service
+  - sudo systemctl start  container-freeipa-master.service

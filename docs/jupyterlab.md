@@ -51,6 +51,7 @@ $ tmux attach -t deploy-vm
 |     jupyterlab      |   up   |  192.168.122.92 | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt |     jupyterlab      |
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
 # sudo kcli ssh jupyterlab
+# /tmp/configure_env.sh
 # cat /var/log/jupyter-lab.log  | grep token
 ```
 

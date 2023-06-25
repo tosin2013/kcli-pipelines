@@ -7,4 +7,4 @@ curl 'https://vim-bootstrap.com/generate.vim' --data 'editor=vim&langs=javascrip
 sudo python3 -m pip install --user --upgrade pip
 python3 -m pip install --user jupyterlab
 jupyter notebook --generate-config
-nohup jupyter-lab --no-browser --ip=0.0.0.0 --port=8888  | sudo tee /var/log/jupyter-lab.log #--NotebookApp.password=$DEFAULT_PASSWORD
+nohup jupyter-lab --no-browser --ip=0.0.0.0 --port=8888   | sudo tee /var/log/jupyter-lab.log  & #--NotebookApp.password=$DEFAULT_PASSWORD
