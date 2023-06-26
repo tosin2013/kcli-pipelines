@@ -20,6 +20,8 @@ This workflow creates KCLI profiles for multiple environments, including Equinix
     * Mirror Registry
     * JupyterLab
     * Ubuntu
+    * RHEL 9
+    * Fedora 38
 8. Copy the kcli-profiles.yml file to the user's home directory and the root directory.
 Expected Output:
 
@@ -33,7 +35,8 @@ The output of the workflow should be a profiles.yml file in the user's home dire
   * Mirror Registry
   * JupyterLab
   * Ubuntu
-
+  * RHEL 9
+  * Fedora 38
 
 ## Error Handling:
 
@@ -58,3 +61,5 @@ The workflow can be tested by running it on a machine with the required dependen
 * Mirror Registry
 * JupyterLab
 * Ubuntu
+* RHEL 9
+* Fedora 38

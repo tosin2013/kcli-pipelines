@@ -12,6 +12,9 @@
 * [Deploy the openshift-jumpbox on vm](docs/openshift-jumpbox.md)
 * [Deploy the Red Hat Ansible Automation Platform on vm](docs/ansible-aap.md)
 * [Deploy the ubuntu on vm](docs/ubuntu.md)
+* [Deploy the fedora on vm](docs/fedora.md)
+* [Deploy the rhel9 on vm](docs/rhel.md)
+
 
 ## How to deploy Vms using Gitlab pipelines
 
