@@ -1,8 +1,6 @@
-# Deploy the jupyterlab on vm
+# Deploy the ubuntuon vm
 
-JupyterLab is a highly extensible, feature-rich notebook authoring application and editing environment, and is a part of Project Jupyter, a large umbrella project centered around the goal of providing tools (and standards) for interactive computing with computational notebooks.
-
-https://jupyterlab.readthedocs.io/en/latest/
+OpenShift Jumpbox VMS contains different tools to help with the installation and management of OpenShift clusters.
 
 ## Requirements
 * A Machine configured with kcli via [qubinode_navigator](https://github.com/tosin2013/qubinode_navigator)
@@ -24,38 +22,37 @@ $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/confi
 $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh 
 ```
 
-### Deploy the jupyterlab
+### Deploy the ubuntu
 ```
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
-export TARGET_SERVER="machine_name" # equinix 
-export VM_PROFILE=jupyterlab
-export VM_NAME="jupyterlab-$(echo $RANDOM | md5sum | head -c 5; echo;)"
+export TARGET_SERVER="supermicro" # equinix 
+export VM_PROFILE=ubuntu
+export VM_NAME="ubuntu-$(echo $RANDOM | md5sum | head -c 5; echo;)"
 export  ACTION="create" # create, delete
 EOF
 
 or 
-$ sed -i 's/export VM_NAME=.*/export VM_NAME=jupyterlab-$(echo $RANDOM | md5sum | head -c 5; echo;)/g' notouch.env
-$ sed -i 's/export VM_PROFILE=.*/export VM_PROFILE=jupyterlab/g' notouch.env
+$ sed -i 's/export VM_NAME=.*/export VM_NAME=ubuntu-$(echo $RANDOM | md5sum | head -c 5; echo;)/g' notouch.env
+$ sed -i 's/export VM_PROFILE=.*/export VM_PROFILE=ubuntu/g' notouch.env
 
 $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/deploy-vm.sh && chmod +x deploy-vm.sh
 $ tmux new-session -d -s deploy-vm 'source notouch.env  && sudo -E  ./deploy-vm.sh'
 $ tmux attach -t deploy-vm
 ```
 
-### Validate the jupyterlab
+### Validate the ubuntu
 ```tmux attach -t deploy-vm
 # sudo kcli list vm 
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
 |           Name           | Status |        Ip       |                 Source                |  Plan |         Profile          |
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
 | freeipa-server-container |   up   |  192.168.1.119  | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt | freeipa-server-container |
-|     jupyterlab-f0547     |   up   | 192.168.122.183 | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt |        jupyterlab        |
+|       ubuntu-b5777       |   up   | 192.168.122.220 |                 ubuntu                | kvirt |          ubuntu          |
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
 
-# sudo kcli ssh jupyterlab-f0547 
-# /tmp/configure_env.sh
-# cat /var/log/jupyter-lab.log  | grep token
+
+# sudo kcli ssh ubuntu-b5777
 ```
 
 ### Delete Deployment 
