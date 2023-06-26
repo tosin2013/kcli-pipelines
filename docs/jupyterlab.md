@@ -29,7 +29,7 @@ $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
 export TARGET_SERVER="machine_name" # equinix 
-export VM_NAME="jupyterlab"
+export VM_NAME="jupyterlab-$(echo $RANDOM | md5sum | head -c 5; echo;)"
 export  ACTION="create" # create, delete
 EOF
 
