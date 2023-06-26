@@ -29,12 +29,6 @@ else
     sudo mkdir -p /home/${KCLI_USER}/.kcli
     sudo mkdir -p /root/.kcli
 fi
-if [ -d /home/${KCLI_USER}/.generated/vmfiles ]; then
-  echo "generated directory already exists"
-else
-  sudo mkdir -p  /home/${KCLI_USER}/.generated/vmfiles
-  sudo mkdir -p  /root/.generated/vmfiles
-fi
 
 cat >/tmp/vm_vars.yaml<<EOF
 image: ${IMAGE_NAME}

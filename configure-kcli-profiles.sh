@@ -43,6 +43,7 @@ sudo -E ./device-edge-workshops/configure-kcli-profile.sh
 sudo -E ./microshift-demos/configure-kcli-profile.sh
 sudo -E ./mirror-registry/configure-kcli-profile.sh
 sudo -E ./jupyterlab/configure-kcli-profile.sh
+sudo -E ./ubuntu/configure-kcli-profile.sh
 echo "*********************************************"
 cat ~/.kcli/profiles.yml
 echo "*********************************************"
