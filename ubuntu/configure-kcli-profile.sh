@@ -13,8 +13,7 @@ else
 fi
 
 cd $KCLI_SAMPLES_DIR
-IMAGE_NAME=ubuntu-22.04-server-cloudimg-amd64.img
-sudo kcli download image ${IMAGE_NAME} -u  ${IMAGE_URL}
+IMAGE_NAME=ubuntu
 
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
