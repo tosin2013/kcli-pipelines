@@ -117,7 +117,7 @@ then
 
     if [[ $VM_NAME == "freeipa-server-container" ]];
     then
-        sudo kcli create vm -p $VM_NAME $VM_NAME --wait
+        sudo kcli create vm -p $VM_PROFILE $VM_NAME --wait
         IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
         DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
         configure_idm_container "freeipa-server-container" $DNS_FORWARDER
@@ -126,7 +126,7 @@ then
         DNS_ADDRESS=$(sudo kcli info vm freeipa-server-container freeipa-server-container | grep ip: | awk '{print $2}' | head -1)
         DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
         echo "Using DNS server $DNS_ADDRESS"
-        sudo kcli create vm -p $VM_NAME $VM_NAME -P dns=${DNS_ADDRESS} --wait
+        sudo kcli create vm -p $VM_PROFILE $VM_NAME -P dns=${DNS_ADDRESS} --wait
         IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
         echo "VM $VM_NAME created with IP address $IP_ADDRESS"
         $ANSIBLE_PLAYBOOK helper_scripts/add_ipa_entry.yaml \

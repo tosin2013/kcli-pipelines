@@ -29,12 +29,14 @@ $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
 export TARGET_SERVER="machine_name" # equinix 
+export VM_PROFILE=mirror-registry
 export VM_NAME="mirror-registry"
 export  ACTION="create" # create, delete
 EOF
 
 or 
 $ sed -i 's/export VM_NAME=.*/export VM_NAME=mirror-registry/g' notouch.env
+$ sed -i 's/export VM_PROFILE=.*/export VM_PROFILE=mirror-registry/g' notouch.env
 
 $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/deploy-vm.sh && chmod +x deploy-vm.sh
 $ tmux new-session -d -s deploy-vm 'source notouch.env  && sudo -E  ./deploy-vm.sh'

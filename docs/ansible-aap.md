@@ -37,12 +37,14 @@ sudo kcli download image rhel9
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
 export TARGET_SERVER="supermicro" # equinix 
+export VM_PROFILE=ansible-aap
 export VM_NAME="ansible-aap"
 export  ACTION="create" # create, delete
 EOF
 
 or 
 $ sed -i 's/export VM_NAME=.*/export VM_NAME=ansible-aap/g' notouch.env
+$ sed -i 's/export VM_PROFILE=.*/export VM_PROFILE=ansible-aap/g' notouch.env
 
 $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/deploy-vm.sh && chmod +x deploy-vm.sh
 
