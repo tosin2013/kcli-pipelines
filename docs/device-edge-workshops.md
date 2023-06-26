@@ -35,12 +35,14 @@ sudo kcli download image rhel9
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
 export TARGET_SERVER="machine_name" # equinix 
+export VM_PROFILE=device-edge-workshops
 export VM_NAME="device-edge-workshops"
 export  ACTION="create" # create, delete
 EOF
 
 or 
 $ sed -i 's/export VM_NAME=.*/export VM_NAME=device-edge-workshops/g' notouch.env
+$ sed -i 's/export VM_PROFILE=.*/export VM_PROFILE=device-edge-workshops/g' notouch.env
 
 $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/deploy-vm.sh && chmod +x deploy-vm.sh
 

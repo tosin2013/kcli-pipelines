@@ -39,12 +39,14 @@ sudo kcli download image rhel9
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
 export TARGET_SERVER="machine_name" # equinix 
+export VM_PROFILE=microshift-demos
 export VM_NAME="microshift-demos"
 export  ACTION="create" # create, delete
 EOF
 
 or 
 $ sed -i 's/export VM_NAME=.*/export VM_NAME=microshift-demos/g' notouch.env
+$ sed -i 's/export VM_PROFILE=.*/export VM_PROFILE=microshift-demos/g' notouch.env
 
 $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/deploy-vm.sh && chmod +x deploy-vm.sh
 

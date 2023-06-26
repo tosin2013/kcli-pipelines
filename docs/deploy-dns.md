@@ -26,6 +26,7 @@ $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
 export TARGET_SERVER="machine_name" # equinix 
+export VM_PROFILE="freeipa-server-container"
 export VM_NAME="freeipa-server-container"
 export  ACTION="create" # create, delete
 EOF

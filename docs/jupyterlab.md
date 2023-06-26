@@ -29,12 +29,14 @@ $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
 export TARGET_SERVER="machine_name" # equinix 
+export VM_PROFILE=jupyterlab
 export VM_NAME="jupyterlab-$(echo $RANDOM | md5sum | head -c 5; echo;)"
 export  ACTION="create" # create, delete
 EOF
 
 or 
-$ sed -i 's/export VM_NAME=.*/export VM_NAME=jupyterlab/g' notouch.env
+$ sed -i 's/export VM_NAME=.*/export VM_NAME=jupyterlab$(echo $RANDOM | md5sum | head -c 5; echo;)/g' notouch.env
+$ sed -i 's/export VM_PROFILE=.*/export VM_PROFILE=jupyterlab/g' notouch.env
 
 $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/deploy-vm.sh && chmod +x deploy-vm.sh
 $ tmux new-session -d -s deploy-vm 'source notouch.env  && sudo -E  ./deploy-vm.sh'
