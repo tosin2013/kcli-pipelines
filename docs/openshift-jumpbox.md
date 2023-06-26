@@ -27,7 +27,7 @@ $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
 export TARGET_SERVER="machine_name" # equinix 
-export VM_NAME="openshift-jumpbox"
+export VM_NAME="openshift-jumpbox-$(echo $RANDOM | md5sum | head -c 5; echo;)"
 export  ACTION="create" # create, delete
 EOF
 
