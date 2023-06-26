@@ -47,10 +47,11 @@ $ tmux attach -t deploy-vm
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
 |           Name           | Status |        Ip       |                 Source                |  Plan |         Profile          |
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
-| freeipa-server-container |   up   | 192.168.122.109 | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt | freeipa-server-container |
-|     openshift-jumpbox      |   up   |  192.168.122.92 | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt |     openshift-jumpbox      |
+| freeipa-server-container |   up   |  192.168.1.119  | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt | freeipa-server-container |
+| openshift-jumpbox-e2f06  |   up   | 192.168.122.179 | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt |    openshift-jumpbox     |
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
-# sudo kcli ssh openshift-jumpbox
+
+# sudo kcli ssh openshift-jumpbox-e2f06
 ```
 
 ### TroubleShooting
