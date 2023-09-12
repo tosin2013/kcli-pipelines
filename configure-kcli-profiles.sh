@@ -28,8 +28,8 @@ KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 echo "KCLI USER: $KCLI_USER" || exit $?
 rm -rf ~/.kcli/profiles.yml
 rm -f /root/.kcli/profiles.yml
-sudo python3 profile_generator/profile_generator.py update_yaml rhel9 rhel9/template.yaml --vars-file rhel9/vm_vars.yml
-sudo python3 profile_generator/profile_generator.py update_yaml fedora37 fedora37/template.yaml --vars-file fedora37/vm_vars.yaml
+sudo python3 profile_generator/profile_generator.py update-yaml rhel9 rhel9/template.yaml --vars-file rhel9/vm_vars.yml
+sudo python3 profile_generator/profile_generator.py update-yaml fedora37 fedora37/template.yaml --vars-file fedora37/vm_vars.yaml
 
 
 sudo -E ./freeipa-server-container/configure-kcli-profile.sh
