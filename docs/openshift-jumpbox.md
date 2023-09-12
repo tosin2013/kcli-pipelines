@@ -15,7 +15,7 @@ $ sudo su -
 ```
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
-export TARGET_SERVER="equinix" # equinix 
+export TARGET_SERVER="rhel8-equinix" # rhel8-equinix 
 EOF
 
 $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/configure-kcli-profiles.sh && chmod +x configure-kcli-profiles.sh
@@ -26,7 +26,7 @@ $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh
 ```
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
-export TARGET_SERVER="machine_name" # equinix 
+export TARGET_SERVER="machine_name" # rhel8-equinix 
 export VM_PROFILE=openshift-jumpbox
 export VM_NAME="openshift-jumpbox-$(echo $RANDOM | md5sum | head -c 5; echo;)"
 export  ACTION="create" # create, delete

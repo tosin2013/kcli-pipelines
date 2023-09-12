@@ -1,6 +1,6 @@
 #!/bin/bash
-#set -xe
-
+set -xe
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
 
 if [ ! -d /opt/kcli-pipelines ];
@@ -11,13 +11,8 @@ else
     sudo git pull
 fi
 
-if [ $TARGET_SERVER == "equinix" ];
+if [ $TARGET_SERVER == "rhel8-equinix" ];
 then 
-    source ~/.bash_aliases
-    source ~/.profile
-    sudo  ln -s /root/.local/bin/ansible-vault /usr/bin/ansible-vault
-    whereis ansible-vault
-    sudo ansible-vault --help
     sudo sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' /opt/kcli-pipelines/helper_scripts/default.env
 fi
 
