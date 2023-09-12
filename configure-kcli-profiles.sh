@@ -26,6 +26,30 @@ rm -f /root/.kcli/profiles.yml
 sudo python3 profile_generator/profile_generator.py update-yaml rhel9 rhel9/template.yaml --vars-file rhel9/vm_vars.yml
 sudo python3 profile_generator/profile_generator.py update-yaml fedora38 fedora38/template.yaml --vars-file fedora38/vm_vars.yaml
 
+if [ ! -d /home/$KCLI_USER/.kcli ];
+then
+    echo "/home/$KCLI_USER/.kcli directory does not exist"
+    mkdir -p /home/$KCLI_USER/.kcli
+fi
+
+if [ ! -d /root/.kcli ];
+then
+    echo "/root/.kcli directory does not exist"
+    mkdir -p /root/.kcli
+fi
+
+if [ ! -f /opt/kcli-pipelines/kcli-profiles.yml ];
+then
+    echo "kcli-profiles.yml file does not exist"
+    exit 1
+fi
+
+cp /opt/kcli-pipelines/kcli-profiles.yml /home/$KCLI_USER/.kcli/profiles.yml
+cp /opt/kcli-pipelines/kcli-profiles.yml /root/.kcli/profiles.yml
+echo "*********************************************"
+cat ~/.kcli/profiles.yml
+echo "*********************************************"
+read -n 1 -s -r -p "Press any key to continue"
 
 sudo -E ./freeipa-server-container/configure-kcli-profile.sh
 #echo "*********************************************"

@@ -1,6 +1,6 @@
 #!/bin/bash
-#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-#set -xe
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -xe
 if [ -f ../helper_scripts/default.env ];
 then 
   source ../helper_scripts/default.env
