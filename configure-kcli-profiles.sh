@@ -1,7 +1,13 @@
 #!/bin/bash
-set -xe
-export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+#set -x
+#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
+
+if [ -z $TARGET_SERVER ];
+then 
+    echo "TARGET_SERVER variable is not set"
+    exit 1
+fi
 
 if [ ! -d /opt/kcli-pipelines ];
 then 
