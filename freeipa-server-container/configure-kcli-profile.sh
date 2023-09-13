@@ -33,7 +33,18 @@ DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
-sudo rm -rf kcli-profiles.yml
+if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
+  sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
+else 
+    sudo mkdir -p /home/${KCLI_USER}/.kcli
+    sudo mkdir -p /root/.kcli
+fi
+if [ -d /home/${KCLI_USER}/vmfiles ]; then
+  echo "generated directory already exists"
+else
+  sudo mkdir -p  /home/${KCLI_USER}/.generated/vmfiles
+  sudo mkdir -p  /root/.generated/vmfiles
+fi
 
 
 cat >/tmp/vm_vars.yaml<<EOF
