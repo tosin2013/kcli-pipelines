@@ -52,7 +52,7 @@ offline_token: ${OFFLINE_TOKEN}
 domain: ${DOMAIN}
 EOF
 
-sudo python3 profile_generator/profile_generator.py update_yaml mirror-registry mirror-registry/template.yaml  --vars-file /tmp/vm_vars.yaml
+sudo python3 profile_generator/profile_generator.py update-yaml mirror-registry mirror-registry/template.yaml  --vars-file /tmp/vm_vars.yaml
 sudo echo ${PULL_SECRET} | sudo tee pull-secret.json
 #cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1

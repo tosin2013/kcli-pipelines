@@ -50,7 +50,7 @@ reservedns: ${DNS_FORWARDER}
 offline_token: ${OFFLINE_TOKEN}
 EOF
 
-sudo python3 profile_generator/profile_generator.py update_yaml openshift-jumpbox openshift-jumpbox/template.yaml  --vars-file /tmp/vm_vars.yaml
+sudo python3 profile_generator/profile_generator.py update-yaml openshift-jumpbox openshift-jumpbox/template.yaml  --vars-file /tmp/vm_vars.yaml
 sudo echo ${PULL_SECRET} | sudo tee pull-secret.json
 cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1

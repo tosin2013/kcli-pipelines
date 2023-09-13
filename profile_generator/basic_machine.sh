@@ -38,8 +38,8 @@ function setup_ansible_vault {
 function update_profiles_file {
   ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
   PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
-  python3 profile_generator/profile_generator.py update_yaml rhel9 rhel9/template.yaml --image rhel-baseos-9.1-x86_64-kvm.qcow2 --user $USER --user-password ${PASSWORD}
-  python3 profile_generator/profile_generator.py update_yaml fedora37 fedora37/template.yaml --image Fedora-Cloud-Base-37-1.7.x86_64.qcow2  --disk-size 30 --numcpus 4 --memory 8192 --user  $USER  --user-password ${PASSWORD}
+  python3 profile_generator/profile_generator.py update-yaml rhel9 rhel9/template.yaml --image rhel-baseos-9.1-x86_64-kvm.qcow2 --user $USER --user-password ${PASSWORD}
+  python3 profile_generator/profile_generator.py update-yaml fedora37 fedora37/template.yaml --image Fedora-Cloud-Base-37-1.7.x86_64.qcow2  --disk-size 30 --numcpus 4 --memory 8192 --user  $USER  --user-password ${PASSWORD}
   ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 
   sudo mkdir -p "${KCLI_CONFIG_DIR}"
