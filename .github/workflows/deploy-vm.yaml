@@ -9,7 +9,7 @@ on:
       target_server:
         description: 'target_server'
         required: true
-        default: target_server
+        default: rhel8-equinix
       action:
         description: 'action'
         required: true
