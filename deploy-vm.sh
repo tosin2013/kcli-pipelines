@@ -68,6 +68,13 @@ function return_cloud_user() {
     esac
 }
 
+# Check if VM exists
+function vm_exists() {
+    local vm_name=$1
+    local exists=$(sudo kcli list vm | grep -c $vm_name)
+    return $exists
+}
+
 # Define the configure_vm function
 function configure_idm_container {
   local vm_name="$1"
@@ -120,16 +127,25 @@ then
 
     if [[ $VM_NAME == "freeipa-server-container" ]];
     then
-        sudo kcli create vm -p $VM_PROFILE $VM_NAME --wait
-        IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
-        DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
-        configure_idm_container "freeipa-server-container" $DNS_FORWARDER
+        if vm_exists "$VM_NAME"; then
+          sudo kcli create vm -p $VM_PROFILE $VM_NAME --wait
+          IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
+          DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
+          configure_idm_container "freeipa-server-container" $DNS_FORWARDER
+        else
+          echo "VM $VM_NAME already exists."
+          exit 0
+        fi
     else
         check_idm ipa.$DOMAIN_NAME || exit $?
         DNS_ADDRESS=$(sudo kcli info vm freeipa-server-container freeipa-server-container | grep ip: | awk '{print $2}' | head -1)
         DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
         echo "Using DNS server $DNS_ADDRESS"
-        sudo kcli create vm -p $VM_PROFILE $VM_NAME -P dns=${DNS_ADDRESS} --wait
+        if vm_exists "$VM_NAME"; then
+          sudo kcli create vm -p $VM_PROFILE $VM_NAME -P dns=${DNS_ADDRESS} --wait
+        else
+          echo "VM $VM_NAME already exists."
+        fi
         IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
         echo "VM $VM_NAME created with IP address $IP_ADDRESS"
         $ANSIBLE_PLAYBOOK helper_scripts/add_ipa_entry.yaml \
