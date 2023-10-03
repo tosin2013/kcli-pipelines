@@ -61,5 +61,6 @@ jobs:
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_NAME=${{ env.VM_NAME }}
+          export VM_PROFILE=${{ env.VM_NAME }}
           export ACTION=${{ env.ACTION }}
           /opt/kcli-pipelines/deploy-vm.sh
