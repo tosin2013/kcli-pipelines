@@ -14,7 +14,7 @@ if [ -f $HOME/.pull-secret.json ]; then
   echo "pull-secret.json already exists"
 else
   echo "pull-secret.json does not exist"
-   exit 1
+  exit 1
 fi
 
 function configure_os(){
