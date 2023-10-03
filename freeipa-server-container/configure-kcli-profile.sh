@@ -17,7 +17,7 @@ then
   source ~/.profile 
   ANSIBLE_GALAXY=/root/.local/bin/ansible-galaxy
 else 
-  ANSIBLE_GALAXY=ansible-galaxy
+  ANSIBLE_GALAXY=/usr/local/bin/ansible-galaxy
 fi
 
 cd $KCLI_SAMPLES_DIR

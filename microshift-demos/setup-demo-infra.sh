@@ -33,7 +33,7 @@ EOF
 IP_ADDRESS=$(hostname -I)
 
 
-sudo ansible-galaxy install git+https://github.com/tosin2013/rhel-edge-kvm-role.git --force
+sudo /usr/local/bin/ansible-galaxy install git+https://github.com/tosin2013/rhel-edge-kvm-role.git --force
 
 sed 's/rhel-edge-kvm.iso/hello-microshift-demo-installer.x86_64.iso/g' edge_vars.yml > edge_vars_use.yml
 sudo ansible-playbook  -i hosts playbooks.yml -t create_kvm_vm  --extra-vars "@edge_vars_use.yml"  --private-key ~/.ssh/cluster-key -K

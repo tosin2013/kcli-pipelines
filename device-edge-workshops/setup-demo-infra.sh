@@ -23,10 +23,10 @@ sed -i "s|your-workshop-domain.lcl|${DOMAIN}|g" local-inventory.yml
 sed -i "s|192.168.200.10|$(hostname -I | awk '{print $1}')|g" local-inventory.yml
 sed -i "s|your-key-here|${BUILDER_KEY}|g" extra_vars.yml
 cat extra_vars.yml | less
-ansible-galaxy  install -r execution-environment/requirements.yml
+/usr/local/bin/ansible-galaxy  install -r execution-environment/requirements.yml
 #sed -i '16d' provisioner/workshop_vars/rhde_aw_120.yml
 #cat provisioner/workshop_vars/rhde_aw_120.yml | grep groups
-ansible-playbook  provisioner/provision_lab.yml -e @extra_vars.yml  -e ansible_python_interpreter=/usr/bin/python3  -i local-inventory.yml
+/usr/local/bin/ansible-playbook  provisioner/provision_lab.yml -e @extra_vars.yml  -e ansible_python_interpreter=/usr/bin/python3  -i local-inventory.yml
 
 
 
