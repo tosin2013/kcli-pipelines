@@ -1,7 +1,7 @@
 #!/bin/bash 
 #set -e 
-export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-set -x
+#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+#set -x
 export ANSIBLE_HOST_KEY_CHECKING=False
 if [ -z "$VM_NAME" ]; then
     echo "Error: Please provide the name of the VM to deploy by setting the VM_NAME environment variable."
@@ -128,7 +128,7 @@ then
     if [[ $VM_NAME == "freeipa-server-container" ]];
     then
         if vm_exists "$VM_NAME"; then
-          sudo kcli create vm -p $VM_PROFILE $VM_NAME --wait
+          sudo kcli create vm -p $VM_PROFILE $VM_NAME --wait || exit $?
           IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
           DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
           configure_idm_container "freeipa-server-container" $DNS_FORWARDER
