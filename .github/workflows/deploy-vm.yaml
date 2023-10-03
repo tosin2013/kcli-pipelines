@@ -13,7 +13,11 @@ on:
       action:
         description: 'action'
         required: true
-        default: action
+        default: create
+        type: choice
+        options:
+          - create
+          - delete
       vm_name:
         description: 'VM Deployment'
         required: true
