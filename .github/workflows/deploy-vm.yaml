@@ -37,11 +37,11 @@ env:
     ACTION: ${{ inputs.action }}
    
 jobs:
-  configure-kcli-profiles:
+  deploy-vm:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-    - name: configure ansible navigator on bastion
+    - name: Deploying  ${{ inputs.vm_name }} on KVM
       uses: appleboy/ssh-action@v0.1.10
       with:
         host: ${{ inputs.hostname }}
