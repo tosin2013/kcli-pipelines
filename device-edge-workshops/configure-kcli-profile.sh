@@ -100,7 +100,7 @@ EOF
     sudo cp  $(pwd)/device-edge-workshops/extra_vars.yml.bak $(pwd)/device-edge-workshops/extra_vars.yml
     #echo "Creating VM ${VM_NAME}"
     #sudo kcli create vm -p device-edge-workshops ${VM_NAME} --wait
-    cat  kcli-profiles.yml
+    #cat  kcli-profiles.yml
     sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
     sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
     /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1

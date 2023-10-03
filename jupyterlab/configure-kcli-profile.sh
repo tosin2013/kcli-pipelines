@@ -53,7 +53,7 @@ domain: ${DOMAIN}
 EOF
 
 sudo python3 profile_generator/profile_generator.py update-yaml jupyterlab jupyterlab/template.yaml  --vars-file /tmp/vm_vars.yaml
-cat  kcli-profiles.yml
+#cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml

@@ -58,7 +58,7 @@ EOF
 sudo python3 profile_generator/profile_generator.py update-yaml microshift-demos microshift-demos/template.yaml  --vars-file /tmp/vm_vars.yaml
 sudo echo ${PULL_SECRET} | sudo tee pull-secret.json
 #cat pull-secret.json
-#cat  kcli-profiles.yml
+##cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
@@ -67,7 +67,7 @@ sudo cp pull-secret.json /root/.generated/vmfiles
 sudo rm pull-secret.json
 sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /home/${KCLI_USER}/.generated/vmfiles
 sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /root/.generated/vmfiles
-cat  kcli-profiles.yml
+#cat  kcli-profiles.yml
 sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 #echo "Creating VM ${VM_NAME}"

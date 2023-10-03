@@ -52,14 +52,14 @@ fi
 
 cp /opt/kcli-pipelines/kcli-profiles.yml /home/$KCLI_USER/.kcli/profiles.yml
 cp /opt/kcli-pipelines/kcli-profiles.yml /root/.kcli/profiles.yml
-echo "*********************************************"
-cat ~/.kcli/profiles.yml
-echo "*********************************************"
-read -n 1 -s -r -p "Press any key to continue"
+#echo "*********************************************"
+#cat ~/.kcli/profiles.yml
+#echo "*********************************************"
+#read -n 1 -s -r -p "Press any key to continue"
 
 sudo -E ./freeipa-server-container/configure-kcli-profile.sh
 #echo "*********************************************"
-#cat ~/.kcli/profiles.yml
+#cat ~/.kcli/profiles.yml | tee /tmp/kcli-profiles.yml > /dev/null
 #echo "*********************************************"
 #read -n 1 -s -r -p "Press any key to continue"
 sudo -E ./openshift-jumpbox/configure-kcli-profile.sh
@@ -70,10 +70,10 @@ sudo -E ./mirror-registry/configure-kcli-profile.sh
 sudo -E ./jupyterlab/configure-kcli-profile.sh
 sudo -E ./ubuntu/configure-kcli-profile.sh
 echo "*********************************************"
-cat ~/.kcli/profiles.yml
+cat ~/.kcli/profiles.yml | tee /tmp/kcli-profiles.yml > /dev/null
 echo "*********************************************"
 #read -n 1 -s -r -p "Press any key to continue"
-sleep 15s
+#sleep 15s
 if [ $KCLI_USER != "root" ];
 then 
     sudo cp kcli-profiles.yml /home/$KCLI_USER/.kcli/profiles.yml
