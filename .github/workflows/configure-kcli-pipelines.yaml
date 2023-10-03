@@ -36,4 +36,4 @@ jobs:
             cd /opt/
             git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
-          ./opt/kcli-pipelines/configure-kcli-profiles.sh
+          /opt/kcli-pipelines/configure-kcli-profiles.sh
