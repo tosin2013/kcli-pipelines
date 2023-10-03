@@ -75,18 +75,18 @@ cp /opt/kcli-pipelines/kcli-profiles.yml /root/.kcli/profiles.yml
 #echo "*********************************************"
 #read -n 1 -s -r -p "Press any key to continue"
 
-sudo -E ./freeipa-server-container/configure-kcli-profile.sh
+sudo -E ./freeipa-server-container/configure-kcli-profile.sh || exit $?
 #echo "*********************************************"
 #cat ~/.kcli/profiles.yml | tee /tmp/kcli-profiles.yml > /dev/null
 #echo "*********************************************"
 #read -n 1 -s -r -p "Press any key to continue"
-sudo -E ./openshift-jumpbox/configure-kcli-profile.sh
-sudo -E ./ansible-aap/configure-kcli-profile.sh
-sudo -E ./device-edge-workshops/configure-kcli-profile.sh
-sudo -E ./microshift-demos/configure-kcli-profile.sh
-sudo -E ./mirror-registry/configure-kcli-profile.sh
-sudo -E ./jupyterlab/configure-kcli-profile.sh
-sudo -E ./ubuntu/configure-kcli-profile.sh
+sudo -E ./openshift-jumpbox/configure-kcli-profile.sh || exit $?
+sudo -E ./ansible-aap/configure-kcli-profile.sh || exit $?
+sudo -E ./device-edge-workshops/configure-kcli-profile.sh || exit $?
+sudo -E ./microshift-demos/configure-kcli-profile.sh  || exit $?
+sudo -E ./mirror-registry/configure-kcli-profile.sh || exit $?
+sudo -E ./jupyterlab/configure-kcli-profile.sh || exit $?
+sudo -E ./ubuntu/configure-kcli-profile.sh || exit $?
 echo "*********************************************"
 cat ~/.kcli/profiles.yml | tee /tmp/kcli-profiles.yml > /dev/null
 echo "*********************************************"
