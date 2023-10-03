@@ -25,7 +25,7 @@ then
     fi 
     ANSIBLE_PLAYBOOK="sudo -E /home/lab-user/.local/bin/ansible-playbook"
 else 
-  ANSIBLE_PLAYBOOK="sudo -E ansible-playbook"
+  ANSIBLE_PLAYBOOK="sudo -E /usr/local/bin/ansible-playbook"
 fi 
 # Define the check_idm function
 function check_idm {
