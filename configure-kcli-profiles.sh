@@ -41,7 +41,7 @@ fi
 if [ ! -d /root/.kcli ];
 then
     echo "/root/.kcli directory does not exist"
-    mkdir -p /root/.kcli
+    sudo mkdir -p /root/.kcli
 fi
 
 if [ ! -f /opt/kcli-pipelines/kcli-profiles.yml ];
