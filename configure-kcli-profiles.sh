@@ -22,6 +22,24 @@ then
     sudo sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' /opt/kcli-pipelines/helper_scripts/default.env
 fi
 
+if [ ! -f  ~/.ssh/id_rsa ];
+then
+    echo "SSH key does not exist"
+    exit 1
+else
+    eval $(ssh-agent)
+    ssh-add ~/.ssh/id_rsa
+fi
+
+
+if [ ! -f /opt/kcli-pipelines/ansible.cfg ];
+then
+   cat >/opt/kcli-pipelines/ansible.cfg<<EOF
+[defaults]
+remote_tmp = /tmp/ansible-$USER
+EOF
+fi
+
 cd /opt/kcli-pipelines
 sudo sed -i 's|export INVENTORY=localhost|export INVENTORY="'${TARGET_SERVER}'"|g' helper_scripts/default.env
 source helper_scripts/default.env 
