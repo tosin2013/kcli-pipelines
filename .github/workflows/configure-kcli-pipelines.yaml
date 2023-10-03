@@ -33,7 +33,7 @@ jobs:
             git config pull.rebase false
             git pull
           else
+            cd /opt/
             git clone https://github.com/tosin2013/kcli-pipelines.git
-            cd /opt/kcli-pipelines
           fi
           ./opt/kcli-pipelines/configure-kcli-profiles.sh
