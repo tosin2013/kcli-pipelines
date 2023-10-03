@@ -1,0 +1,39 @@
+name: Configure KCLI Profiles
+on:
+  workflow_dispatch:
+    inputs:
+      hostname:
+        description: 'hostname'
+        required: true
+        default: hostname
+      target_server:
+        description: 'target_server'
+        required: true
+        default: target_server
+env:
+    TARGET_SERVER: ${{ inputs.target_server }}
+   
+jobs:
+  configure-kcli-profiles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+    - name: configure ansible navigator on bastion
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ inputs.hostname }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        command_timeout: 30m
+        script: | 
+          sudo yum install -y git
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
+            git config pull.rebase false
+            git pull
+          else
+            git clone https://github.com/tosin2013/kcli-pipelines.git
+            cd /opt/kcli-pipelines
+          fi
+          ./opt/kcli-pipelines/configure-kcli-profiles.sh
