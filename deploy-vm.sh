@@ -1,7 +1,7 @@
 #!/bin/bash 
 #set -e 
-#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-#set -x
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -x
 export ANSIBLE_HOST_KEY_CHECKING=False
 if [ -z "$VM_NAME" ]; then
     echo "Error: Please provide the name of the VM to deploy by setting the VM_NAME environment variable."
@@ -25,7 +25,7 @@ then
     fi 
     ANSIBLE_PLAYBOOK="sudo -E /home/lab-user/.local/bin/ansible-playbook"
 else 
-  ANSIBLE_PLAYBOOK="sudo -E ansible-playbook"
+  ANSIBLE_PLAYBOOK="sudo -E /usr/local/bin/ansible-playbook"
 fi 
 # Define the check_idm function
 function check_idm {
