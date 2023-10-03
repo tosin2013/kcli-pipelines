@@ -142,7 +142,7 @@ then
         DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
         echo "Using DNS server $DNS_ADDRESS"
         if vm_exists "$VM_NAME"; then
-          sudo kcli create vm -p $VM_PROFILE $VM_NAME -P dns=${DNS_ADDRESS} --wait
+          sudo kcli create vm -p $VM_PROFILE $VM_NAME -P dns=${DNS_ADDRESS} --wait || exit $?
         else
           echo "VM $VM_NAME already exists."
         fi
