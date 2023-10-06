@@ -84,7 +84,7 @@ function configure_idm_container {
   local dns_forwarder="$2"
   local domain_name=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 
-  if [ "$vm_name" == "freeipa-server-container" ]; then
+  if [ "$vm_name" == "freeipa" ]; then
     # Get the IP address of the VM
     local ip_address=$(sudo kcli info vm "$vm_name" "$vm_name" | grep ip: | awk '{print $2}' | head -1)
 
@@ -128,20 +128,20 @@ if [ $ACTION == "create" ];
 then 
     echo "Creating VM $VM_NAME"
 
-    if [[ $VM_NAME == "freeipa-server-container" ]];
+    if [[ $VM_NAME == "freeipa" ]];
     then
         if vm_exists "$VM_NAME"; then
           sudo kcli create vm -p $VM_PROFILE $VM_NAME --wait || exit $?
           IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
           DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
-          configure_idm_container "freeipa-server-container" $DNS_FORWARDER
+          configure_idm_container "freeipa" $DNS_FORWARDER
         else
           echo "VM $VM_NAME already exists."
           exit 0
         fi
     else
-        check_idm ipa.$DOMAIN_NAME || exit $?
-        DNS_ADDRESS=$(sudo kcli info vm freeipa-server-container freeipa-server-container | grep ip: | awk '{print $2}' | head -1)
+        check_idm idm.$DOMAIN_NAME || exit $?
+        DNS_ADDRESS=$(sudo kcli info vm freeipa freeipa | grep ip: | awk '{print $2}' | head -1)
         DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
         echo "Using DNS server $DNS_ADDRESS"
         if vm_exists "$VM_NAME"; then
