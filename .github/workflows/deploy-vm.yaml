@@ -30,6 +30,7 @@ on:
           - openshift-jumpbox
           - device-edge-workshops
           - ansible-aap
+          - rhel8
           - rhel9
 env:
     TARGET_SERVER: ${{ inputs.target_server }}
