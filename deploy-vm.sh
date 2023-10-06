@@ -62,6 +62,9 @@ function return_cloud_user() {
         rhel9)
             echo "cloud-user"
             ;;
+        rhel8)
+            echo "cloud-user"
+            ;;
         *)
             echo "Unknown VM name"
             ;;

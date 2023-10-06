@@ -95,7 +95,7 @@ EOF
     sudo sed -i "s/DOMAIN=testingdomain.io/DOMAIN=${DOMAIN_NAME}/g" $(pwd)/device-edge-workshops/setup-demo-infra.sh
     sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh  /home/${KCLI_USER}/.generated/vmfiles
     sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /root/.generated/vmfiles
-    cat  $(pwd)/device-edge-workshops/extra_vars.yml 
+    #cat  $(pwd)/device-edge-workshops/extra_vars.yml 
     sudo cp  $(pwd)/device-edge-workshops/extra_vars.yml.bak $(pwd)/device-edge-workshops/extra_vars.yml
     #echo "Creating VM ${VM_NAME}"
     #sudo kcli create vm -p device-edge-workshops ${VM_NAME} --wait
