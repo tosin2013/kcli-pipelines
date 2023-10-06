@@ -132,7 +132,7 @@ then
     then
         if vm_exists "$VM_NAME"; then
           #sudo kcli create vm -p $VM_PROFILE $VM_NAME --wait || exit $?
-          /opt/freeipa-workshop-deployer/deploy-freeipa.sh create
+          /opt/kcli-pipelines/freeipa/deploy-freeipa.sh create
         else
           echo "VM $VM_NAME already exists."
           exit 0
