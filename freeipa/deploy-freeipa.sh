@@ -25,8 +25,9 @@ cd $KCLI_SAMPLES_DIR
 
 if [ ! -d /opt/freeipa-workshop-deployer ];
 then 
+  cd /opt/
   git clone https://github.com/tosin2013/freeipa-workshop-deployer.git
-  cd /opt/freeipa-workshop-deployer
+  cd freeipa-workshop-deployer
 else
   cd /opt/freeipa-workshop-deployer
   git config pull.rebase false
