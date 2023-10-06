@@ -22,9 +22,10 @@ on:
       vm_name:
         description: 'VM Deployment'
         required: true
-        default: 'freeipa-server-container'
+        default: 'freeipa'
         type: choice
         options:
+            - freeipa
             - freeipa-server-container
             - mirror-registry
             - microshift-demos
