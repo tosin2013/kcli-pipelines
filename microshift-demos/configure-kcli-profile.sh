@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe 
+#set -xe 
 if [ -f ../helper_scripts/default.env ];
 then 
   source ../helper_scripts/default.env
