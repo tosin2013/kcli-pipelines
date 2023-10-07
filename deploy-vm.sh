@@ -96,7 +96,7 @@ function configure_idm_container {
     else
       # Add the IP address and hostname to the hosts file
       sudo tee -a /etc/hosts << EOF
-$ip_address ipa.${domain_name}
+$ip_address idm.${domain_name}
 EOF
       echo "Added $ip_address to the hosts file."
     fi
@@ -154,7 +154,7 @@ then
             --extra-vars "@${ANSIBLE_VAULT_FILE}" \
             --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
             --extra-vars "key=${VM_NAME}" \
-            --extra-vars "freeipa_server_fqdn=ipa.${DOMAIN_NAME}" \
+            --extra-vars "freeipa_server_fqdn=idm.${DOMAIN_NAME}" \
             --extra-vars "value=${IP_ADDRESS}" \
             --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
             --extra-vars "action=present" -vvv
@@ -195,7 +195,7 @@ then
         --extra-vars "@${ANSIBLE_VAULT_FILE}" \
         --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
         --extra-vars "key=${VM_NAME}" \
-        --extra-vars "freeipa_server_fqdn=ipa.${DOMAIN_NAME}" \
+        --extra-vars "freeipa_server_fqdn=idm.${DOMAIN_NAME}" \
         --extra-vars "value=${IP_ADDRESS}" \
         --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
         --extra-vars "action=absent" -vvv
