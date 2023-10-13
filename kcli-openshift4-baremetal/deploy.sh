@@ -38,7 +38,7 @@ function destroy(){
 if [ $ACTION == "create" ];
 then 
   create
-elif [ $ACTION == "destroy" ]; 
+elif [ $ACTION == "delete" ]; 
 then 
   destroy
 else 
