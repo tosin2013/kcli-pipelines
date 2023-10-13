@@ -137,6 +137,9 @@ then
           echo "VM $VM_NAME already exists."
           exit 0
         fi
+    elif  [[ $VM_NAME == "kcli-openshift4-baremetal" ]];
+    then 
+      kcli-openshift4-baremetal/deploy.sh create
     else
         check_idm idm.$DOMAIN_NAME || exit $?
         DNS_ADDRESS=$(sudo kcli info vm freeipa freeipa | grep ip: | awk '{print $2}' | head -1)
@@ -186,20 +189,25 @@ then
     fi
 elif [[ $ACTION == "delete" ]];
 then 
-    TARGET_VM=$(sudo kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
-    IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
-    echo "Deleting VM $TARGET_VM"
-    sudo kcli delete vm $TARGET_VM -y
-    $ANSIBLE_PLAYBOOK helper_scripts/add_ipa_entry.yaml \
-        --vault-password-file "$HOME"/.vault_password \
-        --extra-vars "@${ANSIBLE_VAULT_FILE}" \
-        --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
-        --extra-vars "key=${VM_NAME}" \
-        --extra-vars "freeipa_server_fqdn=idm.${DOMAIN_NAME}" \
-        --extra-vars "value=${IP_ADDRESS}" \
-        --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
-        --extra-vars "action=absent" -vvv
-    sudo sed -i  '/\['$VM_NAME'\]/,+2d' helper_scripts/hosts
+ if [[ $VM_NAME == "kcli-openshift4-baremetal" ]];
+    then
+      kcli-openshift4-baremetal/deploy.sh delete
+    else
+      TARGET_VM=$(sudo kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
+      IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
+      echo "Deleting VM $TARGET_VM"
+      sudo kcli delete vm $TARGET_VM -y
+      $ANSIBLE_PLAYBOOK helper_scripts/add_ipa_entry.yaml \
+          --vault-password-file "$HOME"/.vault_password \
+          --extra-vars "@${ANSIBLE_VAULT_FILE}" \
+          --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
+          --extra-vars "key=${VM_NAME}" \
+          --extra-vars "freeipa_server_fqdn=idm.${DOMAIN_NAME}" \
+          --extra-vars "value=${IP_ADDRESS}" \
+          --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \
+          --extra-vars "action=absent" -vvv
+      sudo sed -i  '/\['$VM_NAME'\]/,+2d' helper_scripts/hosts
+    fi 
 elif [[ $ACTION == "deploy_app" ]];
 then 
   #sudo kcli scp /tmp/manifest_tower-dev_20230325T132029Z.zip device-edge-workshops:/tmp
