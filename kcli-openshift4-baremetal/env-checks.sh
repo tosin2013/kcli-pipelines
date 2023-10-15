@@ -5,7 +5,7 @@ then
         echo "Deploying OpenShift"
     else 
         echo "Not deploying OpenShift"
-        yq eval ".deploy_openshift = false" -i /opt/quibinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
+        yq eval ".deploy_openshift = false" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
     fi
 fi
 
@@ -16,7 +16,8 @@ then
         echo "Auto depolying Launch Steps"
     else 
         echo "Skipping Launch Steps"
-        yq eval ".launch_steps = false" -i /opt/quibinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
+        yq eval ".launch_steps = false" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
+        yq eval ".installer_wait = true" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
     fi
 fi 
 
@@ -27,7 +28,7 @@ then
         echo "DEPLOYING 4.13"
     else 
         echo "Skipping Launch Steps"
-        yq eval ".tag = ${TAG}" -i /opt/quibinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
+        yq eval ".tag = ${TAG}" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
     fi
 fi 
 
@@ -37,7 +38,7 @@ then
     if [ $DISCONNECTED_INSTALL == "true" ];
     then 
         echo "RUNNING DISCONNECTED"
-        yq eval ".disconnected = false" -i /opt/quibinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
+        yq eval ".disconnected = false" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
     else 
         echo "Skipping Disconnected setting"
        
