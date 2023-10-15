@@ -1,0 +1,88 @@
+name: Deploy kcli-openshift4-baremetal instances on KVM
+on:
+  workflow_dispatch:
+    inputs:
+      hostname:
+        description: 'hostname'
+        required: true
+        default: hostname
+      target_server:
+        description: 'target_server'
+        required: true
+        default: rhel8-equinix
+      vm_name:
+        description:  'VM Deployment'
+        required: true
+        default: rhel8-equinix
+      action:
+        description: 'action'
+        required: true
+        default: create
+        type: choice
+        options:
+          - create
+          - delete
+      deploy_openshift:
+        description: 'Deploy The OpenShit Cluster on Launch'
+        required: true
+        default: true
+        type: choice
+        options:
+          - true
+          - false
+      auto_launch_steps:
+        description: 'Auto deploy Steps'
+        required: true
+        default: true
+        type: choice
+        options:
+          - true
+          - false
+      deployment_tag:
+        description: 'OpenShift Version'
+        required: true
+        default: '4.13'
+        type: choice
+        options:
+          - '4.12'
+          - '4.13'
+          - '4.14'
+env:
+    TARGET_SERVER: ${{ inputs.target_server }}
+    VM_NAME: ${{ inputs.vm_name }}
+    ACTION: ${{ inputs.action }}
+    DEPLOY_OPENSHIFT: ${{ inputs.deploy_openshift }}
+    LAUNCH_STEPS: ${{ inputs.auto_launch_steps }}
+    TAG: ${{ inputs.deployment_tag }}
+
+jobs:
+  kcli-openshift4-baremetal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+    - name: Deploying  ${{ inputs.vm_name }} on KVM
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ inputs.hostname }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        command_timeout: 30m
+        script: | 
+          sudo yum install -y git
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
+            git config pull.rebase false
+            git pull
+          else
+            cd /opt/
+            git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_NAME=${{ env.VM_NAME }}
+          export VM_PROFILE=${{ env.VM_NAME }}
+          export ACTION=${{ env.ACTION }}
+          export DEPLOY_OPENSHIFT=${{ env.DEPLOY_OPENSHIFT }}
+          export LAUNCH_STEPS=${{ env.LAUNCH_STEPS }}
+          export TAG=${{ env.TAG }}
+          /opt/kcli-pipelines/deploy-vm.sh
