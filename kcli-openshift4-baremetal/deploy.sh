@@ -17,9 +17,10 @@ then
     git clone https://github.com/karmab/kcli-openshift4-baremetal
     cd kcli-openshift4-baremetal
 else
-  cd /opt/kcli-openshift4-baremetal
-  git config pull.rebase false
-  git pull
+    cd /opt/kcli-openshift4-baremetal
+    git config pull.rebase false
+    git config --global --add safe.directory /opt/kcli-openshift4-baremetal
+    git pull
 fi 
 
 
