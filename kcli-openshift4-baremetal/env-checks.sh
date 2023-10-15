@@ -30,3 +30,16 @@ then
         yq eval ".tag = ${TAG}" -i /opt/quibinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
     fi
 fi 
+
+
+if [ ! -z ${DISCONNECTED_INSTALL} ];
+then
+    if [ $DISCONNECTED_INSTALL == "true" ];
+    then 
+        echo "RUNNING DISCONNECTED"
+        yq eval ".disconnected = false" -i /opt/quibinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
+    else 
+        echo "Skipping Disconnected setting"
+       
+    fi
+fi 
