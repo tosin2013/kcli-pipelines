@@ -13,7 +13,7 @@ on:
       vm_name:
         description:  'VM Deployment'
         required: true
-        default: rhel8-equinix
+        default: kcli-openshift4-baremetal
       action:
         description: 'action'
         required: true
