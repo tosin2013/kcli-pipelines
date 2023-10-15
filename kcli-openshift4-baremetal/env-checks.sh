@@ -14,10 +14,12 @@ then
     if [ $LAUNCH_STEPS == "true" ];
     then 
         echo "Auto depolying Launch Steps"
+        yq eval ".launch_steps = true" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
+        yq eval ".installer_wait = true" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
     else 
         echo "Skipping Launch Steps"
         yq eval ".launch_steps = false" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
-        yq eval ".installer_wait = true" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
+        yq eval ".installer_wait = false" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
     fi
 fi 
 
