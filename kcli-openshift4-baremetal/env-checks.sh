@@ -1,8 +1,9 @@
 if [ ! -z $DEPLOY_OPENSHIFT ];
 then 
-    if [ $DEPLOY_OPENSHIFT == "true" ];
+    if [ $DEPLOY_OPENSHIFT == true ];
     then 
         echo "Deploying OpenShift"
+        sudo yq eval ".deploy_openshift = true" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
     else 
         echo "Not deploying OpenShift"
         yq eval ".deploy_openshift = false" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
@@ -11,7 +12,7 @@ fi
 
 if [ ! -z ${LAUNCH_STEPS} ];
 then
-    if [ $LAUNCH_STEPS == "true" ];
+    if [ $LAUNCH_STEPS == true ];
     then 
         echo "Auto depolying Launch Steps"
         yq eval ".launch_steps = true" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
@@ -37,7 +38,7 @@ fi
 
 if [ ! -z ${DISCONNECTED_INSTALL} ];
 then
-    if [ $DISCONNECTED_INSTALL == "true" ];
+    if [ $DISCONNECTED_INSTALL == true ];
     then 
         echo "RUNNING DISCONNECTED"
         yq eval ".disconnected = false" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?

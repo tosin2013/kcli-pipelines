@@ -20,11 +20,20 @@ else
     git pull
 fi 
 
+if [ "$EUID" -ne 0 ]
+then 
+  export USE_SUDO="sudo"
+fi
+
+if [ ! -z "$CICD_PIPELINE" ]; then
+  export USE_SUDO="sudo"
+fi
+
 
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 
 function create(){
-    /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
+    sudo /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
     #yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}" > openshift_pull.json
     yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}" | sudo tee openshift_pull.json >/dev/null
 
@@ -34,11 +43,27 @@ function create(){
     /opt/kcli-pipelines/kcli-openshift4-baremetal/env-checks.sh  || exit $?
     cat lab.yml
     sudo kcli create plan --paramfile  lab.yml lab
+    ##if [ $LAUNCH_STEPS == true ];
+    ##then 
+    ##    sudo kcli ssh lab-installer "sudo /root/scripts/launch_steps.sh"
+    ##fi
+    ##if [ $DISCONNECTED_INSTALL == true ];
+    ##then 
+    ##    sudo kcli ssh lab-installer "sudo /root/scripts/04_disconnected_quay.sh"
+    ##   sudo kcli ssh lab-installer "sudo /root/scripts/04_disconnected_mirror.sh"
+    ##    sudo kcli ssh lab-installer "sudo /root/scripts/04_disconnected_quay.sh"
+    ##    sudo kcli ssh lab-installer "sudo /root/scripts/04_disconnected_olm.sh"
+    ##fi
+    ##if [ $DEPLOY_OPENSHIFT == true ];
+    ##then 
+    ##    sudo kcli ssh lab-installer "sudo /root/scripts/07_deploy_openshift.sh"
+    ##fi
 }
 
 
 function destroy(){
     sudo kcli delete plan lab -y
+    rm -rf lab.yml
 }
 
 if [ $ACTION == "create" ];
