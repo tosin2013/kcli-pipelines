@@ -33,16 +33,16 @@ fi
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 
 function create(){
-    sudo /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
+    ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
     #yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}" > openshift_pull.json
-    yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}" | sudo tee openshift_pull.json >/dev/null
+    ${USE_SUDO} yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}" | sudo tee openshift_pull.json >/dev/null
 
     #cat openshift_pull.json
-    ln -s /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml  lab.yml
-    yq eval ".domain = \"$DOMAIN\"" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
-    /opt/kcli-pipelines/kcli-openshift4-baremetal/env-checks.sh  || exit $?
+    ${USE_SUDO} ln -s /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml  lab.yml
+    ${USE_SUDO} yq eval ".domain = \"$DOMAIN\"" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?
+    ${USE_SUDO} /opt/kcli-pipelines/kcli-openshift4-baremetal/env-checks.sh  || exit $?
     cat lab.yml
-    sudo kcli create plan --paramfile  lab.yml lab
+    ${USE_SUDO} kcli create plan --paramfile  lab.yml lab
     ##if [ $LAUNCH_STEPS == true ];
     ##then 
     ##    sudo kcli ssh lab-installer "sudo /root/scripts/launch_steps.sh"
@@ -62,8 +62,8 @@ function create(){
 
 
 function destroy(){
-    sudo kcli delete plan lab -y
-    rm -rf lab.yml
+    ${USE_SUDO} kcli delete plan lab --y
+    ${USE_SUDO} rm -rf lab.yml
 }
 
 if [ $ACTION == "create" ];
