@@ -36,4 +36,6 @@ export VM_NAME="harbor"
 export  ACTION="create" # create, delete
 
 /opt/kcli-pipelines/deploy-vm.sh
+IP_ADDRESS=$(${USE_SUDO} /usr/bin/kcli info vm ${VM_NAME} | grep ip: | awk '{print $2}')
 
+${USE_SUDO} sshpass -p "$SSH_PASSWORD" ${USE_SUDO} ssh-copy-id -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu${IP_ADDRESS} || exit $?
