@@ -31,8 +31,8 @@ fi
 
 
 #DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}"
-export VM_PROFILE=mirror-registry
-export VM_NAME="mirror-registry"
+export VM_PROFILE=harbor
+export VM_NAME="harbor"
 export  ACTION="create" # create, delete
 
 /opt/kcli-pipelines/deploy-vm.sh
