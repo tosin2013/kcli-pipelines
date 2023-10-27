@@ -69,4 +69,3 @@ EOF
 }
 
 deploy_harbor
-cd /opt/ocp4-disconnected-helper

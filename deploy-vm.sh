@@ -140,6 +140,12 @@ then
     elif  [[ $VM_NAME == "kcli-openshift4-baremetal" ]];
     then 
       kcli-openshift4-baremetal/deploy.sh create
+    elif  [[ $VM_NAME == "ocp4-disconnected-helper" ]];
+    then 
+      ocp4-disconnected-helper/deploy.sh create
+    elif  [[ $VM_NAME == "ceph-cluster" ]];
+    then 
+      ceph-cluster/deploy.sh create
     else
         check_idm idm.$DOMAIN_NAME || exit $?
         DNS_ADDRESS=$(sudo kcli info vm freeipa freeipa | grep ip: | awk '{print $2}' | head -1)
