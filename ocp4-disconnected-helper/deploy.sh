@@ -30,12 +30,25 @@ if [ ! -z "$CICD_PIPELINE" ]; then
 fi
 
 
-#DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}"
+DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 export VM_PROFILE=harbor
 export VM_NAME="harbor"
 export  ACTION="create" # create, delete
 
-/opt/kcli-pipelines/deploy-vm.sh
-IP_ADDRESS=$(${USE_SUDO} /usr/bin/kcli info vm ${VM_NAME} | grep ip: | awk '{print $2}')
+#/opt/kcli-pipelines/deploy-vm.sh
+IP_ADDRESS=$(${USE_SUDO} /usr/bin/kcli info vm harbor | grep ip: | awk '{print $2}')
 
-${USE_SUDO} sshpass -p "$SSH_PASSWORD" ${USE_SUDO} ssh-copy-id -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu${IP_ADDRESS} || exit $?
+#${USE_SUDO} sshpass -p "$SSH_PASSWORD" ${USE_SUDO} ssh-copy-id -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@${IP_ADDRESS} || exit $?
+
+cd  /opt/ocp4-disconnected-helper
+if [[ -f /opt/ocp4-disconnected-helper/playbooks/inventory.org ]];
+then 
+    ${USE_SUDO} cp /opt/ocp4-disconnected-helper/playbooks/inventory.org /opt/ocp4-disconnected-helper/playbooks/inventory
+else 
+    ${USE_SUDO} cp /opt/ocp4-disconnected-helper/playbooks/inventory.org /opt/ocp4-disconnected-helper/playbooks/inventory
+fi
+${USE_SUDO} sed 's/disconn-harbor.d70.kemo.labs/'${VM_NAME}.${DOMAIN}'/g' /opt/ocp4-disconnected-helper/playbooks/inventory
+${USE_SUDO} sed 's/192.168.71.240/'${IP_ADDRESS}'/g'/opt/ocp4-disconnected-helper/playbooks/inventory
+${USE_SUDO} sed 's/notken/ubuntu/g' playbooks/inventory
+
+/usr/local/bin/ansible-playbook -i /opt/ocp4-disconnected-helper/playbooks/inventory /opt/ocp4-disconnected-helper/playbooks/setup-harbor-registry.yml -vvv
