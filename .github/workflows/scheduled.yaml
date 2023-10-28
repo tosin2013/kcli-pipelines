@@ -66,12 +66,12 @@ jobs:
             export TARGET_SERVER=${{ env.TARGET_SERVER }}
             /opt/kcli-pipelines/configure-kcli-profiles.sh
 
-  delete-vm:
-    needs: testing-vm
+  delete-once-vm:
+    needs: configure-kcli-profiles
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Deploying  ${{ inputs.vm_name }} on KVM
+      - name: Deleting  ${{ inputs.vm_name }} on KVM
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.TESTINGHOST }}
@@ -95,7 +95,7 @@ jobs:
             export ACTION=delete
             /opt/kcli-pipelines/deploy-vm.sh
   deploy-vm:
-    needs: configure-kcli-profiles
+    needs: delete-once-vm
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
