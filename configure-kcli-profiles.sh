@@ -88,6 +88,7 @@ sudo -E ./microshift-demos/configure-kcli-profile.sh  || exit $?
 sudo -E ./mirror-registry/configure-kcli-profile.sh || exit $?
 sudo -E ./jupyterlab/configure-kcli-profile.sh || exit $?
 sudo -E ./harbor/configure-kcli-profile.sh || exit $?
+sudo -E ./ceph-cluster/configure-kcli-profile.sh || exit $?
 sudo -E ./ubuntu/configure-kcli-profile.sh || exit $?
 echo "*********************************************"
 cat ~/.kcli/profiles.yml | tee /tmp/kcli-profiles.yml > /dev/null
