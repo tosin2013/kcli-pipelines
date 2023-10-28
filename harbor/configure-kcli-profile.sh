@@ -20,6 +20,7 @@ PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
 RHSM_ORG=$(yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
 RHSM_ACTIVATION_KEY=$(yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
 PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
+sudo echo ${PULL_SECRET} | sudo tee pull-secret.json  > /dev/null
 VM_NAME=harbor-$(echo $RANDOM | md5sum | head -c 5; echo;)
 IMAGE_NAME=rhel9
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
