@@ -1,9 +1,10 @@
 name: Scheduled KCLI Profile Configuration and VM Deployment
 
-schedule:
-  - cron: '0 8 * * *'
-
 on:
+
+  schedule:
+    - cron: '0 8 * * *'
+    
   workflow_dispatch:
     inputs:
       target_server:
