@@ -45,4 +45,6 @@ sed -i "s/CHANGEUSER/${KCLI_USER}/g" ceph-cluster/ceph-cluster.yml
 sed -i "s/CHANGEPASSWORD/${PASSWORD}/g" ceph-cluster/ceph-cluster.yml
 sed -i "s/RHELORG/${RHSM_ORG}/g" ceph-cluster/ceph-cluster.yml
 sed -i "s/ACTIVATIONKEY/${RHSM_ACTIVATION_KEY}/g" ceph-cluster/ceph-cluster.yml
+sed -i "s/qubinet/${NET_NAME}/g" ceph-cluster/ceph-cluster.yml
+
 cat ceph-cluster/ceph-cluster.yml

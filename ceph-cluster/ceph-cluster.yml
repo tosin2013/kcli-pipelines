@@ -10,7 +10,7 @@ ceph-mon01:
   nets:
     - name: qubinet
   pool: default
-  image: rhel-8.7-x86_64-kvm.qcow2
+  image: rhel9
   cmds:
   - echo CHANGEPASSWORD | passwd --stdin root
   - useradd CHANGEUSER
@@ -32,7 +32,7 @@ ceph-mon02:
   nets:
     - name: qubinet
   pool: default
-  image: rhel-8.7-x86_64-kvm.qcow2
+  image: rhel9
   cmds:
   - echo CHANGEPASSWORD | passwd --stdin root
   - useradd CHANGEUSER
@@ -54,7 +54,7 @@ ceph-mon03:
   nets:
     - name: qubinet
   pool: default
-  image: rhel-8.7-x86_64-kvm.qcow2
+  image: rhel9
   cmds:
   - echo CHANGEPASSWORD | passwd --stdin root
   - useradd CHANGEUSER
@@ -77,7 +77,7 @@ ceph-osd01:
   nets:
     - name: qubinet
   pool: default
-  image: rhel-8.7-x86_64-kvm.qcow2
+  image: rhel9
   cmds:
   - echo CHANGEPASSWORD | passwd --stdin root
   - useradd CHANGEUSER
@@ -100,7 +100,7 @@ ceph-osd02:
   nets:
     - name: qubinet
   pool: default
-  image: rhel-8.7-x86_64-kvm.qcow2
+  image: rhel9
   cmds:
   - echo CHANGEPASSWORD | passwd --stdin root
   - useradd CHANGEUSER
@@ -123,7 +123,7 @@ ceph-osd03:
   nets:
     - name: qubinet
   pool: default
-  image: rhel-8.7-x86_64-kvm.qcow2
+  image: rhel9
   cmds:
   - echo CHANGEPASSWORD | passwd --stdin root
   - useradd CHANGEUSER
