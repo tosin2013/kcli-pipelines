@@ -13,6 +13,7 @@ fi
 
 ANSIBLE_PLAYBOOK="sudo -E /usr/local/bin/ansible-playbook"
 export ANSIBLE_HOST_KEY_CHECKING=False
+DOMAIN_NAME=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 
 echo "TEST 1:"
 export VM_NAME_ONE="rhel9-$(echo $RANDOM | md5sum | head -c 5; echo;)"
