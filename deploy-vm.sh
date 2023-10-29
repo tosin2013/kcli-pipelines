@@ -195,9 +195,11 @@ then
     fi
 elif [[ $ACTION == "delete" ]];
 then 
- if [[ $VM_NAME == "kcli-openshift4-baremetal" ]];
+    if [[ $VM_NAME == "kcli-openshift4-baremetal" ]];
     then
       kcli-openshift4-baremetal/deploy.sh delete
+    elif [[ $VM_NAME == "freeipa" ]];
+      /opt/kcli-pipelines/freeipa/deploy-freeipa.sh destroy
     else
       TARGET_VM=$(sudo kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
       IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
