@@ -107,6 +107,7 @@ EOF
     else
       # Add the DNS server to the resolv.conf file
           # Add the IP address and hostname to the hosts file
+     local ip_address=$(sudo kcli info vm "$vm_name" "$vm_name" | grep ip: | awk '{print $2}' | head -1)
     sudo tee /etc/resolv.conf << EOF
 search ${domain_name}
 domain ${domain_name}
@@ -199,6 +200,7 @@ then
     then
       kcli-openshift4-baremetal/deploy.sh delete
     elif [[ $VM_NAME == "freeipa" ]];
+    then
       /opt/kcli-pipelines/freeipa/deploy-freeipa.sh destroy
     else
       TARGET_VM=$(sudo kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
