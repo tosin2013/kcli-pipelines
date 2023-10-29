@@ -50,5 +50,6 @@ fi
 ${USE_SUDO} sed 's/disconn-harbor.d70.kemo.labs/'${VM_NAME}.${DOMAIN}'/g' /opt/ocp4-disconnected-helper/playbooks/inventory
 ${USE_SUDO} sed 's/192.168.71.240/'${IP_ADDRESS}'/g'/opt/ocp4-disconnected-helper/playbooks/inventory
 ${USE_SUDO} sed 's/notken/cloud-user/g' playbooks/inventory
-
+cat playbooks/inventory
+read -n 1 -r -s -p $'Press enter to continue...\n'
 /usr/local/bin/ansible-playbook -i /opt/ocp4-disconnected-helper/playbooks/inventory /opt/ocp4-disconnected-helper/playbooks/setup-harbor-registry.yml -vvv
