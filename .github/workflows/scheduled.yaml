@@ -64,7 +64,7 @@ jobs:
               cd /opt/
               git clone https://github.com/tosin2013/kcli-pipelines.git
             fi
-            export TARGET_SERVER=${{ secret.TESTINGTARGT }}
+            export TARGET_SERVER=${{ secrets.TESTINGTARGT }}
             /opt/kcli-pipelines/configure-kcli-profiles.sh
 
   delete-once-vm:
@@ -90,7 +90,7 @@ jobs:
               cd /opt/
               git clone https://github.com/tosin2013/kcli-pipelines.git
             fi
-            export TARGET_SERVER=${{ secret.TESTINGTARGT }}
+            export TARGET_SERVER=${{ secrets.TESTINGTARGT }}
             export VM_NAME=${{ env.VM_NAME }}
             export VM_PROFILE=${{ env.VM_NAME }}
             export ACTION=delete
@@ -118,7 +118,7 @@ jobs:
               cd /opt/
               git clone https://github.com/tosin2013/kcli-pipelines.git
             fi
-            export TARGET_SERVER=${{ secret.TESTINGTARGT }}
+            export TARGET_SERVER=${{ secrets.TESTINGTARGT }}
             export VM_NAME=${{ env.VM_NAME }}
             export VM_PROFILE=${{ env.VM_NAME }}
             export ACTION=${{ env.ACTION }}
@@ -147,7 +147,7 @@ jobs:
               cd /opt/
               git clone https://github.com/tosin2013/kcli-pipelines.git
             fi
-            export TARGET_SERVER=${{ secret.TESTINGTARGT }}
+            export TARGET_SERVER=${{ secrets.TESTINGTARGT }}
             export VM_NAME=${{ env.VM_NAME }}
             export VM_PROFILE=${{ env.VM_NAME }}
             export ACTION=delete
@@ -177,7 +177,7 @@ jobs:
               cd /opt/
               git clone https://github.com/tosin2013/kcli-pipelines.git
             fi
-            export TARGET_SERVER=${{ secret.TESTINGTARGT }}
+            export TARGET_SERVER=${{ secrets.TESTINGTARGT }}
             export VM_NAME=${{ env.VM_NAME }}
             export VM_PROFILE=${{ env.VM_NAME }}
             export ACTION=delete
