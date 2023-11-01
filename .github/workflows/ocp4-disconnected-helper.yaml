@@ -1,4 +1,4 @@
-name: KCLI Profile Configuration and VM Deployment
+name: OpenShift 4 Disconnected Helper Pipeline
 
 on:
   workflow_dispatch:
