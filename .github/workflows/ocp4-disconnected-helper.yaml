@@ -25,15 +25,6 @@ on:
         default: 'ocp4-disconnected-helper'
         type: choice
         options:
-            - freeipa
-            - freeipa-server-container
-            - mirror-registry
-            - microshift-demos
-            - openshift-jumpbox
-            - device-edge-workshops
-            - ansible-aap
-            - rhel9
-            - rhel8
             - ocp4-disconnected-helper
       setup_harbor_registry:
         description: 'setup harbor registry true or false'
