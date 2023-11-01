@@ -117,7 +117,7 @@ jobs:
             /opt/kcli-pipelines/deploy-vm.sh
 
   download-tar-reg:
-    if: ${{ env.ACTION != 'delete' }}
+    if: ${{ github.event.inputs.action != 'delete' }}
     needs: deploy-registry
     runs-on: ubuntu-latest
     timeout-minutes: 180
@@ -150,7 +150,7 @@ jobs:
             /opt/kcli-pipelines/deploy-vm.sh
 
   push-tar-to-reg:
-    if: ${{ env.ACTION != 'delete' }}
+    if: ${{ github.event.inputs.action != 'delete' }}
     needs: download-tar-reg
     runs-on: ubuntu-latest
     timeout-minutes: 180
