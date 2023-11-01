@@ -127,16 +127,16 @@ EOF
       -out harbor.${DOMAIN}.crt
 
   # Bundle the Server Certificate and the CA Certificate
-  ${USE_SUDO} tee harbor.${DOMAIN}.bundle.crt >/dev/null <(cat harbor.${DOMAIN}.crt ca.crt)
+  ${USE_SUDO} cat harbor.${DOMAIN}.crt ca.crt > /tmp/harbor.${DOMAIN}.bundle.crt
 
   # Convert YAML to JSON
   ${USE_SUDO} yq eval -o=json '.' extra_vars/setup-harbor-registry-vars.yml  > output.json
 
   # Load the certificate contents into a shell variable
-  certificate=$(${USE_SUDO} cat harbor.${DOMAIN}.bundle.crt)
+  certificate=$(${USE_SUDO} cat /tmp/harbor.${DOMAIN}.bundle.crt)
   certificate_key=$(${USE_SUDO} cat harbor.${DOMAIN}.key)
 
-  ${USE_SUDO} cat harbor.${DOMAIN}.bundle.crt > /dev/null 2>&1 || exit $?
+  ${USE_SUDO} cat /tmp/harbor.${DOMAIN}.bundle.crt > /dev/null 2>&1 || exit $?
   ${USE_SUDO} cat harbor.${DOMAIN}.key > /dev/null 2>&1 || exit $?
 
   # Use jq to update the ssl_certificate field with the certificate
