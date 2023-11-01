@@ -123,7 +123,7 @@ ${USE_SUDO} openssl x509 -req -sha512 -days 730 \
     -out harbor.${DOMAIN}.crt
 
 # Bundle the Server Certificate and the CA Certificate
-${USE_SUDO} cat harbor.${DOMAIN}.crt ca.crt > harbor.${DOMAIN}.bundle.crt
+${USE_SUDO} tee harbor.${DOMAIN}.bundle.crt >/dev/null <(cat harbor.${DOMAIN}.crt ca.crt)
 
 # Convert YAML to JSON
 yq eval -o=json '.' extra_vars/setup-harbor-registry-vars.yml  > output.json
