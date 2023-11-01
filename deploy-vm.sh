@@ -209,7 +209,14 @@ then
       TARGET_VM=$(sudo kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
       IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
       echo "Deleting VM $TARGET_VM"
-      sudo kcli delete vm $TARGET_VM -y
+      # if TARGET_VM value populated delete vm
+      if [ ! -z "$TARGET_VM" ];
+      then 
+        sudo kcli delete vm $TARGET_VM -y
+      else 
+        echo "VM $VM_NAME does not exist."
+      fi
+
       $ANSIBLE_PLAYBOOK helper_scripts/add_ipa_entry.yaml \
           --vault-password-file "$HOME"/.vault_password \
           --extra-vars "@${ANSIBLE_VAULT_FILE}" \
