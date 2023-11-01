@@ -30,6 +30,26 @@ if [ ! -z "$CICD_PIPELINE" ]; then
   export USE_SUDO="sudo"
 fi
 
+# SETUP_HARBER_REGISTRY does not exist exit 
+if [ -z "$SETUP_HARBER_REGISTRY" ];
+then 
+    echo "SETUP_HARBER_REGISTRY does not exist"
+    exit 1
+fi
+
+# DOWNLOAD_TO_TAR does not exist exit
+if [ -z "$DOWNLOAD_TO_TAR" ];
+then 
+    echo "DOWNLOAD_TO_TAR does not exist"
+    exit 1
+fi
+
+# PUSH_TAR_TO_REGISTRY does not exist exit
+if [ -z "$PUSH_TAR_TO_REGISTRY" ];
+then 
+    echo "PUSH_TAR_TO_REGISTRY does not exist"
+    exit 1
+fi
 
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 export VM_PROFILE=harbor

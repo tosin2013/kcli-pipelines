@@ -1,0 +1,114 @@
+name: KCLI Profile Configuration and VM Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      hostname:
+        description: 'hostname'
+        required: true
+        default: hostname
+      target_server:
+        description: 'target_server'
+        required: true
+        default: rhel8-equinix
+      action:
+        description: 'action'
+        required: true
+        default: create
+        type: choice
+        options:
+          - create
+          - delete
+      vm_name:
+        description: 'VM Deployment'
+        required: true
+        default: 'ocp4-disconnected-helper'
+        type: choice
+        options:
+            - freeipa
+            - freeipa-server-container
+            - mirror-registry
+            - microshift-demos
+            - openshift-jumpbox
+            - device-edge-workshops
+            - ansible-aap
+            - rhel9
+            - rhel8
+            - ocp4-disconnected-helper
+      setup_harbor_registry:
+        description: 'setup harbor registry true or false'
+        required: true
+        default: 'true'
+      download_to_tar:
+        description: 'Download tar to jumpbox true or false'
+        required: true
+        default: 'true'
+      push_tar_to_registry:
+        description: 'Push tar to registry  true or false'
+        required: true
+        default: 'true'
+env:
+    TARGET_SERVER: ${{ inputs.target_server }}
+    VM_NAME: ${{ inputs.vm_name }}
+    ACTION: ${{ inputs.action }}
+    SETUP_HARBER_REGISTRY: ${{ inputs.setup_harbor_registry }}
+    DOWNLOAD_TO_TAR: ${{ inputs.download_to_tar }}
+    PUSH_TAR_TO_REGISTRY: ${{ inputs.push_tar_to_registry }}
+
+jobs:
+  configure-kcli-profiles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: configuring kcli profiles
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ inputs.hostname }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          command_timeout: 30m
+          script: | 
+            sudo yum install -y git
+            if [ -d "/opt/kcli-pipelines" ]; then
+              cd /opt/kcli-pipelines
+              git config pull.rebase false
+              git pull
+            else
+              cd /opt/
+              git clone https://github.com/tosin2013/kcli-pipelines.git
+            fi
+            export TARGET_SERVER=${{ env.TARGET_SERVER }}
+            /opt/kcli-pipelines/configure-kcli-profiles.sh
+
+  deploy-vm:
+    needs: configure-kcli-profiles
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Deploying  ${{ inputs.vm_name }} on KVM
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ inputs.hostname }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          command_timeout: 150m
+          script: | 
+            sudo yum install -y git
+            if [ -d "/opt/kcli-pipelines" ]; then
+              cd /opt/kcli-pipelines
+              git config pull.rebase false
+              git pull
+            else
+              cd /opt/
+              git clone https://github.com/tosin2013/kcli-pipelines.git
+            fi
+            export TARGET_SERVER=${{ env.TARGET_SERVER }}
+            export VM_NAME=${{ env.VM_NAME }}
+            export VM_PROFILE=${{ env.VM_NAME }}
+            export ACTION=${{ env.ACTION }}
+            export SETUP_HARBER_REGISTRY=${{ env.SETUP_HARBER_REGISTRY }}
+            export DOWNLOAD_TO_TAR=${{ env.DOWNLOAD_TO_TAR }}
+            export PUSH_TAR_TO_REGISTRY=${{ env.PUSH_TAR_TO_REGISTRY }}
+            /opt/kcli-pipelines/deploy-vm.sh
