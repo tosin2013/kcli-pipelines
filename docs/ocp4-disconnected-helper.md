@@ -55,15 +55,15 @@ $ tmux attach -t deploy-vm
 ### Validate the ocp4-disconnected-helper  
 ```
 # sudo kcli list vm 
-+--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
-|           Name           | Status |        Ip       |                 Source                |  Plan |         Profile          |
-+--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
-| freeipa-server-container |   up   | 192.168.122.109 | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt | freeipa-server-container |
-|     ocp4-disconnected-helper            |   up   |  192.168.122.95 |                 rhel9                 | kvirt |     ocp4-disconnected-helper            |
-|     mirror-registry      |   up   |  192.168.122.92 | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt |     mirror-registry      |
-+--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
-# sudo kcli ssh ocp4-disconnected-helper  
-$ cat  /opt/aap_info.txt
++---------+--------+-----------------+--------+-------+---------+
+|   Name  | Status |        Ip       | Source |  Plan | Profile |
++---------+--------+-----------------+--------+-------+---------+
+| freeipa |   up   | 192.168.122.189 | rhel8  | kvirt | freeipa |
+|  harbor |   up   | 192.168.122.143 | rhel9  | kvirt |  harbor |
++---------+--------+-----------------+--------+-------+---------+
+
+# sudo kcli ssh harbor
+$ sudo docker ps 
 ```
 
 ### Delete Deployment 
