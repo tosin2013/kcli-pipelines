@@ -126,19 +126,19 @@ ${USE_SUDO} openssl x509 -req -sha512 -days 730 \
 ${USE_SUDO} tee harbor.${DOMAIN}.bundle.crt >/dev/null <(cat harbor.${DOMAIN}.crt ca.crt)
 
 # Convert YAML to JSON
-yq eval -o=json '.' extra_vars/setup-harbor-registry-vars.yml  > output.json
+${USE_SUDO} yq eval -o=json '.' extra_vars/setup-harbor-registry-vars.yml  > output.json
 
 # Load the certificate contents into a shell variable
 certificate=$(cat harbor.rtodgpoc.com.bundle.crt)
 certificate_key=$(cat harbor.rtodgpoc.com.key)
 
 # Use jq to update the ssl_certificate field with the certificate
-jq --arg cert "$certificate" '.ssl_certificate = $cert' output.json > /tmp/1.json
-jq --arg cert "$certificate_key" '.ssl_certificate_key = $cert' /tmp/1.json > test_new.json
+${USE_SUDO} jq --arg cert "$certificate" '.ssl_certificate = $cert' output.json > /tmp/1.json
+${USE_SUDO} jq --arg cert "$certificate_key" '.ssl_certificate_key = $cert' /tmp/1.json > test_new.json
 
 # Convert JSON back to YAML
-yq eval --output-format=yaml '.' test_new.json > output.yaml
-yq eval '.harbor_hostname = "harbor.'${DOMAIN}'"' -i output.yaml || exit $?
+${USE_SUDO} yq eval --output-format=yaml '.' test_new.json > output.yaml
+${USE_SUDO} yq eval '.harbor_hostname = "harbor.'${DOMAIN}'"' -i output.yaml || exit $?
 
 # if SETUP_HARBER_REGISTRY is set to true, then run the playbook
 if [ "${SETUP_HARBER_REGISTRY}" == "true" ];
