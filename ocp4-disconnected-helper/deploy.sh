@@ -146,6 +146,7 @@ EOF
 
 
     ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/setup-harbor-registry.yml  -e "@output.yaml" -vv || exit $?
+    exit 0
 fi
 
 # if DOWNLOAD_TO_TAR is set to true, then run the playbook
@@ -156,10 +157,12 @@ then
         ${USE_SUDO} rm -rf /opt/images/
     fi
     ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv || exit $?
+    exit 0
 fi
 
 #if PUSH_TAR_TO_REGISTRY is set to true, then run the playbook
 if [ "${PUSH_TAR_TO_REGISTRY}" == "true" ];
 then 
     ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv || exit $?
+    exit 0
 fi
