@@ -51,17 +51,21 @@ then
     exit 1
 fi
 
-DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
-export VM_PROFILE=harbor
-export VM_NAME="harbor"
-export  ACTION="create" # create, delete
 
-/opt/kcli-pipelines/deploy-vm.sh
-IP_ADDRESS=$(${USE_SUDO} /usr/bin/kcli info vm harbor | grep ip: | awk '{print $2}')
+# if SETUP_HARBER_REGISTRY is set to true, then run the playbook
+if [ "${SETUP_HARBER_REGISTRY}" == "true" ];
+then 
+  DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+  export VM_PROFILE=harbor
+  export VM_NAME="harbor"
+  export  ACTION="create" # create, delete
 
-${USE_SUDO} sshpass -p "$SSH_PASSWORD" ${USE_SUDO} ssh-copy-id -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no cloud-user@${IP_ADDRESS} || exit $?
+  /opt/kcli-pipelines/deploy-vm.sh
+  IP_ADDRESS=$(${USE_SUDO} /usr/bin/kcli info vm harbor | grep ip: | awk '{print $2}')
 
-cd  /opt/ocp4-disconnected-helper
+  ${USE_SUDO} sshpass -p "$SSH_PASSWORD" ${USE_SUDO} ssh-copy-id -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no cloud-user@${IP_ADDRESS} || exit $?
+
+  cd  /opt/ocp4-disconnected-helper
 ${USE_SUDO}  tee /tmp/inventory <<EOF
 ## Ansible Inventory template file used by Terraform to create an ./inventory file populated with the nodes it created
 
@@ -75,31 +79,31 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 ansible_internal_private_ip=${IP_ADDRESS}
 EOF
 
-${USE_SUDO} cat /tmp/inventory
+  ${USE_SUDO} cat /tmp/inventory
 
-# Create the CA key
-${USE_SUDO} openssl genrsa -out ca.key 4096
+  # Create the CA key
+  ${USE_SUDO} openssl genrsa -out ca.key 4096
 
-# Generate a self-signed CA certificate
-${USE_SUDO} openssl req -x509 -new -nodes -sha512 -days 3650 \
- -subj "/C=US/ST=Tennessee/L=Nashville/O=ContainersRUs/OU=InfoSec/CN=RootCA" \
- -key ca.key \
- -out ca.crt
+  # Generate a self-signed CA certificate
+  ${USE_SUDO} openssl req -x509 -new -nodes -sha512 -days 3650 \
+  -subj "/C=US/ST=Tennessee/L=Nashville/O=ContainersRUs/OU=InfoSec/CN=RootCA" \
+  -key ca.key \
+  -out ca.crt
 
-# Add the Root CA to your system trust
-${USE_SUDO} cp ca.crt /etc/pki/ca-trust/source/anchors/harbor-ca.pem
-${USE_SUDO} update-ca-trust
+  # Add the Root CA to your system trust
+  ${USE_SUDO} cp ca.crt /etc/pki/ca-trust/source/anchors/harbor-ca.pem
+  ${USE_SUDO} update-ca-trust
 
-# You'll also need to add that CA Cert to whatever system you're accessing Harbor with
+  # You'll also need to add that CA Cert to whatever system you're accessing Harbor with
 
-# Generate a Server Certificate Key
-${USE_SUDO} openssl genrsa -out harbor.${DOMAIN}.key 4096
+  # Generate a Server Certificate Key
+  ${USE_SUDO} openssl genrsa -out harbor.${DOMAIN}.key 4096
 
-# Generate a Server Certificate Signing Request
-${USE_SUDO} openssl req -sha512 -new \
-    -subj "/C=US/ST=Gerogia/L=Atlanta/O=ContainersRUs/OU=DevOps/CN=harbor.${DOMAIN}" \
-    -key harbor.${DOMAIN}.key \
-    -out harbor.${DOMAIN}.csr
+  # Generate a Server Certificate Signing Request
+  ${USE_SUDO} openssl req -sha512 -new \
+      -subj "/C=US/ST=Gerogia/L=Atlanta/O=ContainersRUs/OU=DevOps/CN=harbor.${DOMAIN}" \
+      -key harbor.${DOMAIN}.key \
+      -out harbor.${DOMAIN}.csr
 
 # Create an x509 v3 Extension file using sudo tee
 ${USE_SUDO} tee openssl-v3.ext >/dev/null <<EOF
@@ -115,40 +119,42 @@ DNS.2=harbor
 EOF
 
 
-# Sign the Server Certificate with the CA Certificate
-${USE_SUDO} openssl x509 -req -sha512 -days 730 \
-    -extfile openssl-v3.ext \
-    -CA ca.crt -CAkey ca.key -CAcreateserial \
-    -in harbor.${DOMAIN}.csr \
-    -out harbor.${DOMAIN}.crt
+  # Sign the Server Certificate with the CA Certificate
+  ${USE_SUDO} openssl x509 -req -sha512 -days 730 \
+      -extfile openssl-v3.ext \
+      -CA ca.crt -CAkey ca.key -CAcreateserial \
+      -in harbor.${DOMAIN}.csr \
+      -out harbor.${DOMAIN}.crt
 
-# Bundle the Server Certificate and the CA Certificate
-${USE_SUDO} tee harbor.${DOMAIN}.bundle.crt >/dev/null <(cat harbor.${DOMAIN}.crt ca.crt)
+  # Bundle the Server Certificate and the CA Certificate
+  ${USE_SUDO} tee harbor.${DOMAIN}.bundle.crt >/dev/null <(cat harbor.${DOMAIN}.crt ca.crt)
 
-# Convert YAML to JSON
-${USE_SUDO} yq eval -o=json '.' extra_vars/setup-harbor-registry-vars.yml  > output.json
+  # Convert YAML to JSON
+  ${USE_SUDO} yq eval -o=json '.' extra_vars/setup-harbor-registry-vars.yml  > output.json
 
-# Load the certificate contents into a shell variable
-certificate=$(cat harbor.rtodgpoc.com.bundle.crt)
-certificate_key=$(cat harbor.rtodgpoc.com.key)
+  # Load the certificate contents into a shell variable
+  certificate=$(cat harbor.rtodgpoc.com.bundle.crt)
+  certificate_key=$(cat harbor.rtodgpoc.com.key)
 
-# Use jq to update the ssl_certificate field with the certificate
-${USE_SUDO} jq --arg cert "$certificate" '.ssl_certificate = $cert' output.json > /tmp/1.json
-${USE_SUDO} jq --arg cert "$certificate_key" '.ssl_certificate_key = $cert' /tmp/1.json > test_new.json
+  # Use jq to update the ssl_certificate field with the certificate
+  ${USE_SUDO} jq --arg cert "$certificate" '.ssl_certificate = $cert' output.json > /tmp/1.json
+  ${USE_SUDO} jq --arg cert "$certificate_key" '.ssl_certificate_key = $cert' /tmp/1.json > test_new.json
 
-# Convert JSON back to YAML
-${USE_SUDO} yq eval --output-format=yaml '.' test_new.json > output.yaml
-${USE_SUDO} yq eval '.harbor_hostname = "harbor.'${DOMAIN}'"' -i output.yaml || exit $?
+  # Convert JSON back to YAML
+  ${USE_SUDO} yq eval --output-format=yaml '.' test_new.json > output.yaml
+  ${USE_SUDO} yq eval '.harbor_hostname = "harbor.'${DOMAIN}'"' -i output.yaml || exit $?
 
-# if SETUP_HARBER_REGISTRY is set to true, then run the playbook
-if [ "${SETUP_HARBER_REGISTRY}" == "true" ];
-then 
+
     ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/setup-harbor-registry.yml  -e "@output.yaml" -vv || exit $?
 fi
 
 # if DOWNLOAD_TO_TAR is set to true, then run the playbook
 if [ "${DOWNLOAD_TO_TAR}" == "true" ];
 then 
+    if [ -d /opt/images/ ];
+    then 
+        ${USE_SUDO} rm -rf /opt/images/
+    fi
     ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv || exit $?
 fi
 
