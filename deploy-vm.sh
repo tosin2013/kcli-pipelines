@@ -202,6 +202,9 @@ then
     elif [[ $VM_NAME == "freeipa" ]];
     then
       /opt/kcli-pipelines/freeipa/deploy-freeipa.sh destroy
+    elif [[ $VM_NAME == "ocp4-disconnected-helper" ]];
+    then
+      /opt/kcli-pipelines/ocp4-disconnected-helper/destroy.sh
     else
       TARGET_VM=$(sudo kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
       IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
