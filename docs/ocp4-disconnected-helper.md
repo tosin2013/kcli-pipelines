@@ -1,9 +1,8 @@
 # Deploy the ocp4-disconnected-helper   on vm
 
-Red Hat Ceph Storage is an open, massively scalable, highly available and resilient distributed storage solution for modern data pipelines. Engineered for data analytics, artificial intelligence/machine learning (AI/ML), and hybrid cloud workloads, Red Hat Ceph Storage delivers software-defined storage for both containers and virtual machines on your choice of industry-standard hardware.
+This repository provides some automation and other utilities to deploy OpenShift in a disconnected environment.
 
-Product Documentation for Red Hat Ceph Storage 6:
- * https://access.redhat.com/documentation/en-us/red_hat_ceph_storage/6
+[OpenShift 4 Disconnected Helper](https://github.com/kenmoini/ocp4-disconnected-helper)
 
 
 ## Requirements
