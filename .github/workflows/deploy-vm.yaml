@@ -33,6 +33,7 @@ on:
           - ansible-aap
           - rhel8
           - rhel9
+          - ocp4-disconnected-helper
 env:
     TARGET_SERVER: ${{ inputs.target_server }}
     VM_NAME: ${{ inputs.vm_name }}

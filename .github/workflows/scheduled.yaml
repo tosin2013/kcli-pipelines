@@ -34,6 +34,7 @@ on:
             - ansible-aap
             - rhel9
             - rhel8
+            - ocp4-disconnected-helper
 
 env:
     TARGET_SERVER: ${{ inputs.target_server }}
@@ -91,8 +92,8 @@ jobs:
               git clone https://github.com/tosin2013/kcli-pipelines.git
             fi
             export TARGET_SERVER=${{ secrets.TESTINGTARGT }}
-            export VM_NAME=${{ env.VM_NAME }}
-            export VM_PROFILE=${{ env.VM_NAME }}
+            export VM_NAME=${{ secrets.ENV_VM_NAME}}
+            export VM_PROFILE=${{ secrets.ENV_VM_NAME}}
             export ACTION=delete
             /opt/kcli-pipelines/deploy-vm.sh
   deploy-vm:
@@ -119,9 +120,9 @@ jobs:
               git clone https://github.com/tosin2013/kcli-pipelines.git
             fi
             export TARGET_SERVER=${{ secrets.TESTINGTARGT }}
-            export VM_NAME=${{ env.VM_NAME }}
-            export VM_PROFILE=${{ env.VM_NAME }}
-            export ACTION=${{ env.ACTION }}
+            export VM_NAME=${{ secrets.ENV_VM_NAME}}
+            export VM_PROFILE=${{ secrets.ENV_VM_NAME}}
+            export ACTION=create
             /opt/kcli-pipelines/deploy-vm.sh
 
   testing-vm:
@@ -148,10 +149,10 @@ jobs:
               git clone https://github.com/tosin2013/kcli-pipelines.git
             fi
             export TARGET_SERVER=${{ secrets.TESTINGTARGT }}
-            export VM_NAME=${{ env.VM_NAME }}
-            export VM_PROFILE=${{ env.VM_NAME }}
+            export VM_NAME=${{ secrets.ENV_VM_NAME}}
+            export VM_PROFILE=${{ secrets.ENV_VM_NAME}}
             export ACTION=delete
-            /opt/kcli-pipelines/test-scripts/${{ env.VM_NAME }}-testing.sh
+            /opt/kcli-pipelines/test-scripts/${{ secrets.ENV_VM_NAME}}-testing.sh
 
                       
   delete-vm:
@@ -178,8 +179,8 @@ jobs:
               git clone https://github.com/tosin2013/kcli-pipelines.git
             fi
             export TARGET_SERVER=${{ secrets.TESTINGTARGT }}
-            export VM_NAME=${{ env.VM_NAME }}
-            export VM_PROFILE=${{ env.VM_NAME }}
+            export VM_NAME=${{ secrets.ENV_VM_NAME}}
+            export VM_PROFILE=${{ secrets.ENV_VM_NAME}}
             export ACTION=delete
             /opt/kcli-pipelines/deploy-vm.sh
   

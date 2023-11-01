@@ -34,6 +34,7 @@ on:
             - ansible-aap
             - rhel9
             - rhel8
+            - ocp4-disconnected-helper
 
 env:
     TARGET_SERVER: ${{ inputs.target_server }}
