@@ -168,6 +168,8 @@ if [ "${PUSH_TAR_TO_REGISTRY}" == "true" ];
 then 
     echo "Pushing images to registry"
     cd  /opt/ocp4-disconnected-helper
+    DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+    ${USE_SUDO} yq eval '.registries[0].server = "harbor.'${DOMAIN}'"' -i extra_vars/push-tar-to-registry-vars.yml || exit $?
     echo ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv 
     ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv || exit $?
     exit 0
