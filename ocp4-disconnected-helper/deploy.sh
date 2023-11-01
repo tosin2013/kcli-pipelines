@@ -62,7 +62,7 @@ IP_ADDRESS=$(${USE_SUDO} /usr/bin/kcli info vm harbor | grep ip: | awk '{print $
 ${USE_SUDO} sshpass -p "$SSH_PASSWORD" ${USE_SUDO} ssh-copy-id -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no cloud-user@${IP_ADDRESS} || exit $?
 
 cd  /opt/ocp4-disconnected-helper
-sudo tee /tmp/inventory <<EOF
+${USE_SUDO}  tee /tmp/inventory <<EOF
 ## Ansible Inventory template file used by Terraform to create an ./inventory file populated with the nodes it created
 
 [harbor]
@@ -75,34 +75,34 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 ansible_internal_private_ip=${IP_ADDRESS}
 EOF
 
-cat /tmp/inventory
+${USE_SUDO} cat /tmp/inventory
 
 # Create the CA key
-openssl genrsa -out ca.key 4096
+${USE_SUDO} openssl genrsa -out ca.key 4096
 
 # Generate a self-signed CA certificate
-openssl req -x509 -new -nodes -sha512 -days 3650 \
+${USE_SUDO} openssl req -x509 -new -nodes -sha512 -days 3650 \
  -subj "/C=US/ST=Tennessee/L=Nashville/O=ContainersRUs/OU=InfoSec/CN=RootCA" \
  -key ca.key \
  -out ca.crt
 
 # Add the Root CA to your system trust
-cp ca.crt /etc/pki/ca-trust/source/anchors/harbor-ca.pem
-update-ca-trust
+${USE_SUDO} cp ca.crt /etc/pki/ca-trust/source/anchors/harbor-ca.pem
+${USE_SUDO} update-ca-trust
 
 # You'll also need to add that CA Cert to whatever system you're accessing Harbor with
 
 # Generate a Server Certificate Key
-openssl genrsa -out harbor.${DOMAIN}.key 4096
+${USE_SUDO} openssl genrsa -out harbor.${DOMAIN}.key 4096
 
 # Generate a Server Certificate Signing Request
-openssl req -sha512 -new \
+${USE_SUDO} openssl req -sha512 -new \
     -subj "/C=US/ST=Gerogia/L=Atlanta/O=ContainersRUs/OU=DevOps/CN=harbor.${DOMAIN}" \
     -key harbor.${DOMAIN}.key \
     -out harbor.${DOMAIN}.csr
 
 # Create an x509 v3 Extension file
-cat > openssl-v3.ext <<-EOF
+${USE_SUDO} cat > openssl-v3.ext <<-EOF
 authorityKeyIdentifier=keyid,issuer
 basicConstraints=CA:FALSE
 keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
@@ -115,15 +115,14 @@ DNS.2=harbor
 EOF
 
 # Sign the Server Certificate with the CA Certificate
-openssl x509 -req -sha512 -days 730 \
+${USE_SUDO} openssl x509 -req -sha512 -days 730 \
     -extfile openssl-v3.ext \
     -CA ca.crt -CAkey ca.key -CAcreateserial \
     -in harbor.${DOMAIN}.csr \
     -out harbor.${DOMAIN}.crt
 
 # Bundle the Server Certificate and the CA Certificate
-cat harbor.${DOMAIN}.crt ca.crt > harbor.${DOMAIN}.bundle.crt
-read -n 1 -r -s -p $'Press enter to continue...\n'
+${USE_SUDO} cat harbor.${DOMAIN}.crt ca.crt > harbor.${DOMAIN}.bundle.crt
 
 # Convert YAML to JSON
 yq eval -o=json '.' extra_vars/setup-harbor-registry-vars.yml  > output.json
