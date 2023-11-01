@@ -101,8 +101,8 @@ ${USE_SUDO} openssl req -sha512 -new \
     -key harbor.${DOMAIN}.key \
     -out harbor.${DOMAIN}.csr
 
-# Create an x509 v3 Extension file
-${USE_SUDO} cat > openssl-v3.ext <<-EOF
+# Create an x509 v3 Extension file using sudo tee
+${USE_SUDO} tee openssl-v3.ext >/dev/null <<EOF
 authorityKeyIdentifier=keyid,issuer
 basicConstraints=CA:FALSE
 keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
@@ -113,6 +113,7 @@ subjectAltName = @alt_names
 DNS.1=harbor.${DOMAIN}
 DNS.2=harbor
 EOF
+
 
 # Sign the Server Certificate with the CA Certificate
 ${USE_SUDO} openssl x509 -req -sha512 -days 730 \
