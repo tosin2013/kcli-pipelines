@@ -42,13 +42,6 @@ IP_ADDRESS=$(${USE_SUDO} /usr/bin/kcli info vm harbor | grep ip: | awk '{print $
 ${USE_SUDO} sshpass -p "$SSH_PASSWORD" ${USE_SUDO} ssh-copy-id -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no cloud-user@${IP_ADDRESS} || exit $?
 
 cd  /opt/ocp4-disconnected-helper
-if [[ -f /opt/ocp4-disconnected-helper/playbooks/inventory.org ]];
-then 
-    ${USE_SUDO} cp /opt/ocp4-disconnected-helper/playbooks/inventory.org /opt/ocp4-disconnected-helper/playbooks/inventory
-else 
-    ${USE_SUDO} cp  /opt/ocp4-disconnected-helper/playbooks/inventory /opt/ocp4-disconnected-helper/playbooks/inventory.org
-fi
-
 sudo tee /tmp/inventory <<EOF
 ## Ansible Inventory template file used by Terraform to create an ./inventory file populated with the nodes it created
 
@@ -127,6 +120,20 @@ jq --arg cert "$certificate_key" '.ssl_certificate_key = $cert' /tmp/1.json > te
 yq eval --output-format=yaml '.' test_new.json > output.yaml
 yq eval '.harbor_hostname = "harbor.'${DOMAIN}'"' -i output.yaml || exit $?
 
-/usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/setup-harbor-registry.yml  -e "@output.yaml" -vv || exit $?
-/usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv || exit $?
-/usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv || exit $?
+# if SETUP_HARBER_REGISTRY is set to true, then run the playbook
+if [ "${SETUP_HARBER_REGISTRY}" == "true" ];
+then 
+    /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/setup-harbor-registry.yml  -e "@output.yaml" -vv || exit $?
+fi
+
+# if DOWNLOAD_TO_TAR is set to true, then run the playbook
+if [ "${DOWNLOAD_TO_TAR}" == "true" ];
+then 
+    /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv || exit $?
+fi
+
+#if PUSH_TAR_TO_REGISTRY is set to true, then run the playbook
+if [ "${PUSH_TAR_TO_REGISTRY}" == "true" ];
+then 
+    /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv || exit $?
+fi
