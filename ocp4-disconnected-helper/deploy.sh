@@ -143,17 +143,17 @@ ${USE_SUDO} yq eval '.harbor_hostname = "harbor.'${DOMAIN}'"' -i output.yaml || 
 # if SETUP_HARBER_REGISTRY is set to true, then run the playbook
 if [ "${SETUP_HARBER_REGISTRY}" == "true" ];
 then 
-    /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/setup-harbor-registry.yml  -e "@output.yaml" -vv || exit $?
+    ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/setup-harbor-registry.yml  -e "@output.yaml" -vv || exit $?
 fi
 
 # if DOWNLOAD_TO_TAR is set to true, then run the playbook
 if [ "${DOWNLOAD_TO_TAR}" == "true" ];
 then 
-    /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv || exit $?
+    ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv || exit $?
 fi
 
 #if PUSH_TAR_TO_REGISTRY is set to true, then run the playbook
 if [ "${PUSH_TAR_TO_REGISTRY}" == "true" ];
 then 
-    /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv || exit $?
+    ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv || exit $?
 fi
