@@ -157,6 +157,7 @@ then
         ${USE_SUDO} rm -rf /opt/images/
     fi
     echo "Downloading images to /opt/images"
+    cd  /opt/ocp4-disconnected-helper
     echo   ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv
     ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv || exit $?
     exit 0
@@ -166,6 +167,7 @@ fi
 if [ "${PUSH_TAR_TO_REGISTRY}" == "true" ];
 then 
     echo "Pushing images to registry"
+    cd  /opt/ocp4-disconnected-helper
     echo ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv 
     ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv || exit $?
     exit 0
