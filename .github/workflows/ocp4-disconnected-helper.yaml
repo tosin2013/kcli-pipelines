@@ -30,14 +30,26 @@ on:
         description: 'setup harbor registry true or false'
         required: true
         default: 'true'
+        type: choice
+        options:
+            - true
+            - false
       download_to_tar:
         description: 'Download tar to jumpbox true or false'
         required: true
         default: 'true'
+        type: choice
+        options:
+            - true
+            - false
       push_tar_to_registry:
         description: 'Push tar to registry  true or false'
         required: true
         default: 'true'
+        type: choice
+        options:
+            - true
+            - false
 env:
     TARGET_SERVER: ${{ inputs.target_server }}
     VM_NAME: ${{ inputs.vm_name }}
@@ -77,7 +89,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
-      - name: Deploying  ${{ inputs.vm_name }} on KVM
+      - name: Deploying registry 
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ inputs.hostname }}
@@ -109,7 +121,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
-      - name: Deploying  ${{ inputs.vm_name }} on KVM
+      - name: Downloading tar using oc mirror
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ inputs.hostname }}
@@ -136,34 +148,34 @@ jobs:
             export PUSH_TAR_TO_REGISTRY=false
             /opt/kcli-pipelines/deploy-vm.sh
 
-    push-tar-to-reg:
-      needs: download-tar-to-reg
-      runs-on: ubuntu-latest
-      timeout-minutes: 180
-      steps:
-        - name: Deploying  ${{ inputs.vm_name }} on KVM
-          uses: appleboy/ssh-action@v0.1.10
-          with:
-            host: ${{ inputs.hostname }}
-            username: ${{ secrets.USERNAME }}
-            key: ${{ secrets.KEY }}
-            port: ${{ secrets.PORT }}
-            command_timeout: 150m
-            script: | 
-              sudo yum install -y git
-              if [ -d "/opt/kcli-pipelines" ]; then
-                cd /opt/kcli-pipelines
-                git config pull.rebase false
-                git pull
-              else
-                cd /opt/
-                git clone https://github.com/tosin2013/kcli-pipelines.git
-              fi
-              export TARGET_SERVER=${{ env.TARGET_SERVER }}
-              export VM_NAME=${{ env.VM_NAME }}
-              export VM_PROFILE=${{ env.VM_NAME }}
-              export ACTION=${{ env.ACTION }}
-              export SETUP_HARBER_REGISTRY=false
-              export DOWNLOAD_TO_TAR=false
-              export PUSH_TAR_TO_REGISTRY=${{ env.PUSH_TAR_TO_REGISTRY }}
-              /opt/kcli-pipelines/deploy-vm.sh
+  push-tar-to-reg:
+    needs: download-tar-to-reg
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Deploying  ${{ inputs.vm_name }} on KVM
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ inputs.hostname }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          command_timeout: 150m
+          script: | 
+            sudo yum install -y git
+            if [ -d "/opt/kcli-pipelines" ]; then
+              cd /opt/kcli-pipelines
+              git config pull.rebase false
+              git pull
+            else
+              cd /opt/
+              git clone https://github.com/tosin2013/kcli-pipelines.git
+            fi
+            export TARGET_SERVER=${{ env.TARGET_SERVER }}
+            export VM_NAME=${{ env.VM_NAME }}
+            export VM_PROFILE=${{ env.VM_NAME }}
+            export ACTION=${{ env.ACTION }}
+            export SETUP_HARBER_REGISTRY=false
+            export DOWNLOAD_TO_TAR=false
+            export PUSH_TAR_TO_REGISTRY=${{ env.PUSH_TAR_TO_REGISTRY }}
+            /opt/kcli-pipelines/deploy-vm.sh
