@@ -14,6 +14,7 @@
 * [Deploy the ubuntu on vm](docs/ubuntu.md)
 * [Deploy the fedora on vm](docs/fedora.md)
 * [Deploy the rhel9 on vm](docs/rhel.md)
+* [Deploy the OpenShift 4 Disconnected Helper](docs/ocp4-disconnected-helper.md)
 
 
 ## How to deploy Vms using Gitlab pipelines
