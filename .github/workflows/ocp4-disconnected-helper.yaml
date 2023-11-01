@@ -149,7 +149,7 @@ jobs:
             /opt/kcli-pipelines/deploy-vm.sh
 
   push-tar-to-reg:
-    needs: download-tar-to-reg
+    needs: download-tar-reg
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
