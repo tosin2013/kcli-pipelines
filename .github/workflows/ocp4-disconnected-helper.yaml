@@ -120,7 +120,7 @@ jobs:
     if: ${{ github.event.inputs.action != 'delete' }}
     needs: deploy-registry
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     steps:
       - name: Downloading tar using oc mirror
         uses: appleboy/ssh-action@v0.1.10
@@ -129,7 +129,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          command_timeout: 150m
+          command_timeout: 250m
           script: | 
             sudo yum install -y git
             if [ -d "/opt/kcli-pipelines" ]; then
@@ -153,7 +153,7 @@ jobs:
     if: ${{ github.event.inputs.action != 'delete' }}
     needs: download-tar-reg
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     steps:
       - name: Deploying  ${{ inputs.vm_name }} on KVM
         uses: appleboy/ssh-action@v0.1.10
@@ -162,7 +162,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          command_timeout: 150m
+          command_timeout: 250m
           script: | 
             sudo yum install -y git
             if [ -d "/opt/kcli-pipelines" ]; then
