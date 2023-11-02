@@ -42,8 +42,10 @@ for VM_NAME in $(yq eval '. | keys | .[]' /opt/kcli-pipelines/ceph-cluster/ceph-
   IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
   echo "VM $VM_NAME created with IP address $IP_ADDRESS"
   
+  ANSIBLE_PLAYBOOK="sudo -E /usr/local/bin/ansible-playbook"
+
   # Update the DNS using the add_ipa_entry.yaml playbook
-  sudo $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \
+  $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \
     --vault-password-file "$HOME"/.vault_password \
     --extra-vars "@${ANSIBLE_VAULT_FILE}" \
     --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
