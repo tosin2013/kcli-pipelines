@@ -1,6 +1,6 @@
 #!/bin/bash 
 export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-set -xe
+set -x
 
 if [ -f /opt/kcli-pipelines/helper_scripts/default.env ];
 then 
@@ -37,7 +37,7 @@ fi
 
 cat /opt/kcli-pipelines/ceph-cluster/ceph-cluster.yml
 kcli create plan -f  /opt/kcli-pipelines/ceph-cluster/ceph-cluster.yml
-ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
+sudo -E /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 # Loop over each VM in the ceph-cluster.yml file
 for VM_NAME in $(yq eval '. | keys | .[]' /opt/kcli-pipelines/ceph-cluster/ceph-cluster.yml); do
   # Get the IP address of the VM
@@ -54,7 +54,7 @@ for VM_NAME in $(yq eval '. | keys | .[]' /opt/kcli-pipelines/ceph-cluster/ceph-
     --extra-vars "key=${VM_NAME}" \
     --extra-vars "freeipa_server_fqdn=idm.${DOMAIN_NAME}" \
     --extra-vars "value=${IP_ADDRESS}" \
-    --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \    --extra-vars "action=present" -vvv || exit $?
+    --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" --extra-vars "action=present" -vvv || exit $?
 
 done
-ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
+sudo -E /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
