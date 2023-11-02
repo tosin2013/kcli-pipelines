@@ -43,7 +43,7 @@ for VM_NAME in $(yq eval '. | keys | .[]' /opt/kcli-pipelines/ceph-cluster/ceph-
   echo "VM $VM_NAME created with IP address $IP_ADDRESS"
   
   # Update the DNS using the add_ipa_entry.yaml playbook
-  $ANSIBLE_PLAYBOOK helper_scripts/add_ipa_entry.yaml \
+  $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \
     --vault-password-file "$HOME"/.vault_password \
     --extra-vars "@${ANSIBLE_VAULT_FILE}" \
     --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
