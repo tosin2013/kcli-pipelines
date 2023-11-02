@@ -37,7 +37,7 @@ fi
 
 cat /opt/kcli-pipelines/ceph-cluster/ceph-cluster.yml
 kcli create plan -f  /opt/kcli-pipelines/ceph-cluster/ceph-cluster.yml
-
+ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 # Loop over each VM in the ceph-cluster.yml file
 for VM_NAME in $(yq eval '. | keys | .[]' /opt/kcli-pipelines/ceph-cluster/ceph-cluster.yml); do
   # Get the IP address of the VM
@@ -57,4 +57,4 @@ for VM_NAME in $(yq eval '. | keys | .[]' /opt/kcli-pipelines/ceph-cluster/ceph-
     --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \    --extra-vars "action=present" -vvv || exit $?
 
 done
-
+ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
