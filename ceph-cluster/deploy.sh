@@ -20,7 +20,7 @@ if [ ! -z "$CICD_PIPELINE" ]; then
 fi
 
 
-DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+DOMAIN_NAME=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 
 if [ ! -f /var/lib/libvirt/images/rhel9 ];
 then 
@@ -54,7 +54,7 @@ for VM_NAME in $(yq eval '. | keys | .[]' /opt/kcli-pipelines/ceph-cluster/ceph-
     --extra-vars "key=${VM_NAME}" \
     --extra-vars "freeipa_server_fqdn=idm.${DOMAIN_NAME}" \
     --extra-vars "value=${IP_ADDRESS}" \
-    --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \    --extra-vars "action=present" -vvv
+    --extra-vars "freeipa_server_domain=${DOMAIN_NAME}" \    --extra-vars "action=present" -vvv || exit $?
 
 done
 
