@@ -39,6 +39,9 @@ export TARGET_SERVER="rhel8-equinix" # equinix
 export VM_PROFILE=ocp4-disconnected-helper  
 export VM_NAME="ocp4-disconnected-helper"
 export  ACTION="create" # create, delete
+export SETUP_HARBER_REGISTRY="true" # true, false
+export DOWNLOAD_TO_TAR="true" # true, false
+export PUSH_TAR_TO_REGISTRY="true" # true, false
 EOF
 
 or 
