@@ -18,6 +18,8 @@ cd $KCLI_SAMPLES_DIR
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
 RHSM_ORG=$(yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
+RHEL_USERNAME=$(yq eval '.rhsm_username' "${ANSIBLE_VAULT_FILE}")
+RHEL_PASSWORD=$(yq eval '.rhsm_password' "${ANSIBLE_VAULT_FILE}")
 RHSM_ACTIVATION_KEY=$(yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
 OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
 PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
@@ -44,6 +46,8 @@ fi
 sed -i "s/CHANGEUSER/${KCLI_USER}/g" ceph-cluster/ceph-cluster.yml
 sed -i "s/CHANGEPASSWORD/${PASSWORD}/g" ceph-cluster/ceph-cluster.yml
 sed -i "s/RHELORG/${RHSM_ORG}/g" ceph-cluster/ceph-cluster.yml
+sed -i "s/RHEL_USERNAME/${RHEL_USERNAME}/g" ceph-cluster/ceph-cluster.yml
+sed -i "s/RHEL_PASSWORD/${RHEL_PASSWORD}/g" ceph-cluster/ceph-cluster.yml
 sed -i "s/ACTIVATIONKEY/${RHSM_ACTIVATION_KEY}/g" ceph-cluster/ceph-cluster.yml
 sed -i "s/qubinet/${NET_NAME}/g" ceph-cluster/ceph-cluster.yml
 sed -i "s/RESERVEDNS/${DNS_FORWARDER}/g" ceph-cluster/ceph-cluster.yml
