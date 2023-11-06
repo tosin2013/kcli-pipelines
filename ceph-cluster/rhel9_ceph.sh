@@ -1,6 +1,8 @@
 #!/bin/bash 
 
 PASSWORD='CHANGE_PASSWORD'
+# Define the new resolv.conf content
+NEW_RESOLV_CONF="nameserver DNS_ENDPOINT"
 
 if [ ! -f ~/.ssh/id_rsa ]; then
     ssh-keygen -f ~/.ssh/id_rsa -t rsa -N ''
@@ -12,6 +14,8 @@ if [ ! -f ~/.ssh/id_rsa ]; then
         sshpass -p $PASSWORD ssh-copy-id -o StrictHostKeyChecking=no root@ceph-osd0${i}.CHANGE_DOMAIN
     done
 fi
+
+
 cd /usr/share/cephadm-ansible
 
 cat >hosts<<EOF

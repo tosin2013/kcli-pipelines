@@ -23,7 +23,7 @@ ceph-mon01:
   - systemctl restart sshd
   - curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/ceph-cluster/ceph-mon01.sh --output /tmp/ceph-mon01.sh
   - chmod +x /tmp/ceph-mon01.sh
-  - /tmp/ceph-mon01.sh RHEL_USERNAME RHEL_PASSWORD DOMAIN_NAME CHANGEPASSWORD
+  - /tmp/ceph-mon01.sh RHEL_USERNAME RHEL_PASSWORD DOMAIN_NAME CHANGEPASSWORD DNS_ENDPOINT
 ceph-mon02:
   memory: 8192
   numcpus: 4
@@ -38,8 +38,6 @@ ceph-mon02:
   pool: default
   image: rhel9
   cmds:
-  - nmcli connection modify  "cloud-init eth0"  ipv4.dns RESERVEDNS
-  - nmcli connection down "cloud-init eth0" && sudo nmcli connection up "cloud-init eth0"
   - echo CHANGEPASSWORD | passwd --stdin root
   - useradd CHANGEUSER
   - usermod -aG wheel CHANGEUSER
@@ -64,8 +62,6 @@ ceph-mon03:
   pool: default
   image: rhel9
   cmds:
-  - nmcli connection modify  "cloud-init eth0"  ipv4.dns RESERVEDNS
-  - nmcli connection down "cloud-init eth0" && sudo nmcli connection up "cloud-init eth0"
   - echo CHANGEPASSWORD | passwd --stdin root
   - useradd CHANGEUSER
   - usermod -aG wheel CHANGEUSER
@@ -91,8 +87,6 @@ ceph-osd01:
   pool: default
   image: rhel9
   cmds:
-  - nmcli connection modify  "cloud-init eth0"  ipv4.dns RESERVEDNS
-  - nmcli connection down "cloud-init eth0" && sudo nmcli connection up "cloud-init eth0"
   - echo CHANGEPASSWORD | passwd --stdin root
   - useradd CHANGEUSER
   - usermod -aG wheel CHANGEUSER
@@ -118,8 +112,6 @@ ceph-osd02:
   pool: default
   image: rhel9
   cmds:
-  - nmcli connection modify  "cloud-init eth0"  ipv4.dns RESERVEDNS
-  - nmcli connection down "cloud-init eth0" && sudo nmcli connection up "cloud-init eth0"
   - echo CHANGEPASSWORD | passwd --stdin root
   - useradd CHANGEUSER
   - usermod -aG wheel CHANGEUSER
@@ -145,8 +137,6 @@ ceph-osd03:
   pool: default
   image: rhel9
   cmds:
-  - nmcli connection modify  "cloud-init eth0"  ipv4.dns RESERVEDNS
-  - nmcli connection down "cloud-init eth0" && sudo nmcli connection up "cloud-init eth0"
   - echo CHANGEPASSWORD | passwd --stdin root
   - useradd CHANGEUSER
   - usermod -aG wheel CHANGEUSER

@@ -50,7 +50,7 @@ sed -i "s/RHEL_USERNAME/${RHEL_USERNAME}/g" ceph-cluster/ceph-cluster.yml
 sed -i "s/RHEL_PASSWORD/${RHEL_PASSWORD}/g" ceph-cluster/ceph-cluster.yml
 sed -i "s/ACTIVATIONKEY/${RHSM_ACTIVATION_KEY}/g" ceph-cluster/ceph-cluster.yml
 sed -i "s/qubinet/${NET_NAME}/g" ceph-cluster/ceph-cluster.yml
-sed -i "s/RESERVEDNS/${DNS_FORWARDER}/g" ceph-cluster/ceph-cluster.yml
+sed -i "s/DNS_ENDPOINT/${DNS_FORWARDER}/g" ceph-cluster/ceph-cluster.yml
 sed -i "s/DOMAIN_NAME/${DOMAIN}/g" ceph-cluster/ceph-cluster.yml
 
 
