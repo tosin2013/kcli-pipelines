@@ -23,7 +23,7 @@ ceph-mon01:
   - systemctl restart sshd
   - curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/ceph-cluster/ceph-mon01.sh --output /tmp/ceph-mon01.sh
   - chmod +x /tmp/ceph-mon01.sh
-  - /tmp/ceph-mon01.sh RHEL_USERNAME RHEL_PASSWORD DOMAIN_NAME
+  - /tmp/ceph-mon01.sh RHEL_USERNAME RHEL_PASSWORD DOMAIN_NAME CHANGEPASSWORD
 ceph-mon02:
   memory: 8192
   numcpus: 4
