@@ -1,18 +1,17 @@
 #!/bin/bash 
 
-ssh-keygen -f ~/.ssh/id_rsa -t rsa -N ''
+PASSWORD='CHANGE_PASSWORD'
 
-cd /usr/share/cephadm-ansible
-
-
-for i in {1..3}
-do
-    echo ceph-mon0${i}.CHANGE_DOMAIN
-    ssh-copy-id root@ceph-mon0${i}.CHANGE_DOMAIN
-    echo ceph-osd0${i}.CHANGE_DOMAIN
-    ssh-copy-id root@ceph-osd0${i}.CHANGE_DOMAIN
-done
-
+if [ ! -f ~/.ssh/id_rsa ]; then
+    ssh-keygen -f ~/.ssh/id_rsa -t rsa -N ''
+    for i in {1..3}
+    do
+        echo ceph-mon0${i}.CHANGE_DOMAIN
+        sshpass -p $PASSWORD ssh-copy-id -o StrictHostKeyChecking=no root@ceph-mon0${i}.CHANGE_DOMAIN
+        echo ceph-osd0${i}.CHANGE_DOMAIN
+        sshpass -p $PASSWORD ssh-copy-id -o StrictHostKeyChecking=no root@ceph-osd0${i}.CHANGE_DOMAIN
+    done
+fi
 
 cat >hosts<<EOF
 ceph-mon02.CHANGE_DOMAIN labels="['mon', 'mgr']"
@@ -22,10 +21,10 @@ ceph-osd02.CHANGE_DOMAIN  labels="['osd']"
 ceph-osd03.CHANGE_DOMAIN  labels="['osd']"
 
 [admin]
-ceph-mon01.CHANGE_DOMAIN  monitor_address=$(hostname -I) labels="['_admin', 'mon', 'mgr']"
+ceph-mon01.CHANGE_DOMAIN  monitor_address=ceph-mon01.CHANGE_DOMAIN  labels="['_admin', 'mon', 'mgr']"
 EOF
 
-ansible-playbook -i hosts cephadm-preflight.yml --extra-vars "ceph_origin=rhcs"  || exit $?
+ansible-playbook -i hosts cephadm-preflight.yml --extra-vars "ceph_origin=rhcs"  --extra-vars "ceph_rhcs_version=6" -vvv || exit $?
 
 
 ansible-galaxy collection install containers.podman
@@ -52,8 +51,8 @@ cat >bootstrap-nodes.yml<<EOF
 EOF
 
 
-ansible-playbook -i hosts bootstrap-nodes.yml -vvv
-cephadm bootstrap --mon-ip $(hostname -I) --allow-fqdn-hostname | tee -a /root/cephadm_bootstrap.log
+ansible-playbook -i hosts bootstrap-nodes.yml -vvv || exit $?
+cephadm bootstrap --mon-ip ceph-mon01.CHANGE_DOMAIN  --allow-fqdn-hostname | tee -a /root/cephadm_bootstrap.log
 cephadm shell ceph -s
 ceph -s
 
