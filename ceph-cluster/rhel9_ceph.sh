@@ -25,7 +25,7 @@ ceph-osd03.CHANGE_DOMAIN  labels="['osd']"
 ceph-mon01.CHANGE_DOMAIN  monitor_address=$(hostname -I) labels="['_admin', 'mon', 'mgr']"
 EOF
 
-ansible-playbook -i hosts cephadm-preflight.yml 
+ansible-playbook -i hosts cephadm-preflight.yml --extra-vars "ceph_origin=rhcs"  || exit $?
 
 
 ansible-galaxy collection install containers.podman
