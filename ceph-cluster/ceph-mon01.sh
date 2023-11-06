@@ -1,12 +1,13 @@
 #!/bin/bash
 
-if [ $# -ne 2 ]; then 
+if [ $# -ne 3 ]; then 
     echo "No arguments provided"
-    echo "Usage: $0 <rhel_username> <rhel_password>"
+    echo "Usage: $0 <rhel_username> <rhel_password> <domain_name>"
     exit 1
 fi
 rhsm_username=${1}
 rhsm_password=${2}
+domain_name=${3}
 sudo subscription-manager refresh
 sudo subscription-manager attach --auto
 subscription-manager repos --disable=*
@@ -22,3 +23,4 @@ chmod +x /tmp/rhel9_ceph.sh
 
 sed -i "s/RHEL_USERNAME/${rhsm_username}/g"  /tmp/rhel9_ceph.sh
 sed -i "s/RHEL_PASSWORD/${rhsm_password}/g"  /tmp/rhel9_ceph.sh
+sed -i "s/CHANGE_DOMAIN/${domain_name}/g"  /tmp/rhel9_ceph.sh
