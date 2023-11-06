@@ -10,8 +10,10 @@ if [ ! -f ~/.ssh/id_rsa ]; then
     do
         echo ceph-mon0${i}.CHANGE_DOMAIN
         sshpass -p $PASSWORD ssh-copy-id -o StrictHostKeyChecking=no root@ceph-mon0${i}.CHANGE_DOMAIN
+        ssh root@ceph-mon0${i}.CHANGE_DOMAIN "bash -c 'echo -e \"$NEW_RESOLV_CONF\" | sudo tee /etc/resolv.conf > /dev/null'"
         echo ceph-osd0${i}.CHANGE_DOMAIN
         sshpass -p $PASSWORD ssh-copy-id -o StrictHostKeyChecking=no root@ceph-osd0${i}.CHANGE_DOMAIN
+        ssh root@ceph-osd0${i}.CHANGE_DOMAIN "bash -c 'echo -e \"$NEW_RESOLV_CONF\" | sudo tee /etc/resolv.conf > /dev/null'"
     done
 fi
 
