@@ -12,6 +12,7 @@ if [ ! -f ~/.ssh/id_rsa ]; then
         sshpass -p $PASSWORD ssh-copy-id -o StrictHostKeyChecking=no root@ceph-osd0${i}.CHANGE_DOMAIN
     done
 fi
+cd /usr/share/cephadm-ansible
 
 cat >hosts<<EOF
 ceph-mon02.CHANGE_DOMAIN labels="['mon', 'mgr']"
