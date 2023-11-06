@@ -19,6 +19,8 @@ ceph-mon01:
   - usermod -aG wheel CHANGEUSER
   - echo "CHANGEUSER ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/CHANGEUSER
   - echo CHANGEPASSWORD | passwd --stdin CHANGEUSER
+  - sed -i 's/PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
+  - systemctl restart sshd
   - curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/ceph-cluster/ceph-mon01.sh --output /tmp/ceph-mon01.sh
   - chmod +x /tmp/ceph-mon01.sh
   - /tmp/ceph-mon01.sh RHEL_USERNAME RHEL_PASSWORD
@@ -43,6 +45,8 @@ ceph-mon02:
   - usermod -aG wheel CHANGEUSER
   - echo "CHANGEUSER ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/CHANGEUSER
   - echo CHANGEPASSWORD | passwd --stdin CHANGEUSER
+  - sed -i 's/PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
+  - systemctl restart sshd
   - curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/ceph-cluster/ceph-nodes.sh --output /tmp/ceph-nodes.sh
   - chmod +x /tmp/ceph-nodes.sh
   - /tmp/ceph-nodes.sh
@@ -67,6 +71,8 @@ ceph-mon03:
   - usermod -aG wheel CHANGEUSER
   - echo "CHANGEUSER ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/CHANGEUSER
   - echo CHANGEPASSWORD | passwd --stdin CHANGEUSER
+  - sed -i 's/PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
+  - systemctl restart sshd
   - curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/ceph-cluster/ceph-nodes.sh --output /tmp/ceph-nodes.sh
   - chmod +x /tmp/ceph-nodes.sh
   - /tmp/ceph-nodes.sh
@@ -92,6 +98,8 @@ ceph-osd01:
   - usermod -aG wheel CHANGEUSER
   - echo "CHANGEUSER ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/CHANGEUSER
   - echo CHANGEPASSWORD | passwd --stdin CHANGEUSER
+  - sed -i 's/PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
+  - systemctl restart sshd
   - curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/ceph-cluster/ceph-nodes.sh --output /tmp/ceph-nodes.sh
   - chmod +x /tmp/ceph-nodes.sh
   - /tmp/ceph-nodes.sh
@@ -117,6 +125,8 @@ ceph-osd02:
   - usermod -aG wheel CHANGEUSER
   - echo "CHANGEUSER ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/CHANGEUSER
   - echo CHANGEPASSWORD | passwd --stdin CHANGEUSER
+  - sed -i 's/PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
+  - systemctl restart sshd
   - curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/ceph-cluster/ceph-nodes.sh --output /tmp/ceph-nodes.sh
   - chmod +x /tmp/ceph-nodes.sh
   - /tmp/ceph-nodes.sh
@@ -142,6 +152,8 @@ ceph-osd03:
   - usermod -aG wheel CHANGEUSER
   - echo "CHANGEUSER ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/CHANGEUSER
   - echo CHANGEPASSWORD | passwd --stdin CHANGEUSER
+  - sed -i 's/PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
+  - systemctl restart sshd
   - curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/ceph-cluster/ceph-nodes.sh --output /tmp/ceph-nodes.sh
   - chmod +x /tmp/ceph-nodes.sh
   - /tmp/ceph-nodes.sh
