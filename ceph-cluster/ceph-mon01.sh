@@ -16,9 +16,9 @@ dnf update -y
 subscription-manager repos --enable=rhceph-6-tools-for-rhel-9-x86_64-rpms
 dnf install ansible-core cephadm-ansible bind-utils -y
 
-curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/ceph-cluster/ceph-nodes.sh --output /tmp/rhel8_ceph.sh
+curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/ceph-cluster/rhel9_ceph.sh --output /tmp/rhel8_ceph.sh
 
-chmod +x /tmp/rhel8_ceph.sh
+chmod +x /tmp/rhel9_ceph.sh
 
-sed -i "s/RHEL_USERNAME/${rhsm_username}/g"  /tmp/rhel8_ceph.sh 
-sed -i "s/RHEL_PASSWORD/${rhsm_password}/g"  /tmp/rhel8_ceph.sh 
+sed -i "s/RHEL_USERNAME/${rhsm_username}/g"  /tmp/rhel9_ceph.sh
+sed -i "s/RHEL_PASSWORD/${rhsm_password}/g"  /tmp/rhel9_ceph.sh
