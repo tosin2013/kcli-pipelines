@@ -59,24 +59,28 @@ EOF
 
 
 ansible-playbook -i hosts bootstrap-nodes.yml -vvv || exit $?
-cephadm bootstrap --mon-ip ceph-mon01.CHANGE_DOMAIN  --allow-fqdn-hostname | tee -a /root/cephadm_bootstrap.log
+cephadm bootstrap --mon-ip $(hostname -I)  --allow-fqdn-hostname | tee -a /root/cephadm_bootstrap.log
 cephadm shell ceph -s
 ceph -s
 
-ceph cephadm get-pub-key > ~/ceph.pub
-ssh-copy-id -f -i ~/ceph.pub root@$(dig ceph-mon02.CHANGE_DOMAIN +short)
-ssh-copy-id -f -i ~/ceph.pub root@$(dig ceph-mon03.CHANGE_DOMAIN +short)
-ssh-copy-id -f -i ~/ceph.pub root@$(dig ceph-osd01.CHANGE_DOMAIN +short)
-ssh-copy-id -f -i ~/ceph.pub root@$(dig ceph-osd02.CHANGE_DOMAIN +short)
-ssh-copy-id -f -i ~/ceph.pub root@$(dig ceph-osd03.CHANGE_DOMAIN +short)
+#ceph cephadm get-pub-key > ~/ceph.pub
+ssh-copy-id -f -i /etc/ceph/ceph.pub root@$(dig ceph-mon02.CHANGE_DOMAIN +short)
+ssh-copy-id -f -i /etc/ceph/ceph.pub root@$(dig ceph-mon03.CHANGE_DOMAIN +short)
+ssh-copy-id -f -i /etc/ceph/ceph.pub root@$(dig ceph-osd01.CHANGE_DOMAIN +short)
+ssh-copy-id -f -i /etc/ceph/ceph.pub root@$(dig ceph-osd02.CHANGE_DOMAIN +short)
+ssh-copy-id -f -i /etc/ceph/ceph.pub root@$(dig ceph-osd03.CHANGE_DOMAIN +short)
 ceph orch host add ceph-mon02 $(dig ceph-mon02.CHANGE_DOMAIN +short)
 ceph orch host add ceph-mon03 $(dig ceph-mon03.CHANGE_DOMAIN +short)
 ceph orch host label add ceph-mon01 mon
 ceph orch host label add ceph-mon02 mon
 ceph orch host label add ceph-mon03 mon
 ceph orch apply mon ceph-mon01,ceph-mon02,ceph-mon03
-ceph orch host ls
+ceph orch host ls 
+ceph orch host rescan ceph-mon02 --with-summary
+ceph orch host rescan ceph-mon03 --with-summary
 ceph orch ps
+#ceph orch resume
+#ceph cephadm check-host ceph-mon02
 echo "waiting 120s for mons to be up"
 sleep 120s
 ceph orch host add ceph-osd01 $(dig ceph-osd01.CHANGE_DOMAIN +short)
