@@ -59,7 +59,10 @@ EOF
 
 
 ansible-playbook -i hosts bootstrap-nodes.yml -vvv || exit $?
-cephadm bootstrap --mon-ip $(hostname -I)  --allow-fqdn-hostname | tee -a /root/cephadm_bootstrap.log
+#cephadm bootstrap --mon-ip $(hostname -I)  --allow-fqdn-hostname | tee -a /root/cephadm_bootstrap.log
+
+#https://access.redhat.com/documentation/en-us/red_hat_ceph_storage/6/html/installation_guide/red-hat-ceph-storage-installation#using-a-json-file-to-protect-login-information_install
+cephadm bootstrap --cluster-network 192.168.122.0/24  --mon-ip  $(hostname -I)   --allow-fqdn-hostname --registry-url registry.redhat.io --registry-username RHEL_USERNAME --registry-password RHEL_PASSWORD --yes-i-know | tee -a /root/cephadm_bootstrap.log
 cephadm shell ceph -s
 ceph -s
 
