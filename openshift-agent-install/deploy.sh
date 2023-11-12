@@ -50,7 +50,7 @@ new_graphDataImage="harbor.${DOMAIN}/oc-mirror/openshift/graph-image@sha256:98c4
 new_releases="harbor.${DOMAIN}/oc-mirror/openshift/release-images"
 
 # File to be updated
-updateservice_file="templates/updateservice.yml.j2"
+updateservice_file="openshift-agent-install/templates/updateservice.yml.j2"
 file="example_vars/kcli-pipeline-vars.yaml"
 
 
