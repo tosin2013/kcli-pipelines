@@ -41,4 +41,29 @@ fi
 
 ${USE_SUDO} /usr/local/bin/ansible-galaxy install -r openshift-agent-install/collections/requirements.yml
 
-sudo vim openshift-agent-install/templates/updateservice.yml.j2
+# Assign arguments to variables
+DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+# 98c4fd93ab54e1555a911d33c5bb9c1283905cf215d72038eb856f6efda1c6f1
+GRAPH_DATA_IMAGE=$(yq eval '.graph_data_image' "${ANSIBLE_ALL_VARIABLES}")
+new_graphDataImage="harbor.${DOMAIN}/oc-mirror/openshift/graph-image@sha256:98c4fd93ab54e1555a911d33c5bb9c1283905cf215d72038eb856f6efda1c6f1"
+
+new_releases="harbor.${DOMAIN}/oc-mirror/openshift/release-images"
+
+# File to be updated
+updateservice_file="templates/updateservice.yml.j2"
+file="example_vars/kcli-pipeline-vars.yaml"
+
+
+
+# Use yq to update the graphDataImage and releases fields
+yq e ".spec.graphDataImage = \"$new_graphDataImage\"" -i "$updateservice_file"
+yq e ".spec.releases = \"$new_releases\"" -i "$updateservice_file"
+
+# updating pipeline vars 
+yq e ".base_domain = \"$DOMAIN\"" -i "$file"
+yq e ".ssh_public_key_path = \"$new_value\"" -i "$file"
+yq e ".control_plane_replicas = \"$new_graphDataImage\"" -i "$file"
+yq e ".app_node_replicas = \"$new_releases\"" -i "$file"
+DNS_FORWARDER=$(sudo kcli info vm freeipa | grep ip: | awk '{print $2}' | head -1)
+sed -i "s|192.168.122.10|${DNS_FORWARDER}|g" "$file"
+sed -i "s|kemo.labs|${DOMAIN}|g" "$file"

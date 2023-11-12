@@ -144,6 +144,9 @@ then
     elif  [[ $VM_NAME == "ocp4-disconnected-helper" ]];
     then 
       ocp4-disconnected-helper/deploy.sh create
+    elif [[ $VM_NAME == "openshift-agent-install" ]];
+    then 
+      openshift-agent-install/deploy.sh
     elif  [[ $VM_NAME == "ceph-cluster" ]];
     then 
       ceph-cluster/deploy.sh create
