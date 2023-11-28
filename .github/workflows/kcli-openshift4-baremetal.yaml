@@ -15,7 +15,6 @@ on:
           - cnv-kcli-openshift4-baremetal.yml
           - convereged-kcli-openshift4-baremetal.yml
           - kcli-openshift4-baremetal.yml
-          - sno-kcli-openshift4-baremetal.yml
       target_server:
         description: 'target_server'
         required: true
