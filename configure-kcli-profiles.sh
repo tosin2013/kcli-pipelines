@@ -22,6 +22,11 @@ then
     sudo sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' /opt/kcli-pipelines/helper_scripts/default.env
 fi
 
+if [ $VM_PROFILE == "kcli-openshift4-baremetal" ];
+then 
+    sudo sed -i 's/NET_NAME=.*/NET_NAME=lab-baremetal/g' /opt/kcli-pipelines/helper_scripts/default.env
+fi
+
 if [ ! -f  ~/.ssh/id_rsa ];
 then
     echo "SSH key does not exist"
