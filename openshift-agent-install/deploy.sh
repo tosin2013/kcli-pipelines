@@ -30,6 +30,9 @@ if [ ! -z "$CICD_PIPELINE" ]; then
   export USE_SUDO="sudo"
 fi
 
+if [ ! -z "$OPENSHIFT_VERSION" ]; then 
+  export OPENSHIFT_VERSION="4.14.1"
+fi
 
 if command -v nmstate &>/dev/null; then
   echo "nmstate is installed"
@@ -64,6 +67,27 @@ yq e ".base_domain = \"$DOMAIN\"" -i "$file"
 yq e ".ssh_public_key_path = \"$new_value\"" -i "$file"
 yq e ".control_plane_replicas = \"$new_graphDataImage\"" -i "$file"
 yq e ".app_node_replicas = \"$new_releases\"" -i "$file"
+yq e ".openshift_version = \"$OPENSHIFT_VERSION\"" -i "$file"
 DNS_FORWARDER=$(sudo kcli info vm freeipa | grep ip: | awk '{print $2}' | head -1)
 sed -i "s|192.168.122.10|${DNS_FORWARDER}|g" "$file"
 sed -i "s|kemo.labs|${DOMAIN}|g" "$file"
+
+
+cd /opt/openshift-agent-install/openshift-agent-install
+rm -rf ./generated_manifests/lab
+cd /opt/openshift-agent-install/
+ansible-playbook openshift-agent-install/create-manifests.yml -e "@example_vars/kcli-pipeline-vars.yaml" -vv
+cat openshift-agent-install/generated_manifests/lab/agent-config.yaml
+openshift-install agent create image --dir   /opt/openshift-agent-install/openshift-agent-install/generated_manifests/lab
+
+if [ $KVM_DEPLOY == "TRUE" ];
+then 
+  sudo rm -rf /var/lib/libvirt/images/agent.x86_64.iso
+  cd /opt/openshift-agent-install/openshift-agent-install/generated_manifests/lab
+  sudo cp agent.x86_64.iso /var/lib/libvirt/images/
+  cd /opt/openshift-agent-install/
+fi 
+
+bash -x baremetal-test-script.sh sno
+cd /opt/openshift-agent-install/openshift-agent-install/
+openshift-install agent wait-for bootstrap-complete --dir ./generated_manifests/lab --log-level debug

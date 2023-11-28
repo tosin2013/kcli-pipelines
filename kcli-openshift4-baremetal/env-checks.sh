@@ -26,9 +26,9 @@ fi
 
 if [ ! -z ${TAG} ];
 then
-    if [ $TAG == "4.13" ];
+    if [ $TAG == "4.14" ];
     then 
-        echo "DEPLOYING 4.13"
+        echo "DEPLOYING 4.14"
     else 
         echo "Skipping Launch Steps"
         yq eval ".tag = ${TAG}" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/kcli-openshift4-baremetal.yml || exit $?

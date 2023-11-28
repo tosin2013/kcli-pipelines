@@ -22,6 +22,16 @@ on:
         options:
           - create
           - delete
+      deployment_config:
+        description: 'Supported Deployment Configurations'
+        required: true
+        default: 'kcli-openshift4-baremetal.yml'
+        type: choice
+        options:
+          - cnv-kcli-openshift4-baremetal.yml
+          - convereged-kcli-openshift4-baremetal.yml
+          - kcli-openshift4-baremetal.yml
+          - sno-kcli-openshift4-baremetal.yml
       deploy_openshift:
         description: 'Deploy The OpenShit Cluster on Launch'
         required: true
@@ -63,6 +73,7 @@ env:
     LAUNCH_STEPS: ${{ inputs.auto_launch_steps }}
     TAG: ${{ inputs.deployment_tag }}
     DISCONNECTED_INSTALL: ${{ inputs.disconnected_install }}
+    DEPLOYMENT_CONFIG: ${{ inputs.deployment_config }}
 
 jobs:
   configure-kcli-profiles:
@@ -101,7 +112,7 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
-        command_timeout: 30m
+        command_timeout: 65m
         script: | 
           sudo yum install -y git
           if [ -d "/opt/kcli-pipelines" ]; then
@@ -120,4 +131,5 @@ jobs:
           export LAUNCH_STEPS=${{ env.LAUNCH_STEPS }}
           export TAG=${{ env.TAG }}
           export DISCONNECTED_INSTALL=${{ env.DISCONNECTED_INSTALL }}
+          export DEPLOYMENT_CONFIG=${{ env.DEPLOYMENT_CONFIG }}
           /opt/kcli-pipelines/deploy-vm.sh
