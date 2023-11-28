@@ -6,6 +6,16 @@ on:
         description: 'hostname'
         required: true
         default: hostname
+      deployment_config:
+        description: 'Supported Deployment Configurations'
+        required: true
+        default: 'kcli-openshift4-baremetal.yml'
+        type: choice
+        options:
+          - cnv-kcli-openshift4-baremetal.yml
+          - convereged-kcli-openshift4-baremetal.yml
+          - kcli-openshift4-baremetal.yml
+          - sno-kcli-openshift4-baremetal.yml
       target_server:
         description: 'target_server'
         required: true
@@ -22,16 +32,6 @@ on:
         options:
           - create
           - delete
-      deployment_config:
-        description: 'Supported Deployment Configurations'
-        required: true
-        default: 'kcli-openshift4-baremetal.yml'
-        type: choice
-        options:
-          - cnv-kcli-openshift4-baremetal.yml
-          - convereged-kcli-openshift4-baremetal.yml
-          - kcli-openshift4-baremetal.yml
-          - sno-kcli-openshift4-baremetal.yml
       deploy_openshift:
         description: 'Deploy The OpenShit Cluster on Launch'
         required: true
