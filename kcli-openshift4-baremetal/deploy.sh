@@ -42,7 +42,7 @@ function create(){
     ${USE_SUDO} yq eval ".domain = \"$DOMAIN\"" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/${DEPLOYMENT_CONFIG} || exit $?
     ${USE_SUDO} /opt/kcli-pipelines/kcli-openshift4-baremetal/env-checks.sh  || exit $?
     cat lab.yml
-    #${USE_SUDO} kcli create plan --paramfile  lab.yml lab
+    ${USE_SUDO} kcli create plan --paramfile  lab.yml lab
     create_dns_entries
 }
 
