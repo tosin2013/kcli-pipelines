@@ -103,7 +103,7 @@ jobs:
   kcli-openshift4-baremetal:
     needs: configure-kcli-profiles
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
     - name: Deploying  ${{ inputs.vm_name }} on KVM
       uses: appleboy/ssh-action@v0.1.10
@@ -112,7 +112,7 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
-        command_timeout: 65m
+        command_timeout: 90m
         script: | 
           sudo yum install -y git
           if [ -d "/opt/kcli-pipelines" ]; then
