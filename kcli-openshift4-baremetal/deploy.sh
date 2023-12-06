@@ -43,13 +43,18 @@ function create(){
     ${USE_SUDO} /opt/kcli-pipelines/kcli-openshift4-baremetal/env-checks.sh  || exit $?
     cat lab.yml
     ${USE_SUDO} kcli create plan --paramfile  lab.yml lab
-    create_dns_entries
+    #create_dns_entries
 }
 
 
 function destroy(){
     ${USE_SUDO} kcli delete plan lab --y
     ${USE_SUDO} rm -rf lab.yml
+    export VM_PROFILE=freeipa
+    export VM_NAME="freeipa"
+    export  ACTION="delete" # create, delete
+
+    /opt/kcli-pipelines/deploy-vm.sh
 }
 
 function create_dns_entries(){

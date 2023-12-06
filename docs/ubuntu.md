@@ -26,7 +26,7 @@ $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh
 ```
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
-export TARGET_SERVER="supermicro" # equinix 
+export TARGET_SERVER="rhel8-equinix" # equinix 
 export VM_PROFILE=ubuntu
 export VM_NAME="ubuntu-$(echo $RANDOM | md5sum | head -c 5; echo;)"
 export  ACTION="create" # create, delete
