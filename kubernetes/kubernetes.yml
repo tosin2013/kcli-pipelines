@@ -9,7 +9,7 @@ kube-ctrl01:
   pool: default
   image: ubuntu
   cmds:
-  - echo CHANGEPASSWORD | passwd --stdin root
+  - echo CHANGEPASSWORD | passwd --stdin ubuntu
   - apt update -y 
   - apt install -y git 
   - cd /root
@@ -24,7 +24,7 @@ kube-worker1:
   pool: default
   image: ubuntu
   cmds:
-  - echo CHANGEPASSWORD | passwd --stdin root
+  - echo CHANGEPASSWORD | passwd --stdin ubuntu
   - apt update -y 
 kube-worker2:
   memory: 8192
@@ -36,5 +36,5 @@ kube-worker2:
   pool: default
   image: ubuntu
   cmds:
-  - echo CHANGEPASSWORD | passwd --stdin root
+  - echo CHANGEPASSWORD | passwd --stdin ubuntu
   - apt update -y 

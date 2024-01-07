@@ -91,6 +91,7 @@ sudo -E ./ansible-aap/configure-kcli-profile.sh || exit $?
 sudo -E ./device-edge-workshops/configure-kcli-profile.sh || exit $?
 sudo -E ./microshift-demos/configure-kcli-profile.sh  || exit $?
 sudo -E ./mirror-registry/configure-kcli-profile.sh || exit $?
+sudo -E ./kubernetes/configure-kcli-profile.sh || exit $?
 sudo -E ./jupyterlab/configure-kcli-profile.sh || exit $?
 sudo -E ./harbor/configure-kcli-profile.sh || exit $?
 sudo -E ./ceph-cluster/configure-kcli-profile.sh || exit $?
