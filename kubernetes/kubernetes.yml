@@ -1,0 +1,40 @@
+kube-ctrl01:
+  memory: 8192
+  numcpus: 4
+  reservedns: true
+  disks:
+  - size: 200
+  nets:
+    - name: qubinet
+  pool: default
+  image: ubuntu
+  cmds:
+  - echo {{ user_password }} | passwd --stdin root
+  - apt update -y 
+  - apt install -y git 
+  - cd /root
+  - git clone https://github.com/tosin2013/kubernetes_deployment.git
+kube-worker1:
+  memory: 8192
+  numcpus: 4
+  disks:
+  - size: 200
+  nets:
+    - name: qubinet
+  pool: default
+  image: ubuntu
+  cmds:
+  - echo {{ user_password }} | passwd --stdin root
+  - apt update -y 
+kube-worker2:
+  memory: 8192
+  numcpus: 4
+  disks:
+  - size: 200
+  nets:
+    - name: qubinet
+  pool: default
+  image: ubuntu
+  cmds:
+  - echo {{ user_password }} | passwd --stdin root
+  - apt update -y 

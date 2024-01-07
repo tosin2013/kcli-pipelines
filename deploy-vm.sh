@@ -150,6 +150,9 @@ then
     elif  [[ $VM_NAME == "ceph-cluster" ]];
     then 
       ceph-cluster/deploy.sh create
+    elif  [[ $VM_NAME == "kubernetes" ]];
+    then 
+      kubernetes/deploy.sh create
     else
         check_idm idm.$DOMAIN_NAME || exit $?
         DNS_ADDRESS=$(sudo kcli info vm freeipa freeipa | grep ip: | awk '{print $2}' | head -1)
