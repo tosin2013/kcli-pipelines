@@ -9,10 +9,10 @@ kube-ctrl01:
   pool: default
   image: ubuntu
   cmds:
-  - echo CHANGEPASSWORD | passwd --stdin ubuntu
+  - echo "ubuntu:CHANGEPASSWORD" | sudo chpasswd
   - apt update -y 
   - apt install -y git 
-  - cd /root
+  - cd /home/ubuntu
   - git clone https://github.com/tosin2013/kubernetes_deployment.git
 kube-worker1:
   memory: 8192
@@ -24,7 +24,7 @@ kube-worker1:
   pool: default
   image: ubuntu
   cmds:
-  - echo CHANGEPASSWORD | passwd --stdin ubuntu
+  - echo "ubuntu:CHANGEPASSWORD" | sudo chpasswd
   - apt update -y 
 kube-worker2:
   memory: 8192
@@ -36,5 +36,5 @@ kube-worker2:
   pool: default
   image: ubuntu
   cmds:
-  - echo CHANGEPASSWORD | passwd --stdin ubuntu
+  - echo "ubuntu:CHANGEPASSWORD" | sudo chpasswd
   - apt update -y 
