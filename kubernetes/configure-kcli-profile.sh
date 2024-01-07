@@ -37,11 +37,11 @@ else
   sudo mkdir -p  /root/.generated/vmfiles
 fi
 
-sed -i "s/CHANGEUSER/${KCLI_USER}/g" ceph-cluster/ceph-cluster.yml
-sed -i "s/CHANGEPASSWORD/${PASSWORD}/g" ceph-cluster/ceph-cluster.yml
-sed -i "s/qubinet/${NET_NAME}/g" ceph-cluster/ceph-cluster.yml
-sed -i "s/DNS_ENDPOINT/${DNS_FORWARDER}/g" ceph-cluster/ceph-cluster.yml
-sed -i "s/DOMAIN_NAME/${DOMAIN}/g" ceph-cluster/ceph-cluster.yml
+sed -i "s/CHANGEUSER/${KCLI_USER}/g" kubernetes/kubernetes.yml
+sed -i "s/CHANGEPASSWORD/${PASSWORD}/g" kubernetes/kubernetes.yml
+sed -i "s/qubinet/${NET_NAME}/g" kubernetes/kubernetes.yml
+sed -i "s/DNS_ENDPOINT/${DNS_FORWARDER}/g" kubernetes/kubernetes.yml
+sed -i "s/DOMAIN_NAME/${DOMAIN}/g" kubernetes/kubernetes.yml
 
 
-#cat ceph-cluster/ceph-cluster.yml
+#cat kubernetes/kubernetes.yml
