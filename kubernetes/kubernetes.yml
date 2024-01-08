@@ -1,5 +1,5 @@
 kube-ctrl01:
-  memory: 8192
+  memory: 16384
   numcpus: 4
   reservedns: true
   disks:
@@ -14,8 +14,9 @@ kube-ctrl01:
   - apt install -y git 
   - cd /home/ubuntu
   - git clone https://github.com/tosin2013/kubernetes_deployment.git
+  - chown ubuntu:ubuntu -R ~/kubernetes_deployment
 kube-worker1:
-  memory: 8192
+  memory: 16384
   numcpus: 4
   disks:
   - size: 200
@@ -27,7 +28,7 @@ kube-worker1:
   - echo "ubuntu:CHANGEPASSWORD" | sudo chpasswd
   - apt update -y 
 kube-worker2:
-  memory: 8192
+  memory: 16384
   numcpus: 4
   disks:
   - size: 200
