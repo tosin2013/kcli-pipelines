@@ -33,8 +33,8 @@ export  ACTION="create" # create, delete
 EOF
 
 or 
-$ sed -i 's/export VM_NAME=.*/export VM_NAME=rhel9-$(echo $RANDOM | md5sum | head -c 5; echo;)/g' notouch.env
-$ sed -i 's/export VM_PROFILE=.*/export VM_PROFILE=rhel9/g' notouch.env
+$ sed -i 's/export VM_NAME=.*/export VM_NAME=rhel8-$(echo $RANDOM | md5sum | head -c 5; echo;)/g' notouch.env
+$ sed -i 's/export VM_PROFILE=.*/export VM_PROFILE=rhel8/g' notouch.env
 
 $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/deploy-vm.sh && chmod +x deploy-vm.sh
 $ tmux new-session -d -s deploy-vm 'source notouch.env  && sudo -E  ./deploy-vm.sh'
