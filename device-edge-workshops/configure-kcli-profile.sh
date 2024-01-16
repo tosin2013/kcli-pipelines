@@ -42,12 +42,12 @@ else
 fi
 
 
-if ! kcli list networks | grep -q internal-network; then
-    kcli create network -c 192.168.7.0/24 internal-network
+if ! kcli list networks | grep -q internal-net; then
+    kcli create network -c 192.168.7.0/24 internal-net
 fi
 
-if ! kcli list networks | grep -q external-network; then
-    kcli create network -c 192.168.8.0/24 external-network
+if ! kcli list networks | grep -q external-net; then
+    kcli create network -c 192.168.8.0/24 external-net
 fi
 
 
@@ -58,8 +58,8 @@ user_password: ${PASSWORD}
 disk_size: ${DISK_SIZE} 
 numcpus: 6
 memory: 16368
-internal_net_name: internal-network
-external_net_name: external-network
+internal_net_name: internal-net
+external_net_name: external-net
 reservedns: ${DNS_FORWARDER}
 domainname: ${DOMAIN}
 offline_token: ${OFFLINE_TOKEN}
