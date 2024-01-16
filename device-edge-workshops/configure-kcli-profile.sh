@@ -13,130 +13,69 @@ else
 fi
 
 cd $KCLI_SAMPLES_DIR
-if [ -f /tmp/manifest.zip ]; then
-  echo "manifest.zip file already exists"
+
+
+/usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
+PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
+RHSM_ORG=$(yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
+RHSM_ACTIVATION_KEY=$(yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
+OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
+PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
+VM_NAME=rhel8-$(echo $RANDOM | md5sum | head -c 5; echo;)
+IMAGE_NAME=rhel8
+DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
+DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+DISK_SIZE=50
+KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
+sudo rm -rf kcli-profiles.yml
+if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
+  sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
+else 
+    sudo mkdir -p /home/${KCLI_USER}/.kcli
+    sudo mkdir -p /root/.kcli
+fi
+if [ -d /home/${KCLI_USER}/.generated/vmfiles ]; then
+  echo "generated directory already exists"
 else
-  echo "manifest.zip file does not exist"
-  #exit 1
+  sudo mkdir -p  /home/${KCLI_USER}/.generated/vmfiles
+  sudo mkdir -p  /root/.generated/vmfiles
 fi
 
-if [  -f /root/.vault_password ]; then
-  echo "vault password file already exists"
-else
-  echo "vault password file does not exist"
-  #exit 1
+
+if ! kcli list networks | grep -q internal-network; then
+    kcli create network -c 192.168.7.0/24 internal-network
 fi
 
-function deploy_via_kcli(){
+if ! kcli list networks | grep -q external-network; then
+    kcli create network -c 192.168.8.0/24 external-network
+fi
 
-    source helper_scripts/default.env 
-    /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
-    PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
-    RHSM_PASSWORD=$(yq eval '.rhsm_password' "${ANSIBLE_VAULT_FILE}")
-    RHSM_USERNAME=$(yq eval '.rhsm_username' "${ANSIBLE_VAULT_FILE}")
-    RHSM_ORG=$(yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
-    RHSM_ACTIVATION_KEY=$(yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
-    OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
-    PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
-    DOMAIN_NAME=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
-    DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
-    VM_NAME=device-edge-workshops
-    IMAGE_NAME=rhel9
-    DISK_SIZE=200
-    MEMORTY=32768
-    CPU_NUM=8
-    KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
-    #sudo rm -rf kcli-profiles.yml
-    if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
-      sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
-    else 
-        sudo mkdir -p /home/${KCLI_USER}/.kcli
-        sudo mkdir -p /root/.kcli
-    fi
-    if [ -d /home/${KCLI_USER}/.generated/vmfiles ]; then
-      echo "generated directory already exists"
-    else
-      sudo mkdir -p  /home/${KCLI_USER}/.generated/vmfiles
-      sudo mkdir -p  /root/.generated/vmfiles
-    fi
 
 cat >/tmp/vm_vars.yaml<<EOF
 image: ${IMAGE_NAME}
 user: cloud-user
 user_password: ${PASSWORD}
 disk_size: ${DISK_SIZE} 
-numcpus: ${CPU_NUM}
-memory: ${MEMORTY}
-net_name: ${NET_NAME} 
+numcpus: 6
+memory: 16368
+internal_net_name: internal-network
+external_net_name: external-network
 reservedns: ${DNS_FORWARDER}
+domainname: ${DOMAIN}
 offline_token: ${OFFLINE_TOKEN}
 rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
 EOF
-
-    sudo python3 profile_generator/profile_generator.py update-yaml device-edge-workshops device-edge-workshops/template.yaml   --vars-file /tmp/vm_vars.yaml
-    sudo echo ${PULL_SECRET} | sudo tee pull-secret.json  > /dev/null
-    sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
-    sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
-    sudo cp $(pwd)/device-edge-workshops/local-inventory.yml $(pwd)/device-edge-workshops/local-inventory.yml.bak
-    sudo sed -i "s/your-password/${PASSWORD}/g" $(pwd)/device-edge-workshops/local-inventory.yml
-    sudo cp $(pwd)/device-edge-workshops/local-inventory.yml  /home/${KCLI_USER}/.generated/vmfiles
-    sudo cp $(pwd)/device-edge-workshops/local-inventory.yml /root/.generated/vmfiles
-    sudo rm -rf $(pwd)/device-edge-workshops/local-inventory.yml
-    sudo cp $(pwd)/device-edge-workshops/local-inventory.yml.bak $(pwd)/device-edge-workshops/local-inventory.yml
-    sudo cp $(pwd)/device-edge-workshops/extra_vars.yml $(pwd)/device-edge-workshops/extra_vars.yml.bak
-    sudo sed -i "s/your-password/${RHSM_PASSWORD}/g" $(pwd)/device-edge-workshops/extra_vars.yml
-    sudo sed -i "s/your-username/${RHSM_USERNAME}/g" $(pwd)/device-edge-workshops/extra_vars.yml
-    sudo sed -i "s/your-token-here/${OFFLINE_TOKEN}/g" $(pwd)/device-edge-workshops/extra_vars.yml
-    sudo sed -i "s/internallab.io/${DOMAIN_NAME}/g" $(pwd)/device-edge-workshops/extra_vars.yml
-    #$(pwd)/device-edge-workshops/manifest-generator.sh /tmp/manifest.zip
-    sudo cp $(pwd)/device-edge-workshops/extra_vars.yml  /home/${KCLI_USER}/.generated/vmfiles
-    sudo cp $(pwd)/device-edge-workshops/extra_vars.yml /root/.generated/vmfiles
-    sudo sed -i "s/DOMAIN=testingdomain.io/DOMAIN=${DOMAIN_NAME}/g" $(pwd)/device-edge-workshops/setup-demo-infra.sh
-    sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh  /home/${KCLI_USER}/.generated/vmfiles
-    sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /root/.generated/vmfiles
-    #cat  $(pwd)/device-edge-workshops/extra_vars.yml 
-    sudo cp  $(pwd)/device-edge-workshops/extra_vars.yml.bak $(pwd)/device-edge-workshops/extra_vars.yml
-    #echo "Creating VM ${VM_NAME}"
-    #sudo kcli create vm -p device-edge-workshops ${VM_NAME} --wait
-    #cat  kcli-profiles.yml
-    sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
-    sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
-    /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
-}
-
-function deploy_via_aws(){
-    echo "deploying via aws"
-    #export AWS_ACCESS_KEY_ID=CHANGEME
-    #export AWS_SECRET_ACCESS_KEY=CHANGEME
-}
-
-
-DEPLOYMENT_TYPE=kcli # aws
-
-if [ $DEPLOYMENT_TYPE == "kcli" ];
-then 
-    deploy_via_kcli
-else [ $DEPLOYMENT_TYPE == "aws" ];
-    deploy_via_aws
-fi
-
-#cd /opt/freeipa-workshop-deployer/2_ansible_config/
-#IP_ADDRESS=$(sudo kcli info vm device-edge-workshops | grep ip: | awk '{print $2}')
-#echo "IP Address: ${IP_ADDRESS}"
-#sudo python3  dynamic_dns.py --add controller "$IP_ADDRESS" 
-#sudo python3 dynamic_dns.py --add 'cockpit' "$IP_ADDRESS" 
-#sudo python3 dynamic_dns.py --add 'gitea' "$IP_ADDRESS"
-#sudo python3 dynamic_dns.py --add 'edge-manager' "$IP_ADDRESS"
-#cd ..
-#./2_ansible_config/populate-hostnames.sh || exit 1
-#cd $KCLI_SAMPLES_DIR
-
-#echo "Current Ansible Release:
-#--------------------------------
-#Ansible Automation Platform 2.3 Setup Bundle
-#Last modified: 2023-03-16 SHA-256 Checksum: eae31a1c45e057c3f5d2302c6cf497060a51baec73c86a7f95042d51e4150eb8
-#URL: https://access.redhat.com/downloads/content/480/ver=2.3/rhel---9/2.3/x86_64/product-software"
-#echo "--------------------------------"
-#echo "sudo kcli ssh device-edge-workshops"
-#echo "sudo su -"
+sudo kcli download image ${IMAGE_NAME} -u  ${IMAGE_URL}
+sudo python3 profile_generator/profile_generator.py update-yaml rhel8 rhel8/template.yaml  --vars-file /tmp/vm_vars.yaml
+#cat  kcli-profiles.yml
+/usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
+sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
+sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
+sudo cp  pull-secret.json  /home/${KCLI_USER}/.generated/vmfiles
+sudo cp pull-secret.json /root/.generated/vmfiles
+sudo rm pull-secret.json
+sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /home/${KCLI_USER}/.generated/vmfiles
+sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /root/.generated/vmfiles
+#echo "Creating VM ${VM_NAME}"
+#sudo kcli create vm -p rhel8 ${VM_NAME} --wait
