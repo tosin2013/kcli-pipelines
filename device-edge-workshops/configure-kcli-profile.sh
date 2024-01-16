@@ -21,8 +21,8 @@ RHSM_ORG=$(yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
 RHSM_ACTIVATION_KEY=$(yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
 OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
 PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
-VM_NAME=rhel8-$(echo $RANDOM | md5sum | head -c 5; echo;)
-IMAGE_NAME=rhel8
+VM_NAME=device-edge-deployer
+IMAGE_NAME=rhel9
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50
@@ -51,6 +51,7 @@ if ! kcli list networks | grep -q external-net; then
 fi
 
 
+echo "${PULL_SECRET}" > pull-secret.json
 cat >/tmp/vm_vars.yaml<<EOF
 image: ${IMAGE_NAME}
 user: cloud-user
@@ -72,10 +73,8 @@ sudo python3 profile_generator/profile_generator.py update-yaml rhel8 rhel8/temp
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
-sudo cp  pull-secret.json  /home/${KCLI_USER}/.generated/vmfiles
+sudo cp pull-secret.json  /home/${KCLI_USER}/.generated/vmfiles
 sudo cp pull-secret.json /root/.generated/vmfiles
 sudo rm pull-secret.json
-sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /home/${KCLI_USER}/.generated/vmfiles
-sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /root/.generated/vmfiles
 #echo "Creating VM ${VM_NAME}"
 #sudo kcli create vm -p rhel8 ${VM_NAME} --wait
