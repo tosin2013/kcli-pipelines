@@ -61,7 +61,7 @@ numcpus: 6
 memory: 16368
 internal_net_name: internal-net
 external_net_name: external-net
-reservedns: ${DNS_FORWARDER}
+reservedns: 1.1.1.1
 domainname: ${DOMAIN}
 offline_token: ${OFFLINE_TOKEN}
 rhnorg: ${RHSM_ORG}
