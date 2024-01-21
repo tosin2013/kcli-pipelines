@@ -34,7 +34,7 @@ sudo kcli download image rhel9
 ```
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
-export TARGET_SERVER="machine_name" # equinix 
+export TARGET_SERVER="rhel8-equinix" # equinix 
 export VM_PROFILE=device-edge-workshops
 export VM_NAME="device-edge-workshops"
 export  ACTION="create" # create, delete

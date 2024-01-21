@@ -43,7 +43,7 @@ fi
 
 
 if ! kcli list networks | grep -q internal-net; then
-    kcli create network -c 192.168.7.0/24 internal-net
+    kcli create network -c 192.168.7.0/24 internal-net -P dhcp=false -P dns=false
 fi
 
 if ! kcli list networks | grep -q external-net; then
