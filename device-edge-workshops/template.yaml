@@ -19,7 +19,7 @@
     - {{ external_net_name }}
     - name: {{ internal_net_name }}
       nic: eth1
-      ip: 192.168.100.5
+      ip: 192.168.40.5
       mask: 255.255.255.0
   dns: {{ reservedns }}
   cmds:
