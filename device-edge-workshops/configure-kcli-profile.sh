@@ -57,8 +57,8 @@ image: ${IMAGE_NAME}
 user: cloud-user
 user_password: ${PASSWORD}
 disk_size: ${DISK_SIZE} 
-numcpus: 6
-memory: 16368
+numcpus: 8
+memory: 32736
 internal_net_name: internal-net
 external_net_name: external-net
 reservedns: 1.1.1.1
