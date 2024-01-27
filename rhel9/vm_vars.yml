@@ -1,4 +1,4 @@
-image: rhel-baseos-9.1-x86_64-kvm.qcow2 
+image: rhel9
 user: admin
 user_password: secret
 disk_size: 30
