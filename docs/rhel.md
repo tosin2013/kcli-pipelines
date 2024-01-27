@@ -15,7 +15,7 @@ $ sudo su -
 ```
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
-export TARGET_SERVER="equinix" # equinix 
+export TARGET_SERVER="rhel8-equinix" # equinix 
 EOF
 
 $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/configure-kcli-profiles.sh && chmod +x configure-kcli-profiles.sh
@@ -26,7 +26,7 @@ $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh
 ```
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
-export TARGET_SERVER="supermicro" # equinix 
+export TARGET_SERVER="rhel8-equinix" # equinix 
 export VM_PROFILE=rhel8
 export VM_NAME="rhel8-$(echo $RANDOM | md5sum | head -c 5; echo;)"
 export  ACTION="create" # create, delete
@@ -45,7 +45,7 @@ $ tmux attach -t deploy-vm
 ```
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
-export TARGET_SERVER="supermicro" # equinix 
+export TARGET_SERVER="rhel8-equinix" # equinix 
 export VM_PROFILE=rhel9
 export VM_NAME="rhel9-$(echo $RANDOM | md5sum | head -c 5; echo;)"
 export  ACTION="create" # create, delete
