@@ -79,6 +79,8 @@ reservedns: 1.1.1.1
 domainname: ${DOMAIN}
 offline_token: ${OFFLINE_TOKEN}
 rhnorg: ${RHSM_ORG}
+rhel_username: ${RHEL_USERNAME}
+rhel_password: ${RHEL_PASSWORD}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
 provided_sha_value: ${PROVIDED_SHA_VALUE}
 EOF

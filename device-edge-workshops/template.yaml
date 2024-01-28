@@ -38,5 +38,5 @@
     - dnf install git vim unzip wget tar python3 python3-pip util-linux-user tmux -y 
     - curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/device-edge-workshops/rhel9_aap.sh --output /tmp/rhel9_aap.sh 
     - chmod +x /tmp/rhel9_aap.sh 
-    - echo "bash -x /tmp/rhel9_aap.sh {{ rhel_username }} {{ rhel_password }} {{ provided_sha_value }}" > /home/cloud-user/restart-ansible-aap.sh
+    - echo "bash -x sudo /tmp/rhel9_aap.sh {{ rhel_username }} {{ rhel_password }} {{ provided_sha_value }}" > /home/cloud-user/restart-ansible-aap.sh
     - git clone https://github.com/tosin2013/device-edge-deployer.git && cd device-edge-deployer && ./hack/setup-bastion.sh
