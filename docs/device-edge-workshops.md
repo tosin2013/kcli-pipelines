@@ -51,6 +51,11 @@ $ tmux attach -t deploy-vm
 
 ```
 
+### for debugging
+```
+sudo kcli create vm -p $VM_PROFILE $VM_NAME -P dns=${DNS_ADDRESS} --wait
+```
+
 ### Validate the device-edge-workshops
 ```
 # sudo kcli list vm 

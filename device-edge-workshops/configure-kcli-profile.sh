@@ -12,12 +12,22 @@ else
   exit 1
 fi
 
+if [  -f /root/.vault_password ]; then
+  echo "vault password file already exists"
+else
+  echo "vault password file does not exist"
+  #exit 1
+fi
+
+
 cd $KCLI_SAMPLES_DIR
 
 
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
 RHSM_ORG=$(yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
+RHEL_USERNAME=$(yq eval '.rhsm_username' "${ANSIBLE_VAULT_FILE}")
+RHEL_PASSWORD=$(yq eval '.rhsm_password' "${ANSIBLE_VAULT_FILE}")
 RHSM_ACTIVATION_KEY=$(yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
 OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
 PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
@@ -27,6 +37,10 @@ DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=120
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
+
+#  https://access.redhat.com/downloads/content/480/ver=2.4/rhel---9/2.4/x86_64/product-software
+PROVIDED_SHA_VALUE=7c4509b3436c7423a60a65815493b3d66162acd09dbca131a9b5edad9e319a40 #$(yq eval '.provided_sha_value' "${ANSIBLE_ALL_VARIABLES}")
+
 sudo rm -rf kcli-profiles.yml
 if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
   sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
@@ -66,6 +80,7 @@ domainname: ${DOMAIN}
 offline_token: ${OFFLINE_TOKEN}
 rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
+provided_sha_value: ${PROVIDED_SHA_VALUE}
 EOF
 
 
