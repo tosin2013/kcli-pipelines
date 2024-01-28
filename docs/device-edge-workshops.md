@@ -48,7 +48,7 @@ $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/deplo
 
 $ tmux new-session -d -s deploy-vm 'source notouch.env  && sudo -E  ./deploy-vm.sh'
 $ tmux attach -t deploy-vm
-
+$ sudo kcli scp /tmp/baremetal-playbooks/ device-edge-workshops:/tmp
 ```
 
 ### for debugging
