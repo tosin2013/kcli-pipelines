@@ -48,6 +48,7 @@ $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/deplo
 
 $ tmux new-session -d -s deploy-vm 'source notouch.env  && sudo -E  ./deploy-vm.sh'
 $ tmux attach -t deploy-vm
+
 ```
 
 ### Validate the device-edge-workshops
@@ -60,7 +61,8 @@ $ tmux attach -t deploy-vm
 |  device-edge-workshops   |   up   |  192.168.122.95 |                 rhel9                 | kvirt |     device-edge-workshops     |
 |     mirror-registry      |   up   |  192.168.122.92 | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt |     mirror-registry      |
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
-# sudo kcli ssh device-edge-workshops
+# sudo kcli scp /tmp/baremetal-playbooks device-edge-workshops:/tmp
+$ sudo kcli ssh device-edge-workshops
 $ sudo su - 
 $ ls
 device-edge-workshops  offline_token  setup-demo-infra.sh

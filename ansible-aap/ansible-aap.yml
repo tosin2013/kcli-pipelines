@@ -23,4 +23,5 @@ cmds:
 - echo {{ offline_token }} > /root/offline_token
 - curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/ansible-aap/rhel9_ansible.sh --output /tmp/rhel9_ansible.sh 
 - chmod +x /tmp/rhel9_ansible.sh 
+- echo "bash -x /tmp/rhel9_ansible.sh {{ rhel_username }} {{ rhel_password }} {{ provided_sha_value }}" > /home/cloud-user/restart-ansible-aap.sh
 - bash -x /tmp/rhel9_ansible.sh {{ rhel_username }} {{ rhel_password }} {{ provided_sha_value }} | tee /tmp/install.log
