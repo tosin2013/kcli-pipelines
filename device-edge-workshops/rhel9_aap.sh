@@ -39,6 +39,8 @@ cat >run_me.yaml<<EOF
         name: aap_download                     
 EOF
 
+cp /root/.vault_password /opt/agnosticd/ansible/
+
 
 offline_token=$(cat /root/offline_token)
 export PROVIDED_SHA_VALUE="$3"
@@ -66,14 +68,14 @@ edge-manager-local.local ansible_connection=local
 [database]
 
 [all:vars]
-admin_password='$(openssl rand -base64 12)'
+admin_password='CHANGEME'
 
 pg_host=''
 pg_port=''
 
 pg_database='awx'
 pg_username='awx'
-pg_password='$(openssl rand -base64 12)'
+pg_password='CHANGEME'
 pg_sslmode='prefer'  # set to 'verify-full' for client-side enforced SSL
 
 registry_url='registry.redhat.io'
@@ -83,8 +85,6 @@ registry_password='${REGISTRY_PASSWORD}'
 nginx_http_port='10080'
 nginx_https_port='10443'
 EOF
-
-cp ~/.vault_password /opt/agnosticd/ansible/
 
 sudo ./setup.sh 
 

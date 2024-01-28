@@ -39,4 +39,4 @@
     - curl https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/device-edge-workshops/rhel9_aap.sh --output /tmp/rhel9_aap.sh 
     - chmod +x /tmp/rhel9_aap.sh 
     - echo "bash -x sudo /tmp/rhel9_aap.sh {{ rhel_username }} {{ rhel_password }} {{ provided_sha_value }}" > /home/cloud-user/restart-ansible-aap.sh
-    - git clone https://github.com/tosin2013/device-edge-deployer.git && cd device-edge-deployer && ./hack/setup-bastion.sh
+    #- cd /home/cloud-user && git clone https://github.com/tosin2013/device-edge-deployer.git && chown -R cloud-user:cloud-user device-edge-deployer && cd device-edge-deployer && ./hack/setup-bastion.sh
