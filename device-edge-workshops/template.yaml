@@ -23,6 +23,7 @@
       mask: 255.255.255.0
   dns: {{ reservedns }}
   cmds:
+    - hostnamectl set-hostname edge-manager-local.local
     - nmcli connection modify  "System eth0"  ipv4.dns {{ reservedns }}
     - nmcli connection down "System eth0" && sudo nmcli connection up "System eth0"
     - echo {{ user_password }} | passwd --stdin root
