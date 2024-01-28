@@ -84,6 +84,8 @@ nginx_http_port='10080'
 nginx_https_port='10443'
 EOF
 
+cp ~/.vault_password /opt/agnosticd/ansible/
+
 sudo ./setup.sh 
 
 echo "https://$VM_IP_ADDRESS" > /opt/aap_info.txt
