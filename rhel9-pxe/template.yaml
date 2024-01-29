@@ -16,7 +16,11 @@
   reservedns: true
   {% endif %}
   nets:
-    - name: {{ net_name }}
+    - {{ external_net_name }}
+    - name: {{ internal_net_name }}
+      nic: eth1
+      ip: 192.168.40.2
+      mask: 255.255.255.0
   dns: {{ reservedns }}
   cmds:
     - nmcli connection modify  "cloud-init eth0"  ipv4.dns {{ reservedns }}

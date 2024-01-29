@@ -41,6 +41,14 @@ else
   sudo mkdir -p  /root/.generated/vmfiles
 fi
 
+if ! kcli list networks | grep -q internal-net; then
+    kcli create network -c 192.168.40.0/24 internal-net -P dhcp=false -P dns=false
+fi
+
+if ! kcli list networks | grep -q external-net; then
+    kcli create network -c 192.168.41.0/24 external-net
+fi
+
 
 cat >/tmp/vm_vars.yaml<<EOF
 image: ${IMAGE_NAME}
@@ -49,6 +57,8 @@ user_password: ${PASSWORD}
 disk_size: ${DISK_SIZE} 
 numcpus: 4
 memory: 8184
+internal_net_name: internal-net
+external_net_name: external-net
 net_name: ${NET_NAME} 
 reservedns: ${DNS_FORWARDER}
 domainname: ${DOMAIN}
