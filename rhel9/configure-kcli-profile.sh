@@ -56,7 +56,7 @@ offline_token: ${OFFLINE_TOKEN}
 rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
 EOF
-sudo kcli download image ${IMAGE_NAME} -u  ${IMAGE_URL}
+
 sudo python3 profile_generator/profile_generator.py update-yaml rhel9 rhel9/template.yaml  --vars-file /tmp/vm_vars.yaml
 #cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
