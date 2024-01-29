@@ -72,10 +72,5 @@ sudo python3 profile_generator/profile_generator.py update-yaml rhel9 rhel9/temp
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
-sudo cp  pull-secret.json  /home/${KCLI_USER}/.generated/vmfiles
-sudo cp pull-secret.json /root/.generated/vmfiles
-sudo rm pull-secret.json
-sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /home/${KCLI_USER}/.generated/vmfiles
-sudo cp $(pwd)/device-edge-workshops/setup-demo-infra.sh /root/.generated/vmfiles
 #echo "Creating VM ${VM_NAME}"
 #sudo kcli create vm -p rhel9 ${VM_NAME} --wait
