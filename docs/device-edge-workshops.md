@@ -51,10 +51,6 @@ $ tmux attach -t deploy-vm
 $ sudo kcli scp /tmp/baremetal-playbooks/ device-edge-workshops:/tmp
 ```
 
-### for debugging
-```
-sudo kcli create vm -p $VM_PROFILE $VM_NAME -P dns=${DNS_ADDRESS} --wait
-```
 
 ### Validate the device-edge-workshops
 ```
@@ -80,5 +76,6 @@ If the deployment fails using tmux run the following commands
 ```
 $ sudo kcli list vm
 $ sudo kcli delete vm device-edge-workshops
-$ source notouch.env  && sudo -E  ./deploy-vm.sh
+$ source notouch.env
+$ sudo kcli create vm -p $VM_PROFILE $VM_NAME -P dns=${DNS_ADDRESS} --wait
 ```

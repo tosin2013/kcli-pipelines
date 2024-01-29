@@ -59,6 +59,9 @@ function return_cloud_user() {
         ansible-aap)
             echo "cloud-user"
             ;;
+        rhel9-pxe)
+            echo "cloud-user"
+            ;;
         rhel9)
             echo "cloud-user"
             ;;
