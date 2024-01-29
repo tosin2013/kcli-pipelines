@@ -1,6 +1,6 @@
 #!/bin/bash
-#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-#set -xe
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -x
 if [ -f ../helper_scripts/default.env ];
 then 
   source ../helper_scripts/default.env
@@ -25,7 +25,7 @@ VM_NAME=rhel9-pxe-$(echo $RANDOM | md5sum | head -c 5; echo;)
 IMAGE_NAME=rhel9
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
-DISK_SIZE=50
+DISK_SIZE=200
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 sudo rm -rf kcli-profiles.yml
 if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
