@@ -14,7 +14,7 @@ fi
 
 cd $KCLI_SAMPLES_DIR
 
-
+/usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
 RHSM_ORG=$(yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")

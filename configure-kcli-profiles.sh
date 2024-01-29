@@ -86,16 +86,38 @@ sudo -E ./freeipa-server-container/configure-kcli-profile.sh || exit $?
 #cat ~/.kcli/profiles.yml | tee /tmp/kcli-profiles.yml > /dev/null
 #echo "*********************************************"
 #read -n 1 -s -r -p "Press any key to continue"
+echo "Configuring openshift-jumpbox type"
+echo "*********************************************"
 sudo -E ./openshift-jumpbox/configure-kcli-profile.sh || exit $?
+echo "Configuring ansible-aap type"
+echo "*********************************************"
 sudo -E ./ansible-aap/configure-kcli-profile.sh || exit $?
+echo "Configuring device-edge-workshops type"
+echo "*********************************************"
 sudo -E ./device-edge-workshops/configure-kcli-profile.sh || exit $?
+echo "Configuring microshift-demos type"
+echo "*********************************************"
 sudo -E ./microshift-demos/configure-kcli-profile.sh  || exit $?
+echo "Configuring mirror-registry type"
+echo "*********************************************"
 sudo -E ./mirror-registry/configure-kcli-profile.sh || exit $?
+echo "Configuring kubernetes type"
+echo "*********************************************"
 sudo -E ./kubernetes/configure-kcli-profile.sh || exit $?
+echo "Configuring jupyterlab type"
+echo "*********************************************"
 sudo -E ./jupyterlab/configure-kcli-profile.sh || exit $?
+echo "Configuring harbor type"
+echo "*********************************************"
 sudo -E ./harbor/configure-kcli-profile.sh || exit $?
+echo "Configuring ceph-cluster type"
+echo "*********************************************"
 sudo -E ./ceph-cluster/configure-kcli-profile.sh || exit $?
+echo "Configuring rhel9-pxe type"
+echo "*********************************************"
 sudo -E ./rhel9-pxe/configure-kcli-profile.sh || exit $?
+echo "Configuring ubuntu type"
+echo "*********************************************"
 sudo -E ./ubuntu/configure-kcli-profile.sh || exit $?
 echo "*********************************************"
 cat ~/.kcli/profiles.yml | tee /tmp/kcli-profiles.yml > /dev/null
