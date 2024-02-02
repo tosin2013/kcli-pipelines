@@ -31,6 +31,8 @@
     - dnf install git vim unzip wget tar python3 python3-pip util-linux-user tmux firewalld  ansible-core -y 
     - wget https://dl.smallstep.com/cli/docs-ca-install/latest/step-cli_amd64.rpm && sudo rpm -i step-cli_amd64.rpm
     - wget https://dl.smallstep.com/certificates/docs-ca-install/latest/step-ca_amd64.rpm && sudo rpm -i step-ca_amd64.rpm
+    - ansible-galaxy collection install maxhoesel.smallstep>=0.25.2
+    - hostnamectl set-hostname step-ca.{{ domain }}
 
 
 
