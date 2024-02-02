@@ -16,11 +16,7 @@
   reservedns: true
   {% endif %}
   nets:
-    - {{ external_net_name }}
-    - name: {{ internal_net_name }}
-      nic: eth1
-      ip: 192.168.40.2
-      mask: 255.255.255.0
+    - name: {{ net_name }}
   dns: {{ reservedns }}
   cmds:
     - nmcli connection modify  "cloud-init eth0"  ipv4.dns {{ reservedns }}
@@ -32,9 +28,9 @@
     - echo {{ user_password }} | passwd --stdin {{ user }}
     - subscription-manager refresh
     - subscription-manager attach --auto
-    - dnf install git vim unzip wget tar python3 python3-pip util-linux-user tmux firewalld -y 
-    - dnf install -y ipxe-bootimgs dnsmasq 
-    - mkdir -p /tftpboot && mkdir -p /tftpboot/menu && sudo chcon -t tftpdir_t /tftpboot 
-    - sudo cp /usr/share/ipxe/{undionly.kpxe,ipxe.efi} /tftpboot/
+    - dnf install git vim unzip wget tar python3 python3-pip util-linux-user tmux firewalld  ansible-core -y 
+    - wget https://dl.smallstep.com/cli/docs-ca-install/latest/step-cli_amd64.rpm && sudo rpm -i step-cli_amd64.rpm
+    - wget https://dl.smallstep.com/certificates/docs-ca-install/latest/step-ca_amd64.rpm && sudo rpm -i step-ca_amd64.rpm
+
 
 

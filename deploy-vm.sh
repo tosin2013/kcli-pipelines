@@ -62,6 +62,9 @@ function return_cloud_user() {
         rhel9-pxe)
             echo "cloud-user"
             ;;
+        rhel9-step-ca)
+            echo "cloud-user"
+            ;;
         rhel9)
             echo "cloud-user"
             ;;
