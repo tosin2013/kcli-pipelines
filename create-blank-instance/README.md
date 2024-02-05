@@ -6,7 +6,12 @@ ansible-galaxy collection install community.libvirt
 ```
 
 ```
-pip3 install libvirt-python
-pip3 install lxml
-sudo yum install libvirt-devel
+sudo pip3 install libvirt-python
+sudo pip3 install lxml
+sudo yum install libvirt-devel -y
+```
+
+## Run the playbook 
+```
+sudo -E /usr/local/bin/ansible-playbook  create-blank-instance/configure-blank-instance.yaml
 ```
