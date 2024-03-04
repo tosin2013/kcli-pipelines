@@ -12,7 +12,7 @@ else
   exit 1
 fi 
 
-if [  -f /root/.vault_password ]; thens
+if [  -f /root/.vault_password ]; then
   echo "vault password file already exists"
 else
   echo "vault password file does not exist"
