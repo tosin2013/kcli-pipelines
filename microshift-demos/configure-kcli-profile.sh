@@ -55,7 +55,7 @@ rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
 EOF
 
-sudo python3 profile_generator/profile_generator.py update-yaml microshift-demos microshift-demos/template.yaml  --vars-file /tmp/vm_vars.yaml
+sudo python3 profile_generator/profile_generator.py update_yaml microshift-demos microshift-demos/template.yaml  --vars-file /tmp/vm_vars.yaml
 sudo echo ${PULL_SECRET} | sudo tee pull-secret.json  > /dev/null
 #cat pull-secret.json
 ##cat  kcli-profiles.yml

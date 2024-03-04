@@ -12,6 +12,8 @@ fi
 if [ ! -d /opt/kcli-pipelines ];
 then 
     sudo git clone $GIT_REPO /opt/kcli-pipelines || exit $?
+    cd /opt/kcli-pipelines
+    sudo git checkout hetzner
 else 
     cd /opt/kcli-pipelines
     sudo git pull
@@ -52,9 +54,9 @@ KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 echo "KCLI USER: $KCLI_USER" || exit $?
 rm -rf ~/.kcli/profiles.yml
 sudo rm -f /root/.kcli/profiles.yml
-sudo python3 profile_generator/profile_generator.py update-yaml rhel8 rhel8/template.yaml --vars-file rhel8/vm_vars.yml
-sudo python3 profile_generator/profile_generator.py update-yaml rhel9 rhel9/template.yaml --vars-file rhel9/vm_vars.yml
-sudo python3 profile_generator/profile_generator.py update-yaml fedora38 fedora38/template.yaml --vars-file fedora38/vm_vars.yaml
+sudo python3 profile_generator/profile_generator.py update_yaml rhel8 rhel8/template.yaml --vars-file rhel8/vm_vars.yml
+sudo python3 profile_generator/profile_generator.py update_yaml rhel9 rhel9/template.yaml --vars-file rhel9/vm_vars.yml
+sudo python3 profile_generator/profile_generator.py update_yaml fedora38 fedora38/template.yaml --vars-file fedora38/vm_vars.yaml
 
 if [ ! -d /home/$KCLI_USER/.kcli ];
 then
