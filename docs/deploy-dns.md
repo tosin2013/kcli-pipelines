@@ -25,9 +25,9 @@ $ source notouch.env && sudo -E  ./configure-kcli-profiles.sh
 ```
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
-export TARGET_SERVER="machine_name" # equinix 
-export VM_PROFILE="freeipa-server-container"
-export VM_NAME="freeipa-server-container"
+export TARGET_SERVER="hetzner" # hetzner, equinix
+export VM_PROFILE="freeipa"
+export VM_NAME="freeipa"
 export  ACTION="create" # create, delete
 EOF
 $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/deploy-vm.sh && chmod +x deploy-vm.sh
