@@ -50,12 +50,12 @@ on:
       deployment_tag:
         description: 'OpenShift Version'
         required: true
-        default: '4.13'
+        default: '4.15'
         type: choice
         options:
-          - '4.12'
           - '4.13'
           - '4.14'
+          - '4.15'
       disconnected_install:
         description: 'Enable Disconnected Install'
         required: true
