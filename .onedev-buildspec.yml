@@ -1,0 +1,66 @@
+version: 30
+jobs:
+- name: Deploy VM
+  jobExecutor: testing
+  steps:
+  - !CommandStep
+    name: Configure KCLI Profiles
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Deploy VM
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./deploy-vm.sh\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  paramSpecs:
+  - !TextParam
+    name: CICD_PIPELINE
+    description: 'CICD_PIPELINE '
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'true'
+  - !TextParam
+    name: TARGET_SERVER
+    description: TARGET_SERVER
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: rhel8-equinix
+  - !ChoiceParam
+    name: VM_PROFILE
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: rhel8
+        color: '#0d87e9'
+      - value: rhel9
+        color: '#0d87e9'
+      - value: fedora
+        color: '#0d87e9'
+      - value: ubuntu
+        color: '#0d87e9'
+      - value: openshift-jumpbox
+        color: '#0d87e9'
+      - value: jupyterlab
+        color: '#0d87e9'
+  - !ChoiceParam
+    name: ACTION
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: create
+        color: '#0d87e9'
+      - value: delete
+        color: '#0d87e9'
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 3600
