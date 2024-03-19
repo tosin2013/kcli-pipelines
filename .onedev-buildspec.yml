@@ -4,20 +4,33 @@ jobs:
   jobExecutor: testing
   steps:
   - !CommandStep
+    name: Download kcli-pipelines
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "if [ ! -d /opt/kcli-pipelines ];\nthen \n  cd /opt/\n  git clone @param:GIT_REPO@\nelse\n  cd /opt/kcli-pipelines\n  git pull\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
     name: Configure KCLI Profiles
     runInContainer: false
     interpreter: !DefaultInterpreter
-      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nif [ @param:VM_PROFILE@ == \"freeipa\" ];\nthen \n  export VM_NAME=\"@param:VM_PROFILE@\"\nelse\n  export VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nfi \nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   - !CommandStep
     name: Deploy VM
     runInContainer: false
     interpreter: !DefaultInterpreter
-      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./deploy-vm.sh\n"
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nif [ @param:VM_PROFILE@ == \"freeipa\" ];\nthen \n  export VM_NAME=\"@param:VM_PROFILE@\"\nelse\n  export VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nfi \nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./deploy-vm.sh\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   paramSpecs:
+  - !TextParam
+    name: GIT_REPO
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: https://github.com/tosin2013/kcli-pipelines.git
   - !TextParam
     name: CICD_PIPELINE
     description: 'CICD_PIPELINE '
@@ -38,6 +51,8 @@ jobs:
     allowEmpty: false
     choiceProvider: !SpecifiedChoices
       choices:
+      - value: freeipa
+        color: '#0d87e9'
       - value: rhel8
         color: '#0d87e9'
       - value: rhel9
