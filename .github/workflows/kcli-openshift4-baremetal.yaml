@@ -9,7 +9,7 @@ on:
       deployment_config:
         description: 'Supported Deployment Configurations'
         required: true
-        default: 'kcli-openshift4-baremetal.yml'
+        default: 'cnv-kcli-openshift4-baremetal.yml'
         type: choice
         options:
           - cnv-kcli-openshift4-baremetal.yml
