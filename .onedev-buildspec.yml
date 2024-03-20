@@ -1,7 +1,7 @@
 version: 30
 jobs:
 - name: Deploy VM
-  jobExecutor: testing
+  jobExecutor: default-executor
   steps:
   - !CommandStep
     name: Download kcli-pipelines
