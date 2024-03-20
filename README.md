@@ -35,7 +35,7 @@ SSH_USER="lab-user"
 ACTION=create #delete
 ```
 
-Run thhe pipeline
+Run the pipeline
 ```
 $ ./trigger-pipeline.sh
 ```

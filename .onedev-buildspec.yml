@@ -1,0 +1,231 @@
+version: 30
+jobs:
+- name: Deploy VM
+  jobExecutor: default-executor
+  steps:
+  - !CommandStep
+    name: Download kcli-pipelines
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "if [ ! -d /opt/kcli-pipelines ];\nthen \n  cd /opt/\n  git clone @param:GIT_REPO@\nelse\n  cd /opt/kcli-pipelines\n  git pull\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure KCLI Profiles
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nif [ @param:VM_PROFILE@ == \"freeipa\" ];\nthen \n  export VM_NAME=\"@param:VM_PROFILE@\"\nelse\n  export VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nfi \nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Deploy VM
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nif [ @param:VM_PROFILE@ == \"freeipa\" ];\nthen \n  export VM_NAME=\"@param:VM_PROFILE@\"\nelse\n  export VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nfi \nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./deploy-vm.sh\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  paramSpecs:
+  - !TextParam
+    name: GIT_REPO
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: https://github.com/tosin2013/kcli-pipelines.git
+  - !TextParam
+    name: CICD_PIPELINE
+    description: 'CICD_PIPELINE '
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'true'
+  - !TextParam
+    name: TARGET_SERVER
+    description: TARGET_SERVER
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: rhel8-equinix
+  - !ChoiceParam
+    name: VM_PROFILE
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: freeipa
+        color: '#0d87e9'
+      - value: rhel8
+        color: '#0d87e9'
+      - value: rhel9
+        color: '#0d87e9'
+      - value: fedora
+        color: '#0d87e9'
+      - value: ubuntu
+        color: '#0d87e9'
+      - value: openshift-jumpbox
+        color: '#0d87e9'
+      - value: jupyterlab
+        color: '#0d87e9'
+  - !ChoiceParam
+    name: ACTION
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: create
+        color: '#0d87e9'
+      - value: delete
+        color: '#0d87e9'
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 3600
+- name: kcli-openshift4-baremetal
+  jobExecutor: default-executor
+  steps:
+  - !CommandStep
+    name: Download kcli-pipelines
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "if [ ! -d /opt/kcli-pipelines ];\nthen \n  cd /opt/\n  git clone @param:GIT_REPO@\nelse\n  cd /opt/kcli-pipelines\n  git pull\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure KCLI Profiles
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nif [ @param:VM_PROFILE@ == \"freeipa\" ];\nthen \n  export VM_NAME=\"@param:VM_PROFILE@\"\nelse\n  export VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nfi \nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Deploy VM
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: |
+        export TARGET_SERVER=@param:TARGET_SERVER@
+         export VM_NAME=@param:VM_PROFILE@
+         export VM_PROFILE=@param:VM_PROFILE@
+         export ACTION=@param:ACTION@
+         export DEPLOY_OPENSHIFT=@param:DEPLOY_OPENSHIFT@
+         export LAUNCH_STEPS=@param:LAUNCH_STEPS@
+         export TAG=@param:TAG@
+         export DISCONNECTED_INSTALL=@param:DISCONNECTED_INSTALL@
+         export DEPLOYMENT_CONFIG=@param:DEPLOYMENT_CONFIG@
+         cd /opt/kcli-pipelines/
+        ./deploy-vm.sh
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  paramSpecs:
+  - !TextParam
+    name: GIT_REPO
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: https://github.com/tosin2013/kcli-pipelines.git
+  - !TextParam
+    name: CICD_PIPELINE
+    description: 'CICD_PIPELINE '
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'true'
+  - !TextParam
+    name: TARGET_SERVER
+    description: TARGET_SERVER
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: rhel8-equinix
+  - !ChoiceParam
+    name: VM_PROFILE
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: kcli-openshift4-baremetal
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: kcli-openshift4-baremetal
+  - !ChoiceParam
+    name: ACTION
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: create
+        color: '#0d87e9'
+      - value: delete
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: create
+  - !ChoiceParam
+    name: DEPLOY_OPENSHIFT
+    description: '''Deploy The OpenShit Cluster on Launch'
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: 'true'
+        color: '#0d87e9'
+      - value: 'false'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'true'
+  - !ChoiceParam
+    name: LAUNCH_STEPS
+    description: Auto deploy Steps
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: 'true'
+        color: '#0d87e9'
+      - value: 'false'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'true'
+  - !ChoiceParam
+    name: TAG
+    description: OpenShift Version
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: '4.13'
+        color: '#0d87e9'
+      - value: '4.14'
+        color: '#0d87e9'
+      - value: '4.15'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: '4.15'
+  - !ChoiceParam
+    name: DISCONNECTED_INSTALL
+    description: Enable Disconnected Install
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: 'true'
+        color: '#0d87e9'
+      - value: 'false'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'false'
+  - !ChoiceParam
+    name: DEPLOYMENT_CONFIG
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: cnv-kcli-openshift4-baremetal.yml
+        color: '#0d87e9'
+      - value: convereged-kcli-openshift4-baremetal.yml
+        color: '#0d87e9'
+      - value: kcli-openshift4-baremetal.yml
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: cnv-kcli-openshift4-baremetal.yml
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 3600
