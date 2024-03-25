@@ -228,4 +228,4 @@ jobs:
   retryCondition: never
   maxRetries: 3
   retryDelay: 30
-  timeout: 3600
+  timeout: 7200
