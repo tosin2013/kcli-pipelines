@@ -21,7 +21,7 @@ jobs:
     name: Deploy VM
     runInContainer: false
     interpreter: !DefaultInterpreter
-      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nif [ @param:VM_PROFILE@ == \"freeipa\" ];\nthen \n  export VM_NAME=\"@param:VM_PROFILE@\"\nelse\n  export VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nfi \n\n#if [ @param:ACTION@ == \"delete\" ];\n#then \n#   export VM_NAME=\"@param:VM_NAME_INSTANCE@\"\n#fi \n\nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./deploy-vm.sh\n"
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nif [ @param:VM_PROFILE@ == \"freeipa\" ];\nthen \n  export VM_NAME=\"@param:VM_PROFILE@\"\nelse\n  export VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nfi \n\nif [ @param:ACTION@ == \"delete\" ];\nthen \n   export VM_NAME=\"@param:VM_NAME_INSTANCE@\"\nfi \n\nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./deploy-vm.sh\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   paramSpecs:
@@ -79,6 +79,7 @@ jobs:
         color: '#0d87e9'
   - !TextParam
     name: VM_NAME_INSTANCE
+    description: Only use when you want to delete a vm
     allowEmpty: false
     multiline: false
   retryCondition: never
