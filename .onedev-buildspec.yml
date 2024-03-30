@@ -80,7 +80,7 @@ jobs:
   - !TextParam
     name: VM_NAME_INSTANCE
     description: Only use when you want to delete a vm
-    allowEmpty: false
+    allowEmpty: true
     multiline: false
   retryCondition: never
   maxRetries: 3
