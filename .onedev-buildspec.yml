@@ -82,6 +82,19 @@ jobs:
     description: Only use when you want to delete a vm
     allowEmpty: true
     multiline: false
+  - !ChoiceParam
+    name: COMMUNITY_VERSION
+    description: "Set to true if you do not have access to Red Hat Activation Keys\r\n\r\nhttps://access.redhat.com/articles/1378093"
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: 'true'
+        color: '#0d87e9'
+      - value: 'false'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'false'
   retryCondition: never
   maxRetries: 3
   retryDelay: 30
