@@ -65,7 +65,7 @@ jobs:
         color: '#0d87e9'
       - value: jupyterlab
         color: '#0d87e9'
-      - value: 'centos9stream'
+      - value: centos9stream
         color: '#0d87e9'
   - !ChoiceParam
     name: ACTION
@@ -77,6 +77,17 @@ jobs:
         color: '#0d87e9'
       - value: delete
         color: '#0d87e9'
+  - !TextParam
+    name: VM_NAME
+    showCondition:
+      inputName: ACTION
+      valueMatcher: !ValueIsOneOf
+        values:
+        - delete
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: vm_name
   retryCondition: never
   maxRetries: 3
   retryDelay: 30
