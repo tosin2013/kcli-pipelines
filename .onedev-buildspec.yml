@@ -79,15 +79,8 @@ jobs:
         color: '#0d87e9'
   - !TextParam
     name: VM_NAME_INSTANCE
-    showCondition:
-      inputName: ACTION
-      valueMatcher: !ValueIsOneOf
-        values:
-        - delete
     allowEmpty: false
     multiline: false
-    defaultValueProvider: !SpecifiedDefaultValue
-      value: vm_name
   retryCondition: never
   maxRetries: 3
   retryDelay: 30
