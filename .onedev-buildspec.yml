@@ -65,6 +65,8 @@ jobs:
         color: '#0d87e9'
       - value: jupyterlab
         color: '#0d87e9'
+      - value: 'centos9stream'
+        color: '#0d87e9'
   - !ChoiceParam
     name: ACTION
     allowMultiple: false
