@@ -84,7 +84,7 @@ jobs:
       valueMatcher: !ValueIsOneOf
         values:
         - delete
-    allowEmpty: false
+    allowEmpty: true
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
       value: vm_name
