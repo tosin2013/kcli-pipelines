@@ -57,39 +57,6 @@ function destroy(){
     /opt/kcli-pipelines/deploy-vm.sh
 }
 
-function create_dns_entries(){
-    ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
-    API_ENDPOINT=$(yq eval '. | .api_ip' /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/${DEPLOYMENT_CONFIG})
-    CLUSTER_NAME=$(yq eval '. | .cluster' /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/${DEPLOYMENT_CONFIG})
-    APPS_ENDPOINT=$(yq eval '. | .ingress_ip' /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/${DEPLOYMENT_CONFIG})
-    ANSIBLE_PLAYBOOK="sudo -E /usr/local/bin/ansible-playbook"
-    DOMAIN_NAME=api.${CLUSTER_NAME}.${DOMAIN}
-    # Update the DNS using the add_ipa_entry.yaml playbook
-    $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \
-      --vault-password-file "$HOME"/.vault_password \
-      --extra-vars "@${ANSIBLE_VAULT_FILE}" \
-      --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
-      --extra-vars "key=api.${CLUSTER_NAME}" \
-      --extra-vars "freeipa_server_fqdn=idm.${DOMAIN}" \
-      --extra-vars "value=${API_ENDPOINT}" \
-      --extra-vars "freeipa_server_domain=${DOMAIN}" --extra-vars "action=present" -vvv || exit $?
-
-    DOMAIN_NAME=*.apps.${CLUSTER_NAME}.${DOMAIN}
-    $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \
-      --vault-password-file "$HOME"/.vault_password \
-      --extra-vars "@${ANSIBLE_VAULT_FILE}" \
-      --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
-      --extra-vars "key=*.apps.${CLUSTER_NAME}" \
-      --extra-vars "freeipa_server_fqdn=idm.${DOMAIN}" \
-      --extra-vars "value=${APPS_ENDPOINT}" \
-      --extra-vars "freeipa_server_domain=${DOMAIN}" --extra-vars "action=present" -vvv || exit $?
-
-      # replace nameserver 127.0.0.1 in /etc/resolv.conf with the ipa server
-      # this is needed for the installer to be able to resolve the api and apps endpoints
-      DNS_SERVER_IP=$(sudo kcli info vm freeipa | grep ip: | awk '{print $2}' | head -1)
-      sudo sed -i "s/nameserver 127.0.0.1/nameserver ${DNS_SERVER_IP}/g" /etc/resolv.conf
-}
-
 if [ $ACTION == "create" ];
 then 
   create
