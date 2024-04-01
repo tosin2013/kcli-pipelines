@@ -33,8 +33,8 @@ cat >/tmp/vm_vars.yaml<<EOF
 image: ${IMAGE_NAME}
 user_password: ${PASSWORD}
 disk_size: ${DISK_SIZE} 
-numcpus: 4
-memory: 8192
+numcpus: 6
+memory: 16384
 net_name: ${NET_NAME} 
 reservedns: ${DNS_FORWARDER}
 domain: ${DOMAIN}
