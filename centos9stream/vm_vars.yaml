@@ -1,4 +1,4 @@
-image: Fedora-Cloud-Base-37-1.7.x86_64.qcow2
+image: centos9stream
 user: admin
 user_password: secret
 disk_size: 30
