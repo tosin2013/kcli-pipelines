@@ -42,6 +42,7 @@ sed -i 's/KCLI_NETWORK=.*/KCLI_NETWORK="'${NET_NAME}'"/' vars.sh
 # Check if the argument is "create" or "destroy"
 if [ "$1" == "create" ]; then
     echo "Creating..."
+    export COMMUNITY_VERSION="${COMMUNITY_VERSION}"
     /opt/freeipa-workshop-deployer/1_kcli/create.sh
     /opt/freeipa-workshop-deployer/2_ansible_config/configure.sh
 elif [ "$1" == "destroy" ]; then
