@@ -30,7 +30,7 @@ jobs:
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: https://github.com/tosin2013/kcli-pipelines.git
+      value: http://admin:Wbz86TKvE4ZP6dPYFhTz@147.28.162.71:6610/tosin2013/kcli-pipelines.git
   - !TextParam
     name: CICD_PIPELINE
     description: 'CICD_PIPELINE '
@@ -140,7 +140,7 @@ jobs:
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: http://admin:oeuHd427IFFnXH6FUYCA40ZIkNQ@157.90.32.176:6610/tosin2013/kcli-pipelines.git
+      value: https://github.com/tosin2013/kcli-pipelines.git
   - !TextParam
     name: CICD_PIPELINE
     description: 'CICD_PIPELINE '
@@ -154,7 +154,7 @@ jobs:
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: hetzner
+      value: rhel8-equinix
   - !ChoiceParam
     name: VM_PROFILE
     allowMultiple: false
@@ -245,6 +245,91 @@ jobs:
         color: '#0d87e9'
     defaultValueProvider: !SpecifiedDefaultValue
       value: cnv-kcli-openshift4-baremetal.yml
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 7200
+- name: step-ca server
+  jobExecutor: default-executor
+  steps:
+  - !CommandStep
+    name: Download kcli-pipelines
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "if [ ! -d /opt/kcli-pipelines ];\nthen \n  cd /opt/\n  git clone @param:GIT_REPO@\nelse\n  cd /opt/kcli-pipelines\n  git pull\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure KCLI Profiles
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport VM_NAME=\"@param:VM_PROFILE@\"\nexport  ACTION=\"@param:ACTION@\" # create, delete\nexport DOMAIN=@param:DOMAIN@\nexport INITIAL_PASSWORD=@param:INITIAL_PASSWORD@\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Deploy VM
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: |
+        export TARGET_SERVER=@param:TARGET_SERVER@
+        export VM_NAME=@param:VM_PROFILE@
+        export VM_PROFILE=@param:VM_PROFILE@
+        export ACTION=@param:ACTION@
+         cd /opt/kcli-pipelines/
+        ./deploy-vm.sh
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  paramSpecs:
+  - !TextParam
+    name: GIT_REPO
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: https://github.com/tosin2013/kcli-pipelines.git
+  - !TextParam
+    name: CICD_PIPELINE
+    description: 'CICD_PIPELINE '
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'true'
+  - !TextParam
+    name: TARGET_SERVER
+    description: TARGET_SERVER
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: rhel8-equinix
+  - !ChoiceParam
+    name: VM_PROFILE
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: rhel9-step-ca
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: rhel9-step-ca
+  - !ChoiceParam
+    name: ACTION
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: create
+        color: '#0d87e9'
+      - value: delete
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: create
+  - !TextParam
+    name: DOMAIN
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: example.com
+  - !SecretParam
+    name: INITIAL_PASSWORD
   retryCondition: never
   maxRetries: 3
   retryDelay: 30
