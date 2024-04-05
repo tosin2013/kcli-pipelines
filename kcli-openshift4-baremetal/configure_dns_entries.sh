@@ -59,8 +59,7 @@ function create_dns_entries(){
 
       # replace nameserver 127.0.0.1 in /etc/resolv.conf with the ipa server
       # this is needed for the installer to be able to resolve the api and apps endpoints
-      DNS_SERVER_IP=$(sudo kcli info vm freeipa | grep ip: | awk '{print $2}' | head -1)
-      sudo sed -i "s/nameserver 127.0.0.1/nameserver ${DNS_SERVER_IP}/g" /etc/resolv.conf
+      /opt/kcli-pipelines/configure-dns.sh
 }
 
 create_dns_entries

@@ -1,6 +1,6 @@
 ## !/bin/bash
 ## https://ypbind.de/maus/notes/real_life_step-ca_with_multiple_users/
-set -xe
+set -x
 
 if [ -z "$DOMAIN" ]; then
     echo "DOMAIN is not set"
@@ -10,6 +10,12 @@ else
     DOMAIN=${DOMAIN:-example.com}
 fi
 
+
+cd /tmp/ && curl -OL https://raw.githubusercontent.com/tosin2013/openshift-4-deployment-notes/master/pre-steps/configure-openshift-packages.sh
+chmod +x /tmp/configure-openshift-packages.sh && /tmp/configure-openshift-packages.sh -i
+wget https://dl.smallstep.com/cli/docs-ca-install/latest/step-cli_amd64.rpm && sudo rpm -i step-cli_amd64.rpm
+wget https://dl.smallstep.com/certificates/docs-ca-install/latest/step-ca_amd64.rpm && sudo rpm -i step-ca_amd64.rpm
+ansible-galaxy collection install maxhoesel.smallstep>=0.25.2
 sudo hostnamectl set-hostname step-ca.${DOMAIN}
 
 if [ ! -f /etc/step/initial_password ]; then
