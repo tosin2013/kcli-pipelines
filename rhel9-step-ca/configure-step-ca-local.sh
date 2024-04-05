@@ -1,6 +1,6 @@
 ## !/bin/bash
 ## https://ypbind.de/maus/notes/real_life_step-ca_with_multiple_users/
-set -xe
+set -x
 
 if [ -z "$DOMAIN" ]; then
     echo "DOMAIN is not set"
