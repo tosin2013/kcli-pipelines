@@ -117,9 +117,9 @@ sudo -E ./ceph-cluster/configure-kcli-profile.sh || exit $?
 echo "Configuring rhel9-pxe type"
 echo "*********************************************"
 sudo -E ./rhel9-pxe/configure-kcli-profile.sh || exit $?
-echo "Configuring rhel9-step-ca type"
+echo "Configuring step-ca-server type"
 echo "*********************************************"
-sudo -E ./rhel9-step-ca/configure-kcli-profile.sh || exit $?
+sudo -E ./step-ca-server/configure-kcli-profile.sh || exit $?
 echo "Configuring ubuntu type"
 echo "*********************************************"
 sudo -E ./ubuntu/configure-kcli-profile.sh || exit $?
