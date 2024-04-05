@@ -2,7 +2,14 @@
 ## https://ypbind.de/maus/notes/real_life_step-ca_with_multiple_users/
 set -xe
 
-DOMAIN=example.com
+if [ -z "$DOMAIN" ]; then
+    echo "DOMAIN is not set"
+    read -p "Enter the domain name: " DOMAIN
+else
+    echo "DOMAIN is set to $DOMAIN"
+    DOMAIN=${DOMAIN:-example.com}
+fi
+
 sudo hostnamectl set-hostname step-ca.${DOMAIN}
 
 if [ ! -f /etc/step/initial_password ]; then

@@ -37,6 +37,9 @@
     - wget https://dl.smallstep.com/certificates/docs-ca-install/latest/step-ca_amd64.rpm && sudo rpm -i step-ca_amd64.rpm
     - ansible-galaxy collection install maxhoesel.smallstep>=0.25.2
     - hostnamectl set-hostname step-ca.{{ domain }}
+    - echo "{{ initial_password }}" > /etc/step/initial_password
+    - cd /tmp/ && curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/rhel9-step-ca/configure-step-ca-local.sh
+    - chmod +x /tmp/configure-step-ca-local.sh && export DOMAIN={{ domain }} && /tmp/configure-step-ca-local.sh || tee -a /tmp/install-step-ca.log
 
 
 

@@ -43,7 +43,6 @@ function create(){
     ${USE_SUDO} /opt/kcli-pipelines/kcli-openshift4-baremetal/env-checks.sh  || exit $?
     cat lab.yml
     ${USE_SUDO} kcli create plan --paramfile  lab.yml lab
-    #create_dns_entries
 }
 
 

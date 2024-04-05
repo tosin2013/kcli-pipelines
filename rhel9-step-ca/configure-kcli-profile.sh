@@ -27,6 +27,14 @@ DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=200
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
+
+if [ -z "${INITIAL_PASSWORD}"];
+then 
+  INITIAL_PASSWORD="password"
+else
+  echo "INITIAL_PASSWORD is set to ${INITIAL_PASSWORD}"
+fi 
+
 sudo rm -rf kcli-profiles.yml
 if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
   sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
@@ -55,6 +63,7 @@ domainname: ${DOMAIN}
 offline_token: ${OFFLINE_TOKEN}
 rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
+initial_password: ${INITIAL_PASSWORD}
 EOF
 sudo python3 profile_generator/profile_generator.py update-yaml rhel9-step-ca rhel9-step-ca/template.yaml  --vars-file /tmp/vm_vars.yaml
 #cat  kcli-profiles.yml
