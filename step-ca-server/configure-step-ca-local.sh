@@ -18,6 +18,11 @@ wget https://dl.smallstep.com/certificates/docs-ca-install/latest/step-ca_amd64.
 ansible-galaxy collection install maxhoesel.smallstep>=0.25.2
 sudo hostnamectl set-hostname step-ca.${DOMAIN}
 
+if [ -f /tmp/initial_password ]; then
+    mkdir -p /etc/step
+    cp /tmp/initial_password /etc/step/initial_password
+fi
+
 if [ ! -f /etc/step/initial_password ]; then
     mkdir -p /etc/step
     # Collect password from user
