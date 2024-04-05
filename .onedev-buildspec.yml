@@ -30,7 +30,7 @@ jobs:
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: http://admin:Wbz86TKvE4ZP6dPYFhTz@147.28.162.71:6610/tosin2013/kcli-pipelines.git
+      value: https://github.com/tosin2013/kcli-pipelines.git
   - !TextParam
     name: CICD_PIPELINE
     description: 'CICD_PIPELINE '
