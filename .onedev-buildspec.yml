@@ -333,10 +333,10 @@ jobs:
     allowEmpty: false
     choiceProvider: !SpecifiedChoices
       choices:
-      - value: rhel9-step-ca
+      - value: step-ca-server
         color: '#0d87e9'
     defaultValueProvider: !SpecifiedDefaultValue
-      value: rhel9-step-ca
+      value: step-ca-server
   - !ChoiceParam
     name: ACTION
     allowMultiple: false
