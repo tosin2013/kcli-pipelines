@@ -27,6 +27,10 @@ DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=200
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
+# FreeIPA DNS ADDRESS
+export vm_name="freeipa"
+export ip_address=$(sudo kcli info vm "$vm_name" "$vm_name" | grep ip: | awk '{print $2}' | head -1)
+
 if [ -z ${COMMUNITY_VERSION} ];
 then 
   COMMUNITY_VERSION="false"
@@ -69,6 +73,7 @@ net_name: ${NET_NAME}
 reservedns: ${DNS_FORWARDER}
 domainname: ${DOMAIN}
 initial_password: ${INITIAL_PASSWORD}
+freeipa_dns: ${ip_address}
 EOF
   sudo python3 profile_generator/profile_generator.py update-yaml step-ca-server step-ca-server/template-centos.yaml --vars-file /tmp/vm_vars.yaml
 else
@@ -87,6 +92,7 @@ offline_token: ${OFFLINE_TOKEN}
 rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
 initial_password: ${INITIAL_PASSWORD}
+freeipa_dns: ${ip_address}
 EOF
   sudo python3 profile_generator/profile_generator.py update-yaml step-ca-server step-ca-server/template.yaml  --vars-file /tmp/vm_vars.yaml
 fi

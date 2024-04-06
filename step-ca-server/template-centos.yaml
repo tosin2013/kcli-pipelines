@@ -20,4 +20,4 @@
     - dnf install git vim unzip wget tar python3 python3-pip util-linux-user tmux firewalld  ansible-core jq -y 
     - cd /tmp/ && curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/step-ca-server/configure-step-ca-local.sh
     - echo "{{ initial_password }}" > /tmp/initial_password|| exit $?
-    - chmod +x /tmp/configure-step-ca-local.sh && bash -x /tmp/configure-step-ca-local.sh  {{ domainname }} || tee -a /tmp/install-step-ca.log
+    - chmod +x /tmp/configure-step-ca-local.sh && bash -x /tmp/configure-step-ca-local.sh  {{ domainname }} {{ freeipa_dns }} || tee -a /tmp/install-step-ca.log

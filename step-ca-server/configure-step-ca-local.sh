@@ -1,13 +1,14 @@
 ## !/bin/bash
 ## https://ypbind.de/maus/notes/real_life_step-ca_with_multiple_users/
 set -x
-if [ -z $1 ]; then
-    echo "Please pass domain name as argument"
-    echo "Usage: $0 <domain>"
-    exit 1
+
+if [ $# -ne 2 ]; then
+    echo "Please pass domain namd and dns ip address as argument"
+    echo "Usage: $0 <domain> <dns_ip>"
 fi
 
 DOMAIN=$1
+DNS_IP=$2
 
 cd /tmp/ && curl -OL https://raw.githubusercontent.com/tosin2013/openshift-4-deployment-notes/master/pre-steps/configure-openshift-packages.sh
 chmod +x /tmp/configure-openshift-packages.sh && /tmp/configure-openshift-packages.sh -i
