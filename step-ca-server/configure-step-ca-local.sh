@@ -46,4 +46,3 @@ jq '.authority.provisioners[0].claims = {
 nohup step-ca $(step path)/config/ca.json --password-file=/etc/step/initial_password > step-ca.log 2>&1 &
 cat step-ca.log
 echo "step-ca $(step path)/config/ca.json"
-noup step-ca $(step path)/config/ca.json" > step-ca.log 2>&1 &
