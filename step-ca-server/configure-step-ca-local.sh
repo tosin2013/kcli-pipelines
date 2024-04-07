@@ -47,9 +47,12 @@ jq '.authority.provisioners[0].claims = {
     "minTLSCertDuration": "5m",
     "maxTLSCertDuration": "2000h",
     "defaultTLSCertDuration": "2000h"
-}' .step/config/ca.json > .step/config/ca.json.tmp && mv .step/config/ca.json.tmp .step/config/ca.json
+}' .step/config/ca.json > .step/config/ca.json.tmp 
+mv .step/config/ca.json .step/config/ca.json.bak
+mv .step/config/ca.json.tmp .step/config/ca.json
 
 nohup step-ca $(step path)/config/ca.json --password-file=/etc/step/initial_password > step-ca.log 2>&1 &
+# pkill step-ca
 cat step-ca.log
 echo "step-ca $(step path)/config/ca.json"
 
