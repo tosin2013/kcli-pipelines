@@ -5,6 +5,7 @@ set -x
 if [ $# -ne 2 ]; then
     echo "Please pass domain namd and dns ip address as argument"
     echo "Usage: $0 <domain> <dns_ip>"
+    exit 1
 fi
 
 DOMAIN=$1

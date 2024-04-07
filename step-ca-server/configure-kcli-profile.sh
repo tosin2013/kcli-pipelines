@@ -31,12 +31,29 @@ KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 export vm_name="freeipa"
 export ip_address=$(sudo kcli info vm "$vm_name" "$vm_name" | grep ip: | awk '{print $2}' | head -1)
 
-if [ -z ${COMMUNITY_VERSION} ];
-then 
-  COMMUNITY_VERSION="false"
+COMMUNITY_VERSION="$(echo -e "${COMMUNITY_VERSION}" | tr -d '[:space:]')"
+
+echo "COMMUNITY_VERSION is set to: $COMMUNITY_VERSION"
+
+if [ "$COMMUNITY_VERSION" == "true" ]; then
+  echo "Community version"
+  export IMAGE_NAME=centos8stream
+  export TEMPLATE_NAME=template-centos.yaml
+  export LOGIN_USER=centos
+  echo "IMAGE_NAME: $IMAGE_NAME"
+  echo "TEMPLATE_NAME: $TEMPLATE_NAME"
+elif [ "$COMMUNITY_VERSION" == "false" ]; then
+  echo "Enterprise version"
+  export IMAGE_NAME=rhel8
+  export TEMPLATE_NAME=template.yaml
+  export LOGIN_USER=cloud-user
+  echo "IMAGE_NAME: $IMAGE_NAME"
+  echo "TEMPLATE_NAME: $TEMPLATE_NAME"
 else
-  echo "COMMUNITY_VERSION is set to ${COMMUNITY_VERSION}"
+  echo "Correct $COMMUNITY_VERSION not set"
+  exit 1
 fi
+
 
 if [ -z "${INITIAL_PASSWORD}"];
 then 
@@ -59,12 +76,11 @@ else
   sudo mkdir -p  /root/.generated/vmfiles
 fi
 
-if [  ${COMMUNITY_VERSION} == "true" ];
-then
+if [ "$IMAGE_NAME" == "centos8stream" ]; then
   echo "Using community version"
 cat >/tmp/vm_vars.yaml<<EOF
 image: ${IMAGE_NAME}
-user: centos
+user: ${LOGIN_USER}
 user_password: ${PASSWORD}
 disk_size: ${DISK_SIZE} 
 numcpus: 4
@@ -76,11 +92,11 @@ initial_password: ${INITIAL_PASSWORD}
 freeipa_dns: ${ip_address}
 EOF
   sudo python3 profile_generator/profile_generator.py update-yaml step-ca-server step-ca-server/template-centos.yaml --vars-file /tmp/vm_vars.yaml
-else
+elif [ "$IMAGE_NAME" == "rhel8" ]; then
   echo "Using RHEL version"
 cat >/tmp/vm_vars.yaml<<EOF
 image: ${IMAGE_NAME}
-user: cloud-user
+user: ${LOGIN_USER}
 user_password: ${PASSWORD}
 disk_size: ${DISK_SIZE} 
 numcpus: 4
@@ -95,6 +111,9 @@ initial_password: ${INITIAL_PASSWORD}
 freeipa_dns: ${ip_address}
 EOF
   sudo python3 profile_generator/profile_generator.py update-yaml step-ca-server step-ca-server/template.yaml  --vars-file /tmp/vm_vars.yaml
+else
+  echo "Correct IMAGE_NAME: $IMAGE_NAME not set"
+  exit 1
 fi
 
 #cat  kcli-profiles.yml
