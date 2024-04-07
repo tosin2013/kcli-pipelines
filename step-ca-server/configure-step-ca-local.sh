@@ -34,10 +34,10 @@ fi
 wget https://dl.smallstep.com/cli/docs-ca-install/latest/step-cli_amd64.rpm && sudo rpm -i step-cli_amd64.rpm
 wget https://dl.smallstep.com/certificates/docs-ca-install/latest/step-ca_amd64.rpm && sudo rpm -i step-ca_amd64.rpm
 ansible-galaxy collection install maxhoesel.smallstep>=0.25.2
-sudo hostnamectl set-hostname step-ca.${DOMAIN}
+sudo hostnamectl set-hostname step-ca-server.${DOMAIN}
 
 
-step ca init  --dns=step-ca.${DOMAIN} --address='[::]:443'  \
+step ca init  --dns=step-ca-server.${DOMAIN} --address='[::]:443'  \
     --address=0.0.0.0:443  --name="Certificate authority for internal.${DOMAIN}" \
     --deployment-type=standalone --provisioner="root@internal.${DOMAIN} " --password-file=/etc/step/initial_password || exit $?
 
