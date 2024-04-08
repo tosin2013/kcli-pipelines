@@ -12,6 +12,25 @@ else
   exit 1
 fi
 
+if [ ! -z ${CERTIFICATE_PATH} ];
+then
+  CERTIFICATE_PATH=${CERTIFICATE_PATH}
+  echo "Certificate path is ${CERTIFICATE_PATH}" || exit $?
+else
+  echo "Certificate path is not set"
+  touch /tmp/certificate.crt
+  CERTIFICATE_PATH=/tmp/certificate.crt
+fi
+
+if [ ! -z ${KEY_PATH} ];
+then
+  KEY_PATH=${KEY_PATH}
+  echo "Key path is ${KEY_PATH}" || exit $?
+else
+  touch /tmp/certificate.key
+  KEY_PATH=/tmp/certificate.key
+fi
+
 cd $KCLI_SAMPLES_DIR
 IMAGE_URL="https://opencolo.mm.fcix.net/fedora/linux/releases/39/Cloud/x86_64/images/Fedora-Cloud-Base-39-1.5.x86_64.qcow2"
 IMAGE_NAME=Fedora-Cloud-Base-39-1.5.x86_64.qcow2
@@ -60,6 +79,10 @@ sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 sudo cp pull-secret.json  /home/${KCLI_USER}/.generated/vmfiles
 sudo cp pull-secret.json /root/.generated/vmfiles
+sudo cp ${CERTIFICATE_PATH} /home/${KCLI_USER}/.generated/vmfiles/mirror-registry.${DOMAIN}.crt
+sudo cp ${CERTIFICATE_PATH} /root/.generated/vmfiles/mirror-registry.${DOMAIN}.crt
+sudo cp ${KEY_PATH} /home/${KCLI_USER}/.generated/vmfiles/mirror-registry.${DOMAIN}.key
+sudo cp ${KEY_PATH} /root/.generated/vmfiles/mirror-registry.${DOMAIN}.key
 sudo rm pull-secret.json
 #echo "Creating VM ${VM_NAME}"
 #sudo kcli create vm -p mirror-registry ${VM_NAME} --wait
