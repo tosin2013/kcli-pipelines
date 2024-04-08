@@ -14,19 +14,7 @@ cmds:
   - echo "{{ user }} ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/{{ user }}
   - echo {{ user_password }} | passwd --stdin {{ user }}
   - hostnamectl set-hostname mirror-registry.{{ domain }}
-  - dnf update -y
-  - dnf install curl wget tar jq podman skopeo httpd-tools openssl nano nfs-utils bash-completion bind-utils ansible vim libvirt firewalld acl policycoreutils-python-utils -y
-  - echo 0 > /proc/sys/net/ipv4/ip_unprivileged_port_start
-  - VERSION=v1.3.10;curl -OL https://github.com/quay/mirror-registry/releases/download/${VERSION}/mirror-registry-offline.tar.gz
-  - tar -zxvf mirror-registry-offline.tar.gz
-  - mkdir -p /registry/
-  - sudo firewall-cmd --add-port=8443/tcp --permanent
-  - sudo firewall-cmd --reload
-  - sudo semanage port  -a 8443 -t http_port_t -p tcp
-  - sudo semanage port  -l  | grep -w http_port_t
-  - cp /home/admin/qubinode-installer/pull_secret.json /home/cloud-user/pull_secret.json
-  - if [ ! -s "/root/.generated/vmfiles/mirror-registry.{{ domain }}.crt" ]; then sudo ./mirror-registry install --quayHostname $(hostname) --quayRoot /registry/  | tee /tmp/mirror-registry-offline.log; fi
-  - if [ ! -s "/root/.generated/vmfiles/mirror-registry.{{ domain }}.crt" ]; then sudo ./mirror-registry install --quayHostname $(hostname) --quayRoot /registry/ --certPath mirror-registry.{{ domain }}.crt --sslKey /home/{{ user }}/mirror-registry.{{ domain }}.key | tee /tmp/mirror-registry-offline.log; fi
+
 files:
   - path: /root/pull-secret.json
     origin: ~/.generated/vmfiles/pull-secret.json

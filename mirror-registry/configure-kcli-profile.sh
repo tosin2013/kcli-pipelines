@@ -45,6 +45,7 @@ DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=300
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+VERSION="v1.3.9"
 if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
   sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
 else 
@@ -69,6 +70,7 @@ net_name: ${NET_NAME}
 reservedns: ${DNS_FORWARDER}
 offline_token: ${OFFLINE_TOKEN}
 domain: ${DOMAIN}
+version: ${VERSION}
 EOF
 
 sudo python3 profile_generator/profile_generator.py update-yaml mirror-registry mirror-registry/template.yaml  --vars-file /tmp/vm_vars.yaml
