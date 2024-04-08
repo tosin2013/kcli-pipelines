@@ -1,0 +1,8 @@
+image: fedora39
+user: admin
+user_password: secret
+disk_size: 30
+numcpus: 4
+memory: 8192
+net_name: default
+reservedns: 1.1.1.1
