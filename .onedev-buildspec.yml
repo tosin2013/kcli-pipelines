@@ -57,7 +57,7 @@ jobs:
         color: '#0d87e9'
       - value: rhel9
         color: '#0d87e9'
-      - value: fedora
+      - value: fedora39
         color: '#0d87e9'
       - value: ubuntu
         color: '#0d87e9'
