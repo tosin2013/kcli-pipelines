@@ -75,6 +75,8 @@ ufw allow 443/tcp
 # Allow incoming traffic on Harbor HTTP (port 8080) and HTTPS (port 8443)
 ufw allow 8080/tcp
 ufw allow 8443/tcp
+# Allow incoming traffic on SSH (port 22)
+ufw allow ssh
 
 # Enable UFW
 ufw enable
