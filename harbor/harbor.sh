@@ -99,12 +99,12 @@ echo "Harbor Version: $HARBORVERSION"
 if [ -f /root/harbor-online-installer-$HARBORVERSION.tgz ]; then
     echo "Harbor $HARBORVERSION already exists"
     cd /root
-    tar xvf harbor-online-installer-$HARBORVERSION.tgz || exit 1
+    tar xvf harbor-online-installer-$HARBORVERSION.tgz || exit $?
 else
     #curl -s https://api.github.com/repos/goharbor/harbor/releases/latest | grep browser_download_url | grep online | cut -d '"' -f 4 | wget -qi -
     cd /root
     curl -OL https://github.com/goharbor/harbor/releases/download/$HARBORVERSION/harbor-online-installer-$HARBORVERSION.tgz
-    tar xvf harbor-online-installer-$HARBORVERSION.tgz || exit 1
+    tar xvf harbor-online-installer-$HARBORVERSION.tgz || exit $?
 fi
 
 cd /root/harbor
