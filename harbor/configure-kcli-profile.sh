@@ -17,7 +17,7 @@ IMAGE_NAME=ubuntu
 
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
-VM_NAME=ubuntu-$(echo $RANDOM | md5sum | head -c 5; echo;)
+VM_NAME=harbor
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=300
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")

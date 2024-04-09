@@ -23,6 +23,8 @@ then
     tar -zxvf mirror-registry-offline.tar.gz
 fi 
 mkdir -p /registry/
+systemctl start firewalld
+systemctl enable firewalld
 firewall-cmd --add-port=8443/tcp --permanent
 firewall-cmd --reload
 semanage port -a -t http_port_t -p tcp 8443
