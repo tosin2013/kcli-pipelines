@@ -60,8 +60,9 @@ if [ -f /tmp/initial_password ]; then
     cp /tmp/initial_password /etc/step/initial_password
 fi
 
-if [ ! -f $HOME/${DOMAIN}.crt ];
+if [ ! -f /root/${DOMAIN}.crt ];
 then
+  cd /root/
   TOKEN=$(step ca token harbor.${DOMAIN} --password-file=/etc/step/initial_password --issuer="root@internal.${DOMAIN} ")
   step ca certificate --token $TOKEN --not-after=1440h  --password-file /etc/step/initial_password  harbor.${DOMAIN}  harbor.${DOMAIN}.crt  harbor.${DOMAIN}.key 
 fi
@@ -94,13 +95,13 @@ echo "Harbor Version: $HARBORVERSION"
 #Install Latest Stable Harbor Release
 
 
-if [ -f $HOME/harbor-online-installer-$HARBORVERSION.tgz ]; then
+if [ -f /root/harbor-online-installer-$HARBORVERSION.tgz ]; then
     echo "Harbor $HARBORVERSION already exists"
-    cd $HOME
+    cd /root
     tar xvf harbor-online-installer-$HARBORVERSION.tgz || exit 1
 else
     #curl -s https://api.github.com/repos/goharbor/harbor/releases/latest | grep browser_download_url | grep online | cut -d '"' -f 4 | wget -qi -
-    cd $HOME
+    cd /root
     curl -OL https://github.com/goharbor/harbor/releases/download/$HARBORVERSION/harbor-online-installer-$HARBORVERSION.tgz
     tar xvf harbor-online-installer-$HARBORVERSION.tgz || exit 1
 fi
@@ -109,8 +110,8 @@ cd harbor
 cp harbor.yml.tmpl harbor.yml
 sed -i "s/reg.mydomain.com/$IPorFQDN/g" harbor.yml
 sed -i "s/# external_url:.*/external_url: $IPorFQDN/g" harbor.yml
-sed -i "s|certificate: /your/certificate/path|certificate: $HOME/harbor.${DOMAIN}.crt|" harbor.yml
-sed -i "s|private_key: /your/private/key/path|private_key: $HOME/harbor.${DOMAIN}.key|"  harbor.yml
+sed -i "s|certificate: /your/certificate/path|certificate: /root/harbor.${DOMAIN}.crt|" harbor.yml
+sed -i "s|private_key: /your/private/key/path|private_key: /root/harbor.${DOMAIN}.key|"  harbor.yml
 cat harbor.yml
 cd /root/harbor
 ./install.sh --with-notary --with-trivy
