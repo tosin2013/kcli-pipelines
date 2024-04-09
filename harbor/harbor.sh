@@ -67,10 +67,11 @@ tee /etc/docker/daemon.json >/dev/null <<EOF
   "storage-driver": "overlay2"
 }
 EOF
-mkdir -p /etc/systemd/system/docker.service.d
-usermod -aG docker ubuntu
-systemctl daemon-reload
-systemctl restart docker
+#mkdir -p /etc/systemd/system/docker.service.d
+#MAINUSER=$(logname)
+#usermod -aG docker $MAINUSER
+#systemctl daemon-reload
+#systemctl restart docker
 echo "Docker Installation done"
 
 #Install Latest Stable Docker Compose Release
