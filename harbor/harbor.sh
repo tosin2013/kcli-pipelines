@@ -14,6 +14,10 @@ check_and_start_docker() {
         sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
         sudo apt-get update
         sudo apt-get install -y docker-ce
+
+        # Install Docker Compose
+        sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
     fi
 
     # Check if Docker service is running
@@ -84,12 +88,8 @@ echo "Housekeeping done"
 
 check_and_start_docker
 
-#Install Latest Stable Docker Compose Release
-COMPOSEVERSION=$(curl -s https://github.com/docker/compose/releases/latest/download 2>&1 | grep -Po [0-9]+\.[0-9]+\.[0-9]+)
-curl -L "https://github.com/docker/compose/releases/download/$COMPOSEVERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
-ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-echo "Docker Compose Installation done"
+echo "Starting Harbor install"
+echo "Harbor Version: $HARBORVERSION"
 
 #Install Latest Stable Harbor Release
 
