@@ -85,7 +85,7 @@ ufw allow 8443/tcp
 ufw allow ssh
 
 # Enable UFW
-ufw enable
+ufw enable -y
 echo "Housekeeping done"
 
 check_and_start_docker
@@ -114,5 +114,5 @@ sed -i "s/# external_url:.*/external_url: $IPorFQDN/g" harbor.yml
 sed -i "s|certificate: /your/certificate/path|certificate: /root/harbor.${DOMAIN}.crt|" harbor.yml
 sed -i "s|private_key: /your/private/key/path|private_key: /root/harbor.${DOMAIN}.key|"  harbor.yml
 cat harbor.yml
-./install.sh --with-notary --with-trivy
+./install.sh
 echo -e "Harbor Installation Complete \n\nPlease log out and log in or run the command 'newgrp docker' to use Docker without sudo\n\nLogin to your harbor instance:\n docker login -u admin -p Harbor12345 $IPorFQDN"
