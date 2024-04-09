@@ -14,7 +14,34 @@ FINGERPRINT=${4}
 
 sudo dnf update -y
 sudo dnf install curl wget tar jq skopeo httpd-tools openssl nano nfs-utils bash-completion bind-utils ansible-core vim libvirt firewalld acl policycoreutils-python-utils -y
-sudo dnf install podman podman-docker podman-compose -y || exit $?
+sudo dnf -y install \
+  podman \
+  skopeo \
+  buildah 
+
+#==============================================================================
+# Non-root podman hacks
+sudo chmod 4755 /usr/bin/newgidmap
+sudo chmod 4755 /usr/bin/newuidmap
+
+sudo dnf reinstall -yq shadow-utils
+
+cat > /tmp/xdg_runtime_dir.sh <<EOF
+export XDG_RUNTIME_DIR="\$HOME/.run/containers"
+EOF
+
+sudo mv /tmp/xdg_runtime_dir.sh /etc/profile.d/xdg_runtime_dir.sh
+sudo chmod a+rx /etc/profile.d/xdg_runtime_dir.sh
+sudo cp /etc/profile.d/xdg_runtime_dir.sh /etc/profile.d/xdg_runtime_dir.zsh
+
+
+cat > /tmp/ping_group_range.conf <<EOF
+net.ipv4.ping_group_range=0 2000000
+EOF
+sudo mv /tmp/ping_group_range.conf /etc/sysctl.d/ping_group_range.conf
+
+sudo sysctl --system
+
 if ! grep -q "0" /proc/sys/net/ipv4/ip_unprivileged_port_start; then
     sudo tee "/proc/sys/net/ipv4/ip_unprivileged_port_start" <<< "0"
 fi
