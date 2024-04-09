@@ -1,6 +1,4 @@
 #!/bin/bash
-export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-set -x
 #Harbor on Ubuntu 18.04
 # https://gist.github.com/kacole2/95e83ac84fec950b1a70b0853d6594dc
 # https://github.com/goharbor/harbor/releases # v2.10.1

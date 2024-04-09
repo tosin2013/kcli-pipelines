@@ -1,4 +1,6 @@
 #!/bin/bash
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -x
 # https://github.com/quay/mirror-registry
 # Usage: ./configure-quay.sh domain quay_version ca_url fingerprint
 
@@ -60,25 +62,32 @@ then
     step certificate install $(step path)/certs/root_ca.crt
 fi
 
-if [ ! -f /home/$USER/${DOMAIN}.crt ];
+if [ -f /tmp/initial_password ]; then
+    mkdir -p /etc/step
+    cp /tmp/initial_password /etc/step/initial_password
+fi
+
+if [ ! -f /root/${DOMAIN}.crt ];
 then
-  TOKEN=$(step ca token  mirror-registry.${DOMAIN})
+  mkdir /root/quay-certs
+  cd /root/quay-certs
+  TOKEN=$(step ca token mirror-registry.${DOMAIN} --password-file=/etc/step/initial_password --issuer="root@internal.${DOMAIN} ")
   step ca certificate --token $TOKEN --not-after=1440h   mirror-registry.${DOMAIN}  mirror-registry.${DOMAIN}.crt  mirror-registry.${DOMAIN}.key 
 fi
 
 
-if [  ! -f $HOME/mirror-registry-offline.tar.gz ];
+if [  ! -f /root/mirror-registry-offline.tar.gz ];
 then
-    cd $HOME
-    curl -OL "https://github.com/quay/mirror-registry/releases/download/${VERSION}/mirror-registry-offline.tar.gz"
-    tar -zxvf mirror-registry-offline.tar.gz
+    cd /root/
+    curl -OL "https://github.com/quay/mirror-registry/releases/download/${QUAY_VERSION}/mirror-registry-offline.tar.gz"
+    tar -zxvf mirror-registry-offline.tar.gz || exit $?
 fi 
 
 sudo mkdir -p /registry/
 sudo chmod -R 775 /registry/
 sudo chown cloud-user:cloud-user  -R  /registry/
-sudo choown cloud-user:cloud-user  -R /home/cloud-user 
+sudo chown cloud-user:cloud-user  -R /home/cloud-user 
 
 
 echo "Installing mirror-registry without self-signed certificate"
-./mirror-registry install  --quayRoot /registry/ --quayHostname mirror-registry.${DOMAIN} --certPath mirror-registry.${DOMAIN}.crt --sslKey /home/${USER}/mirror-registry.${DOMAIN}.key || tee /tmp/mirror-registry-offline.log
+./mirror-registry install  --quayRoot /registry/ --quayHostname mirror-registry.${DOMAIN} -k /root/quay-certs || tee /tmp/mirror-registry-offline.log
