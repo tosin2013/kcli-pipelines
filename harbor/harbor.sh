@@ -1,5 +1,6 @@
 #!/bin/bash
-
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -x
 #Harbor on Ubuntu 18.04
 # https://gist.github.com/kacole2/95e83ac84fec950b1a70b0853d6594dc
 # https://github.com/goharbor/harbor/releases # v2.10.1
@@ -106,13 +107,12 @@ else
     tar xvf harbor-online-installer-$HARBORVERSION.tgz || exit 1
 fi
 
-cd harbor
+cd /root/harbor
 cp harbor.yml.tmpl harbor.yml
 sed -i "s/reg.mydomain.com/$IPorFQDN/g" harbor.yml
 sed -i "s/# external_url:.*/external_url: $IPorFQDN/g" harbor.yml
 sed -i "s|certificate: /your/certificate/path|certificate: /root/harbor.${DOMAIN}.crt|" harbor.yml
 sed -i "s|private_key: /your/private/key/path|private_key: /root/harbor.${DOMAIN}.key|"  harbor.yml
 cat harbor.yml
-cd /root/harbor
 ./install.sh --with-notary --with-trivy
 echo -e "Harbor Installation Complete \n\nPlease log out and log in or run the command 'newgrp docker' to use Docker without sudo\n\nLogin to your harbor instance:\n docker login -u admin -p Harbor12345 $IPorFQDN"
