@@ -71,6 +71,8 @@ reservedns: ${DNS_FORWARDER}
 offline_token: ${OFFLINE_TOKEN}
 domain: ${DOMAIN}
 version: ${VERSION}
+rhnorg: ${RHSM_ORG}
+rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
 EOF
 
 sudo python3 profile_generator/profile_generator.py update-yaml mirror-registry mirror-registry/template.yaml  --vars-file /tmp/vm_vars.yaml
