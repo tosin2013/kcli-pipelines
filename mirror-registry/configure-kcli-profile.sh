@@ -12,23 +12,10 @@ else
   exit 1
 fi
 
-if [ ! -z ${CERTIFICATE_PATH} ];
-then
-  CERTIFICATE_PATH=${CERTIFICATE_PATH}
-  echo "Certificate path is ${CERTIFICATE_PATH}" || exit $?
-else
-  echo "Certificate path is not set"
-  touch /tmp/certificate.crt
-  CERTIFICATE_PATH=/tmp/certificate.crt
-fi
-
-if [ ! -z ${KEY_PATH} ];
-then
-  KEY_PATH=${KEY_PATH}
-  echo "Key path is ${KEY_PATH}" || exit $?
-else
-  touch /tmp/certificate.key
-  KEY_PATH=/tmp/certificate.key
+# QUAY_VERSION CA_URL FINGERPRINT env not found exit 
+if [ -z "${QUAY_VERSION}" ] || [ -z "${CA_URL}" ] || [ -z "${FINGERPRINT}" ] || [ -z ${STEP_CA_PASSWORD} ]; then
+    echo "QUAY_VERSION CA_URL FINGERPRINT STEP_CA_PASSWORD env variables must be set"
+    exit 1
 fi
 
 cd $KCLI_SAMPLES_DIR
@@ -46,7 +33,6 @@ DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=300
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
-VERSION="v1.3.9"
 if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
   sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
 else 
@@ -71,9 +57,12 @@ net_name: ${NET_NAME}
 reservedns: ${DNS_FORWARDER}
 offline_token: ${OFFLINE_TOKEN}
 domain: ${DOMAIN}
-version: ${VERSION}
 rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
+initial_password: ${STEP_CA_PASSWORD}
+quay_version: ${QUAY_VERSION}
+ca_url: ${CA_URL}
+fingerprint: ${FINGERPRINT}
 EOF
 
 sudo python3 profile_generator/profile_generator.py update-yaml mirror-registry mirror-registry/template.yaml  --vars-file /tmp/vm_vars.yaml
@@ -84,10 +73,6 @@ sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 sudo cp pull-secret.json  /home/${KCLI_USER}/.generated/vmfiles
 sudo cp pull-secret.json /root/.generated/vmfiles
-sudo cp ${CERTIFICATE_PATH} /home/${KCLI_USER}/.generated/vmfiles/mirror-registry.${DOMAIN}.crt
-sudo cp ${CERTIFICATE_PATH} /root/.generated/vmfiles/mirror-registry.${DOMAIN}.crt
-sudo cp ${KEY_PATH} /home/${KCLI_USER}/.generated/vmfiles/mirror-registry.${DOMAIN}.key
-sudo cp ${KEY_PATH} /root/.generated/vmfiles/mirror-registry.${DOMAIN}.key
 sudo rm pull-secret.json
 #echo "Creating VM ${VM_NAME}"
 #sudo kcli create vm -p mirror-registry ${VM_NAME} --wait
