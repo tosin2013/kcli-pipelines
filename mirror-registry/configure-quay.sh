@@ -27,12 +27,7 @@ sudo mkdir -p /registry/
 sudo chmod -R 775 /registry/
 sudo chown cloud-user:cloud-user  -R  /registry/
 sudo choown cloud-user:cloud-user  -R /home/cloud-user 
-#systemctl start firewalld
-#systemctl enable firewalld
-#firewall-cmd --add-port=8443/tcp --permanent
-#firewall-cmd --reload
-#semanage port -a -t http_port_t -p tcp 8443
-#semanage port -l | grep -w http_port_t
+
 
 if [ ! -s "/root/.generated/vmfiles/mirror-registry.${DOMAIN}.crt" ]; then
     echo "Installing mirror-registry without self-signed certificate"

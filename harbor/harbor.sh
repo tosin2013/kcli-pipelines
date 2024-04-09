@@ -31,10 +31,15 @@ then
     step certificate install $(step path)/certs/root_ca.crt
 fi
 
+if [ -f /tmp/initial_password ]; then
+    mkdir -p /etc/step
+    cp /tmp/initial_password /etc/step/initial_password
+fi
+
 if [ ! -f $HOME/${DOMAIN}.crt ];
 then
   TOKEN=$(step ca token  harbor.${DOMAIN})
-  step ca certificate --token $TOKEN --not-after=1440h   harbor.${DOMAIN}  harbor.${DOMAIN}.crt  harbor.${DOMAIN}.key 
+  step ca certificate --token $TOKEN --not-after=1440h  --password-file /etc/step/initial_password  harbor.${DOMAIN}  harbor.${DOMAIN}.crt  harbor.${DOMAIN}.key 
 fi
 
 IPorFQDN=$(hostname -f)
@@ -63,9 +68,7 @@ tee /etc/docker/daemon.json >/dev/null <<EOF
 }
 EOF
 mkdir -p /etc/systemd/system/docker.service.d
-groupadd docker
-MAINUSER=$(logname)
-usermod -aG docker $MAINUSER
+usermod -aG docker ubuntu
 systemctl daemon-reload
 systemctl restart docker
 echo "Docker Installation done"

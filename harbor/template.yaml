@@ -8,3 +8,7 @@ disks:
   - size: {{ disk_size }}
 cmds:
   - echo {{ user_password }} | passwd --stdin root
+  - echo "{{ initial_password }}" > /tmp/initial_password || exit $?
+  - curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/harbor/harbor.sh
+  - chmod +x harbor.sh
+  - ./harbor.sh {{ domain }} {{ harbor_version }} {{ ca_url }}  {{ fingerprint }}
