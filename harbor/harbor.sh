@@ -112,4 +112,6 @@ sed -i "s/# external_url:.*/external_url: $IPorFQDN/g" harbor.yml
 sed -i "s|certificate: /your/certificate/path|certificate: $HOME/harbor.${DOMAIN}.crt|" harbor.yml
 sed -i "s|private_key: /your/private/key/path|private_key: $HOME/harbor.${DOMAIN}.key|"  harbor.yml
 cat harbor.yml
+cd /root/harbor
+./install.sh --with-notary --with-trivy
 echo -e "Harbor Installation Complete \n\nPlease log out and log in or run the command 'newgrp docker' to use Docker without sudo\n\nLogin to your harbor instance:\n docker login -u admin -p Harbor12345 $IPorFQDN"
