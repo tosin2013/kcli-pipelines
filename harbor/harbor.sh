@@ -4,6 +4,26 @@
 # https://gist.github.com/kacole2/95e83ac84fec950b1a70b0853d6594dc
 # https://github.com/goharbor/harbor/releases # v2.10.1
 
+check_and_start_docker() {
+    if ! command -v docker &> /dev/null; then
+        # Docker is not installed, install it
+        echo "Docker is not installed. Installing..."
+        sudo apt update
+        sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+        sudo apt-get update
+        sudo apt-get install -y docker-ce
+    fi
+
+    # Check if Docker service is running
+    if ! sudo systemctl is-active --quiet docker; then
+        # Docker service is not running, start it
+        echo "Docker service is not running. Starting Docker..."
+        sudo systemctl start docker
+    fi
+}
+
 if [ $# -ne 4 ]; then
     echo "Usage: $0 <domain> <harbor-version> <ca-url> <fingerprint>"
     exit 1
@@ -38,7 +58,7 @@ fi
 
 if [ ! -f $HOME/${DOMAIN}.crt ];
 then
-  TOKEN=$(step ca token  harbor.${DOMAIN})
+  step ca token harbor.${DOMAIN} --password-file=/etc/step/initial_password --issuer="root@internal.${DOMAIN} "
   step ca certificate --token $TOKEN --not-after=1440h  --password-file /etc/step/initial_password  harbor.${DOMAIN}  harbor.${DOMAIN}.crt  harbor.${DOMAIN}.key 
 fi
 
@@ -47,32 +67,20 @@ IPorFQDN=$(hostname -f)
 apt update -y
 swapoff --all
 sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
-ufw disable #Do Not Do This In Production
+
+# Allow incoming traffic on HTTP (port 80) and HTTPS (port 443)
+ufw allow 80/tcp
+ufw allow 443/tcp
+
+# Allow incoming traffic on Harbor HTTP (port 8080) and HTTPS (port 8443)
+ufw allow 8080/tcp
+ufw allow 8443/tcp
+
+# Enable UFW
+ufw enable
 echo "Housekeeping done"
 
-#Install Latest Stable Docker Release
-apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-apt-get update -y
-apt-get install -y docker-ce docker-ce-cli containerd.io
-tee /etc/docker/daemon.json >/dev/null <<EOF
-{
-  "exec-opts": ["native.cgroupdriver=systemd"],
-  "insecure-registries" : ["$IPorFQDN:443","$IPorFQDN:80","0.0.0.0/0"],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "100m"
-  },
-  "storage-driver": "overlay2"
-}
-EOF
-#mkdir -p /etc/systemd/system/docker.service.d
-#MAINUSER=$(logname)
-#usermod -aG docker $MAINUSER
-#systemctl daemon-reload
-#systemctl restart docker
-echo "Docker Installation done"
+check_and_start_docker
 
 #Install Latest Stable Docker Compose Release
 COMPOSEVERSION=$(curl -s https://github.com/docker/compose/releases/latest/download 2>&1 | grep -Po [0-9]+\.[0-9]+\.[0-9]+)
@@ -84,11 +92,13 @@ echo "Docker Compose Installation done"
 #Install Latest Stable Harbor Release
 
 
-if [ -f harbor-online-installer-$HARBORVERSION.tgz ]; then
+if [ -f $HOME/harbor-online-installer-$HARBORVERSION.tgz ]; then
     echo "Harbor $HARBORVERSION already exists"
+    cd $HOME
     tar xvf harbor-online-installer-$HARBORVERSION.tgz || exit 1
 else
     #curl -s https://api.github.com/repos/goharbor/harbor/releases/latest | grep browser_download_url | grep online | cut -d '"' -f 4 | wget -qi -
+    cd $HOME
     curl -OL https://github.com/goharbor/harbor/releases/download/$HARBORVERSION/harbor-online-installer-$HARBORVERSION.tgz
     tar xvf harbor-online-installer-$HARBORVERSION.tgz || exit 1
 fi
