@@ -29,7 +29,6 @@ RHSM_ACTIVATION_KEY=$(yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
 OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
 PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
 VM_NAME=mirror-registry-$(echo $RANDOM | md5sum | head -c 5; echo;)
-DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=300
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
@@ -46,6 +45,10 @@ else
   sudo mkdir -p  /root/.generated/vmfiles
 fi
 
+# FreeIPA DNS ADDRESS
+export vm_name="freeipa"
+export ip_address=$(sudo kcli info vm "$vm_name" "$vm_name" | grep ip: | awk '{print $2}' | head -1)
+
 cat >/tmp/vm_vars.yaml<<EOF
 image: ${IMAGE_NAME}
 user: cloud-user
@@ -54,7 +57,7 @@ disk_size: ${DISK_SIZE}
 numcpus: 4
 memory: 8192
 net_name: ${NET_NAME} 
-reservedns: ${DNS_FORWARDER}
+reservedns: ${ip_address}
 offline_token: ${OFFLINE_TOKEN}
 domain: ${DOMAIN}
 rhnorg: ${RHSM_ORG}

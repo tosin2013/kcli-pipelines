@@ -56,7 +56,7 @@ hostnamectl set-hostname mirror-registry.${DOMAIN}
 
 if [ ! -f /root/.step/config/defaults.json ];
 then 
-    step ca bootstrap --ca-url ${CA_URL} --fingerprint ${FINGERPRINT}
+    step ca bootstrap --ca-url ${CA_URL} --fingerprint ${FINGERPRINT} || exit $?
     step certificate install $(step path)/certs/root_ca.crt
 fi
 

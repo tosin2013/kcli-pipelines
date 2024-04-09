@@ -25,7 +25,9 @@ IMAGE_NAME=ubuntu
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
 VM_NAME=harbor
-DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
+# FreeIPA DNS ADDRESS
+export vm_name="freeipa"
+export ip_address=$(sudo kcli info vm "$vm_name" "$vm_name" | grep ip: | awk '{print $2}' | head -1)
 DISK_SIZE=300
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
@@ -43,7 +45,7 @@ disk_size: ${DISK_SIZE}
 numcpus: 4
 memory: 8192
 net_name: ${NET_NAME} 
-reservedns: ${DNS_FORWARDER}
+reservedns: ${ip_address}
 domain: ${DOMAIN}
 harbor_version: ${HARBOR_VERSION}
 ca_url: ${CA_URL}
