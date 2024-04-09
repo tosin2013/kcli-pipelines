@@ -25,6 +25,8 @@ cmds:
   - hostnamectl set-hostname mirror-registry.{{ domain }}
   - subscription-manager refresh
   - subscription-manager attach --auto
+  - cd /tmp/ && curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/mirror-registry/configure-quay.sh
+  - chmod +x /tmp/configure-quay.sh && bash -x /tmp/configure-quay.sh  v1.3.10 {{ domain }} || tee -a /tmp/install-quay.log
 files:
   - path: /root/pull-secret.json
     origin: ~/.generated/vmfiles/pull-secret.json
