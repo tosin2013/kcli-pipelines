@@ -32,12 +32,13 @@ else
 fi
 
 cd $KCLI_SAMPLES_DIR
-IMAGE_URL="https://opencolo.mm.fcix.net/fedora/linux/releases/39/Cloud/x86_64/images/Fedora-Cloud-Base-39-1.5.x86_64.qcow2"
-IMAGE_NAME=Fedora-Cloud-Base-39-1.5.x86_64.qcow2
-sudo kcli download image ${IMAGE_NAME} -u  ${IMAGE_URL}
+
+IMAGE_NAME=rhel8
 
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
+RHSM_ORG=$(yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
+RHSM_ACTIVATION_KEY=$(yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
 OFFLINE_TOKEN=$(yq eval '.offline_token' "${ANSIBLE_VAULT_FILE}")
 PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
 VM_NAME=mirror-registry-$(echo $RANDOM | md5sum | head -c 5; echo;)

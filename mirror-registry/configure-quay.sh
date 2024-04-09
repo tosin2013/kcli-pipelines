@@ -23,18 +23,18 @@ then
     tar -zxvf mirror-registry-offline.tar.gz
 fi 
 mkdir -p /registry/
-sudo firewall-cmd --add-port=8443/tcp --permanent
-sudo firewall-cmd --reload
-sudo semanage port -a -t http_port_t -p tcp 8443
-sudo semanage port -l | grep -w http_port_t
+firewall-cmd --add-port=8443/tcp --permanent
+firewall-cmd --reload
+semanage port -a -t http_port_t -p tcp 8443
+semanage port -l | grep -w http_port_t
 
 if [ ! -s "/root/.generated/vmfiles/mirror-registry.${DOMAIN}.crt" ]; then
     echo "Installing mirror-registry without self-signed certificate"
-    sudo ./mirror-registry install  --quayRoot /registry/ --quayHostname mirror-registry.${DOMAIN} || tee /tmp/mirror-registry-offline.log
+    ./mirror-registry install  --quayRoot /registry/ --quayHostname mirror-registry.${DOMAIN} || tee /tmp/mirror-registry-offline.log
 fi
 
 if [ ! -s "/root/.generated/vmfiles/mirror-registry.${DOMAIN}.crt" ]; then
     echo "Installing mirror-registry without self-signed certificate"
-    sudo ./mirror-registry install  --quayRoot /registry/ --quayHostname mirror-registry.${DOMAIN}
+    ./mirror-registry install  --quayRoot /registry/ --quayHostname mirror-registry.${DOMAIN}
   --certPath mirror-registry.${DOMAIN}.crt --sslKey /home/${USER}/mirror-registry.${DOMAIN}.key || tee /tmp/mirror-registry-offline.log
 fi

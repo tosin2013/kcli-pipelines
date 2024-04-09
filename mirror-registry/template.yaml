@@ -1,4 +1,4 @@
-image: {{ image }}
+  image: {{ image }}
 {% if rhnregister %}
   rhnregister: true
 {% endif %}
@@ -8,31 +8,33 @@ image: {{ image }}
 {% if rhnactivationkey %}
   rhnactivationkey: {{ rhnactivationkey }}
 {% endif %}
-numcpus: {{ numcpus }}
-memory: {{ memory }}
-nets:
-  - name: {{ net_name }}
-disks:
-  - size: {{ disk_size }}
-cmds:
-  - nmcli connection modify  "cloud-init eth0"  ipv4.dns {{ reservedns }}
-  - nmcli connection down "cloud-init eth0" && sudo nmcli connection up "cloud-init eth0"
-  - echo {{ user_password }} | passwd --stdin root
-  - useradd {{ user }}
-  - usermod -aG wheel {{ user }}
-  - echo "{{ user }} ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/{{ user }}
-  - echo {{ user_password }} | passwd --stdin {{ user }}
-  - hostnamectl set-hostname mirror-registry.{{ domain }}
-  - subscription-manager refresh
-  - subscription-manager attach --auto
-  - cd /tmp/ && curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/mirror-registry/configure-quay.sh
-  - chmod +x /tmp/configure-quay.sh && bash -x /tmp/configure-quay.sh  v1.3.10 {{ domain }} || tee -a /tmp/install-quay.log
-files:
-  - path: /root/pull-secret.json
-    origin: ~/.generated/vmfiles/pull-secret.json
-  - path: /home/{{ user }}/pull-secret.json
-    origin:  ~/.generated/vmfiles/pull-secret.json
-  - path: /home/{{ user }}/mirror-registry.{{ domain }}.crt
-    origin: /root/.generated/vmfiles/mirror-registry.{{ domain }}.crt
-  - path:  /home/{{ user }}/mirror-registry.{{ domain }}.key
-    origin:  /root/.generated/vmfiles/mirror-registry.{{ domain }}.key
+  numcpus: {{ numcpus }}
+  memory: {{ memory }}
+  nets:
+    - name: {{ net_name }}
+  disks:
+    - size: {{ disk_size }}
+  cmds:
+    - nmcli connection modify  "System eth0"  ipv4.dns {{ reservedns }}
+    - nmcli connection down "System eth0" && sudo nmcli connection up "System eth0"
+    - echo {{ user_password }} | passwd --stdin root
+    - useradd {{ user }}
+    - usermod -aG wheel {{ user }}
+    - echo "{{ user }} ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/{{ user }}
+    - echo {{ user_password }} | passwd --stdin {{ user }}
+    - hostnamectl set-hostname mirror-registry.{{ domain }}
+    - subscription-manager refresh
+    - subscription-manager attach --auto
+    - dnf install git vim unzip wget tar python3 python3-pip util-linux-user tmux -y 
+    - subscription-manager repos --enable=rhel-8-for-x86_64-appstream-rpms --enable=rhel-8-for-x86_64-baseos-rpms
+    - cd /tmp/ && curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/mirror-registry/configure-quay.sh
+    - chmod +x /tmp/configure-quay.sh && bash -x /tmp/configure-quay.sh  v1.3.10 {{ domain }} || tee -a /tmp/install-quay.log
+  files:
+    - path: /root/pull-secret.json
+      origin: ~/.generated/vmfiles/pull-secret.json
+    - path: /home/{{ user }}/pull-secret.json
+      origin:  ~/.generated/vmfiles/pull-secret.json
+    - path: /home/{{ user }}/mirror-registry.{{ domain }}.crt
+      origin: /root/.generated/vmfiles/mirror-registry.{{ domain }}.crt
+    - path:  /home/{{ user }}/mirror-registry.{{ domain }}.key
+      origin:  /root/.generated/vmfiles/mirror-registry.{{ domain }}.key
