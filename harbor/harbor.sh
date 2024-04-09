@@ -58,7 +58,7 @@ fi
 
 if [ ! -f $HOME/${DOMAIN}.crt ];
 then
-  step ca token harbor.${DOMAIN} --password-file=/etc/step/initial_password --issuer="root@internal.${DOMAIN} "
+  TOKEN=$(step ca token harbor.${DOMAIN} --password-file=/etc/step/initial_password --issuer="root@internal.${DOMAIN} ")
   step ca certificate --token $TOKEN --not-after=1440h  --password-file /etc/step/initial_password  harbor.${DOMAIN}  harbor.${DOMAIN}.crt  harbor.${DOMAIN}.key 
 fi
 
