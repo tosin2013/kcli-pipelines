@@ -61,7 +61,7 @@ fi
 
 cat >/tmp/vm_vars.yaml<<EOF
 image: ${IMAGE_NAME}
-user: fedora
+user: cloud-user
 user_password: ${PASSWORD}
 disk_size: ${DISK_SIZE} 
 numcpus: 4

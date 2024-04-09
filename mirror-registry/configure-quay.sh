@@ -13,8 +13,8 @@ DOMAIN=${2}
 dnf update -y
 dnf install curl wget tar jq skopeo httpd-tools podman openssl nano nfs-utils bash-completion bind-utils ansible vim libvirt firewalld acl policycoreutils-python-utils -y
 
-if ! grep -q "echo 0 > /proc/sys/net/ipv4/ip_unprivileged_port_start" /path/to/file; then
-    echo "echo 0 > /proc/sys/net/ipv4/ip_unprivileged_port_start" >> /path/to/file
+if ! grep -q "0" /proc/sys/net/ipv4/ip_unprivileged_port_start; then
+    echo 0 > "/proc/sys/net/ipv4/ip_unprivileged_port_start"
 fi
 
 if [  ! -f $HOME/mirror-registry-offline.tar.gz ];
