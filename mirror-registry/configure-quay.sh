@@ -4,8 +4,8 @@ set -x
 # https://github.com/quay/mirror-registry
 # Usage: ./configure-quay.sh domain quay_version ca_url fingerprint
 
-if [ $# -ne 4 ]; then
-    echo "Usage: $0 <domain> <quay_version> <ca_url> <fingerprint>"
+if [ $# -ne 5 ]; then
+    echo "Usage: $0 <domain> <quay_version> <ca_url> <fingerprint> <password>"
     exit 1
 fi
 
@@ -13,13 +13,21 @@ DOMAIN=${1}
 QUAY_VERSION=${2}
 CA_URL=${3}
 FINGERPRINT=${4}
+PASSWORD=${5}
 
 sudo dnf update -y
 sudo dnf install curl wget tar jq skopeo httpd-tools openssl nano nfs-utils bash-completion bind-utils ansible-core vim libvirt firewalld acl policycoreutils-python-utils -y
 sudo dnf -y install \
   podman \
   skopeo \
-  buildah 
+  buildah \
+  sshpass
+
+if [ ! -f /root/.ssh/id_rsa ];
+then
+    sudo ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''
+    sshpass -p "$SSH_PASSWORD" ssh-copy-id -o StrictHostKeyChecking=no lab-user@${IP_ADDRESS} || exit $?
+fi
 
 #==============================================================================
 # Non-root podman hacks
@@ -90,4 +98,4 @@ sudo chown cloud-user:cloud-user  -R /home/cloud-user
 
 
 echo "Installing mirror-registry without self-signed certificate"
-./mirror-registry install  --quayRoot /registry/ --quayHostname mirror-registry.${DOMAIN} -k /root/quay-certs || tee /tmp/mirror-registry-offline.log
+./mirror-registry install  --quayRoot /registry/ --quayHostname mirror-registry.${DOMAIN} -k /root/quay-certs  --targetUsername  cloud-user --ssh-key ~/.ssh/id_rsa || tee /tmp/mirror-registry-offline.log
