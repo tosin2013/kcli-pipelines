@@ -99,9 +99,6 @@ sudo -E ./device-edge-workshops/configure-kcli-profile.sh || exit $?
 echo "Configuring microshift-demos type"
 echo "*********************************************"
 sudo -E ./microshift-demos/configure-kcli-profile.sh  || exit $?
-echo "Configuring mirror-registry type"
-echo "*********************************************"
-sudo -E ./mirror-registry/configure-kcli-profile.sh || exit $?
 echo "Configuring kubernetes type"
 echo "*********************************************"
 sudo -E ./kubernetes/configure-kcli-profile.sh || exit $?
@@ -120,7 +117,7 @@ sudo -E ./step-ca-server/configure-kcli-profile.sh || exit $?
 echo "Configuring ubuntu type"
 echo "*********************************************"
 sudo -E ./ubuntu/configure-kcli-profile.sh || exit $?
-if [ ! -z $VM_PROFILE ];
+if [[ ! -z "$CUSTOM_PROFILE" ]];
 then 
     echo "Configuring ${VM_PROFILE} type"
     echo "*********************************************"
