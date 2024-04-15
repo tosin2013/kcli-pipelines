@@ -26,6 +26,7 @@ sudo dnf -y install \
 if [ ! -f /root/.ssh/id_rsa ];
 then
     sudo ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''
+    IP_ADDRESS=$(hostname -I | awk '{print $1}')
     sshpass -p "$SSH_PASSWORD" ssh-copy-id -o StrictHostKeyChecking=no cloud-user@${IP_ADDRESS} || exit $?
 fi
 
