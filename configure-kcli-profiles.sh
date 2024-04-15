@@ -99,9 +99,6 @@ sudo -E ./device-edge-workshops/configure-kcli-profile.sh || exit $?
 echo "Configuring microshift-demos type"
 echo "*********************************************"
 sudo -E ./microshift-demos/configure-kcli-profile.sh  || exit $?
-echo "Configuring mirror-registry type"
-echo "*********************************************"
-sudo -E ./mirror-registry/configure-kcli-profile.sh || exit $?
 echo "Configuring kubernetes type"
 echo "*********************************************"
 sudo -E ./kubernetes/configure-kcli-profile.sh || exit $?
