@@ -65,7 +65,7 @@ else
     fi
 
     # Copy the SSH key to the target machine
-    if ! sudo ssh-copy-id -o StrictHostKeyChecking=no ${SSH_USER}@"${IP_ADDRESS}"; then
+    if ! sshpass -p "$SSH_PASSWORD" ssh-copy-id -o StrictHostKeyChecking=no cloud-user@"${IP_ADDRESS}"; then
         echo "Failed to copy SSH key to ${IP_ADDRESS}"
         exit 1
     fi
