@@ -13,7 +13,7 @@ DOMAIN=${1}
 QUAY_VERSION=${2}
 CA_URL=${3}
 FINGERPRINT=${4}
-PASSWORD=${5}
+SSH_PASSWORD=${5}
 
 sudo dnf update -y
 sudo dnf install curl wget tar jq skopeo httpd-tools openssl nano nfs-utils bash-completion bind-utils ansible-core vim libvirt firewalld acl policycoreutils-python-utils -y
@@ -23,12 +23,26 @@ sudo dnf -y install \
   buildah \
   sshpass
 
-if [ ! -f /root/.ssh/id_rsa ];
-then
-    sudo ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''
-    IP_ADDRESS=$(hostname -I | awk '{print $1}')
-    sshpass -p "$SSH_PASSWORD" ssh-copy-id -o StrictHostKeyChecking=no cloud-user@${IP_ADDRESS} || exit $?
+
+# IP address of the target machine
+IP_ADDRESS=$(hostname -I | awk '{print $1}')
+
+# Attempt to SSH into the machine. If it succeeds, exit the script.
+ssh -o BatchMode=yes -o ConnectTimeout=5 cloud-user@"${IP_ADDRESS}" exit
+
+# Check the exit status of the SSH command
+if [ $? -ne 0 ]; then
+    echo "SSH failed, setting up new SSH key."
+
+    # Check if SSH key exists, if not generate one
+    if [ ! -f /root/.ssh/id_rsa ]; then
+        sudo ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''
+    fi
+
+    # Copy the SSH key to the target machine
+    sshpass -p "$SSH_PASSWORD" ssh-copy-id -o StrictHostKeyChecking=no cloud-user@"${IP_ADDRESS}" || exit $?
 fi
+
 
 #==============================================================================
 # Non-root podman hacks
