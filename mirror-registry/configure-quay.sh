@@ -23,26 +23,53 @@ sudo dnf -y install \
   buildah \
   sshpass
 
-
 # IP address of the target machine
 IP_ADDRESS=$(hostname -I | awk '{print $1}')
+echo "Attempting to SSH to ${IP_ADDRESS}"
 
-# Attempt to SSH into the machine. If it succeeds, exit the script.
-ssh -o BatchMode=yes -o ConnectTimeout=5 cloud-user@"${IP_ADDRESS}" exit
+# Define the user and the SSH key directory for root
+SSH_USER="cloud-user"
+SSH_KEY_DIR="/root/.ssh"
+KEY_PATH="${SSH_KEY_DIR}/id_rsa"
 
-# Check the exit status of the SSH command
-if [ $? -ne 0 ]; then
-    echo "SSH failed, setting up new SSH key."
+# Ensure SSH key directory exists
+sudo mkdir -p "${SSH_KEY_DIR}"
+sudo chmod 700 "${SSH_KEY_DIR}"
+
+# Function to check if the host is known
+check_known_host() {
+    local host=$1
+    local known_hosts="${SSH_KEY_DIR}/known_hosts"
+    ssh-keygen -F "$host" -f "$known_hosts" >/dev/null
+    return $?
+}
+
+# Attempt to check the known_hosts file for the target host
+if check_known_host "$IP_ADDRESS"; then
+    echo "Host ${IP_ADDRESS} is known. Trying to connect."
+    # Try to connect using existing keys
+    if sudo ssh -o BatchMode=yes -o ConnectTimeout=5 ${SSH_USER}@"${IP_ADDRESS}" exit 2>/dev/null; then
+        echo "SSH connection successful, exiting."
+        exit 0
+    else
+        echo "SSH connection failed, but host is known. Check authentication."
+        exit 1
+    fi
+else
+    echo "Host ${IP_ADDRESS} is not known. Proceeding with key setup."
 
     # Check if SSH key exists, if not generate one
-    if [ ! -f /root/.ssh/id_rsa ]; then
-        sudo ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''
+    if [ ! -f "${KEY_PATH}" ]; then
+        echo "No SSH key found, generating one."
+        sudo ssh-keygen -f "${KEY_PATH}" -t rsa -N ''
     fi
 
     # Copy the SSH key to the target machine
-    sshpass -p "$SSH_PASSWORD" ssh-copy-id -o StrictHostKeyChecking=no cloud-user@"${IP_ADDRESS}" || exit $?
+    if ! sudo ssh-copy-id -o StrictHostKeyChecking=no ${SSH_USER}@"${IP_ADDRESS}"; then
+        echo "Failed to copy SSH key to ${IP_ADDRESS}"
+        exit 1
+    fi
 fi
-
 
 #==============================================================================
 # Non-root podman hacks
