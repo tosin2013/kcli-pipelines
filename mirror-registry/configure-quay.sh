@@ -38,11 +38,6 @@ SSH_USER="cloud-user"
 SSH_KEY_DIR="/root/.ssh"
 KEY_PATH="${SSH_KEY_DIR}/id_rsa"
 
-
-# Ensure SSH key directory exists
-sudo mkdir -p "${SSH_KEY_DIR}"
-sudo chmod 700 "${SSH_KEY_DIR}"
-
 # Function to check if the host is known
 check_known_host() {
     local host=$1
@@ -67,7 +62,11 @@ else
     # Check if SSH key exists, if not generate one
     if [ ! -f "${KEY_PATH}" ]; then
         echo "No SSH key found, generating one."
-        sudo ssh-keygen -f ${KEY_PATH} -t rsa -N '' -y
+        # Ensure SSH key directory exists
+        sudo mkdir -p "${SSH_KEY_DIR}"
+        sudo chmod 700 "${SSH_KEY_DIR}"
+        rm -rf /root/.ssh/id_rsa 
+        ssh-keygen -f  /root/.ssh/id_rsa -t rsa -N '' -y || exit $?
     else
         echo "SSH key already exists at ${KEY_PATH}."
         sudo chmod 600 "${KEY_PATH}" # Ensure the key has correct permissions
