@@ -31,7 +31,6 @@
     - cd /tmp/ && curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/mirror-registry/configure-quay.sh
     - chmod +x /tmp/configure-quay.sh && echo "bash -x /tmp/configure-quay.sh {{ domain }} {{ quay_version }} {{ ca_url }}  {{ fingerprint }} {{ user_password }}" > /tmp/install-quay.sh
     - chmod +x /tmp/install-quay.sh 
-    - /tmp/install-quay.sh | tee -a /tmp/install-quay.log
   files:
     - path: /root/pull-secret.json
       origin: ~/.generated/vmfiles/pull-secret.json

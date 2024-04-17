@@ -53,9 +53,7 @@ if check_known_host "$IP_ADDRESS"; then
         exit 0
     else
         echo "SSH connection failed, but host is known. Check authentication."
-        rm -rf "${SSH_KEY_DIR}/known_hosts"
-        sudo ssh-keygen -f "${KEY_PATH}" -t rsa -N ''
-        sshpass -p "$SSH_PASSWORD" ssh-copy-id -o StrictHostKeyChecking=no cloud-user@"${IP_ADDRESS}"
+        exit 1
     fi
 else
     echo "Host ${IP_ADDRESS} is not known. Proceeding with key setup."
