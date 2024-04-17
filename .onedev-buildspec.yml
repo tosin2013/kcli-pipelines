@@ -291,7 +291,7 @@ jobs:
     name: Configure KCLI Profiles
     runInContainer: false
     interpreter: !DefaultInterpreter
-      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport VM_NAME=\"@param:VM_PROFILE@\"\nexport  ACTION=\"@param:ACTION@\" # create, delete\nexport DOMAIN=@param:DOMAIN@\nexport INITIAL_PASSWORD=@param:INITIAL_PASSWORD@\nexport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport VM_NAME=\"@param:VM_PROFILE@\"\nexport  ACTION=\"@param:ACTION@\" # create, delete\nexport DOMAIN=@param:DOMAIN@\nexport INITIAL_PASSWORD=@param:INITIAL_PASSWORD@\nexport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\nexport CUSTOM_PROFILE=true\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   - !CommandStep
@@ -389,14 +389,14 @@ jobs:
     name: Configure KCLI Profiles
     runInContainer: false
     interpreter: !DefaultInterpreter
-      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport VM_NAME=\"@param:VM_PROFILE@\"\nexport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\nexport HARBOR_VERSION=@param:HARBOR_VERSION@\nexport CA_URL=@param:CA_URL@\nexport FINGERPRINT=@param:FINGERPRINT@\nexport STEP_CA_PASSWORD=@param:STEP_CA_PASSWORD@\nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport VM_NAME=\"@param:VM_PROFILE@\"\nexport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\nexport HARBOR_VERSION=@param:HARBOR_VERSION@\nexport QUAY_VERSION=@param:QUAY_VERSION@\nexport CA_URL=@param:CA_URL@\nexport FINGERPRINT=@param:FINGERPRINT@\nexport STEP_CA_PASSWORD=@param:STEP_CA_PASSWORD@\nexport  ACTION=\"@param:ACTION@\" # create, delete\nexport CUSTOM_PROFILE=true\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   - !CommandStep
     name: Deploy VM
     runInContainer: false
     interpreter: !DefaultInterpreter
-      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport VM_NAME=\"@param:VM_PROFILE@\"\nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./deploy-vm.sh || exit $?\n"
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport VM_NAME=\"@param:VM_PROFILE@\"\nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./deploy-vm.sh\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   paramSpecs:
@@ -440,11 +440,6 @@ jobs:
         color: '#0d87e9'
       - value: delete
         color: '#0d87e9'
-  - !TextParam
-    name: VM_NAME_INSTANCE
-    description: Only use when you want to delete a vm
-    allowEmpty: true
-    multiline: false
   - !ChoiceParam
     name: COMMUNITY_VERSION
     description: "Set to true if you do not have access to Red Hat Activation Keys\r\n\r\nhttps://access.redhat.com/articles/1378093"
@@ -470,6 +465,12 @@ jobs:
     defaultValueProvider: !SpecifiedDefaultValue
       value: v2.10.1
   - !TextParam
+    name: QUAY_VERSION
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: v1.3.10
+  - !TextParam
     name: CA_URL
     allowEmpty: false
     multiline: false
@@ -480,6 +481,25 @@ jobs:
   - !SecretParam
     name: STEP_CA_PASSWORD
   retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 3600
+  postBuildActions:
+  - !RunJobAction
+    condition: '"VM_PROFILE" is "mirror-registry"'
+    jobName: Configure Mirror Registry
+- name: Configure Mirror Registry
+  jobExecutor: default-executor
+  steps:
+  - !CommandStep
+    name: install mirror-registry
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: |
+        kcli ssh root@@mirror-registry /tmp/install-quay.sh
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  retryCondition: '"Log" contains "failed"'
   maxRetries: 3
   retryDelay: 30
   timeout: 3600
