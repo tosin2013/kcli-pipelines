@@ -1,6 +1,6 @@
 #!/bin/bash
-export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-set -x
+#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+#set -x
 # https://github.com/quay/mirror-registry
 # Usage: ./configure-quay.sh domain quay_version ca_url fingerprint
 
@@ -14,6 +14,12 @@ QUAY_VERSION=${2}
 CA_URL=${3}
 FINGERPRINT=${4}
 SSH_PASSWORD=${5}
+
+# Check if the user is root, if not exit
+if [ "$(id -u)" != "0" ]; then
+    echo "This script must be run as root"
+    exit 1
+fi
 
 sudo dnf update -y
 sudo dnf install curl wget tar jq skopeo httpd-tools openssl nano nfs-utils bash-completion bind-utils ansible-core vim libvirt firewalld acl policycoreutils-python-utils -y
