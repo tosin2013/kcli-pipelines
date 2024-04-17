@@ -27,6 +27,12 @@ sudo dnf -y install \
 IP_ADDRESS=$(hostname -I | awk '{print $1}')
 echo "Attempting to SSH to ${IP_ADDRESS}"
 
+# Define the user and the SSH key directory for root
+SSH_USER="cloud-user"
+SSH_KEY_DIR="/root/.ssh"
+KEY_PATH="${SSH_KEY_DIR}/id_rsa"
+
+
 # Ensure SSH key directory exists
 sudo mkdir -p "${SSH_KEY_DIR}"
 sudo chmod 700 "${SSH_KEY_DIR}"
