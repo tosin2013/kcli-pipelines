@@ -51,7 +51,6 @@ if check_known_host "$IP_ADDRESS"; then
     # Try to connect using existing keys
     if sudo ssh -o BatchMode=yes -o ConnectTimeout=5 ${SSH_USER}@"${IP_ADDRESS}" exit 2>/dev/null; then
         echo "SSH connection successful, exiting."
-        exit 0
     else
         echo "SSH connection failed, but host is known. Check authentication."
         exit 1
@@ -62,7 +61,7 @@ else
     # Check if SSH key exists, if not generate one
     if [ ! -f "${KEY_PATH}" ]; then
         echo "No SSH key found, generating one."
-        sudo ssh-keygen -f "${KEY_PATH}" -t rsa -N ''
+        sudo ssh-keygen -f ${KEY_PATH} -t rsa -N '' -y
     else
         echo "SSH key already exists at ${KEY_PATH}."
         sudo chmod 600 "${KEY_PATH}" # Ensure the key has correct permissions
