@@ -327,7 +327,7 @@ jobs:
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: rhel8-equinix
+      value: hetzner
   - !ChoiceParam
     name: VM_PROFILE
     allowMultiple: false
@@ -419,7 +419,7 @@ jobs:
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: rhel8-equinix
+      value: hetzner
   - !ChoiceParam
     name: VM_PROFILE
     allowMultiple: false
