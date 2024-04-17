@@ -1,4 +1,4 @@
-image: Fedora-Cloud-Base-38-1.6.x86_64.qcow2
+image: fedora39
 user: admin
 user_password: secret
 disk_size: 30

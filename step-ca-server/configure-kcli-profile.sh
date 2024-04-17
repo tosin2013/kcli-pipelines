@@ -1,5 +1,5 @@
 #!/bin/bash
-export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 set -x
 if [ -f ../helper_scripts/default.env ];
 then 
@@ -27,6 +27,41 @@ DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=200
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
+# FreeIPA DNS ADDRESS
+export vm_name="freeipa"
+export ip_address=$(sudo kcli info vm "$vm_name" "$vm_name" | grep ip: | awk '{print $2}' | head -1)
+
+COMMUNITY_VERSION="$(echo -e "${COMMUNITY_VERSION}" | tr -d '[:space:]')"
+
+echo "COMMUNITY_VERSION is set to: $COMMUNITY_VERSION"
+
+if [ "$COMMUNITY_VERSION" == "true" ]; then
+  echo "Community version"
+  export IMAGE_NAME=centos8stream
+  export TEMPLATE_NAME=template-centos.yaml
+  export LOGIN_USER=centos
+  echo "IMAGE_NAME: $IMAGE_NAME"
+  echo "TEMPLATE_NAME: $TEMPLATE_NAME"
+elif [ "$COMMUNITY_VERSION" == "false" ]; then
+  echo "Enterprise version"
+  export IMAGE_NAME=rhel8
+  export TEMPLATE_NAME=template.yaml
+  export LOGIN_USER=cloud-user
+  echo "IMAGE_NAME: $IMAGE_NAME"
+  echo "TEMPLATE_NAME: $TEMPLATE_NAME"
+else
+  echo "Correct $COMMUNITY_VERSION not set"
+  exit 1
+fi
+
+
+if [ -z "${INITIAL_PASSWORD}"];
+then 
+  INITIAL_PASSWORD="password"
+else
+  echo "INITIAL_PASSWORD is set to ${INITIAL_PASSWORD}"
+fi 
+
 sudo rm -rf kcli-profiles.yml
 if [ -f /home/${KCLI_USER}/.kcli/profiles.yml ]; then
   sudo cp  /home/${KCLI_USER}/.kcli/profiles.yml kcli-profiles.yml
@@ -41,10 +76,27 @@ else
   sudo mkdir -p  /root/.generated/vmfiles
 fi
 
-
+if [ "$IMAGE_NAME" == "centos8stream" ]; then
+  echo "Using community version"
 cat >/tmp/vm_vars.yaml<<EOF
 image: ${IMAGE_NAME}
-user: cloud-user
+user: ${LOGIN_USER}
+user_password: ${PASSWORD}
+disk_size: ${DISK_SIZE} 
+numcpus: 4
+memory: 8184
+net_name: ${NET_NAME} 
+reservedns: ${DNS_FORWARDER}
+domainname: ${DOMAIN}
+initial_password: ${INITIAL_PASSWORD}
+freeipa_dns: ${ip_address}
+EOF
+  sudo python3 profile_generator/profile_generator.py update-yaml step-ca-server step-ca-server/template-centos.yaml --vars-file /tmp/vm_vars.yaml
+elif [ "$IMAGE_NAME" == "rhel8" ]; then
+  echo "Using RHEL version"
+cat >/tmp/vm_vars.yaml<<EOF
+image: ${IMAGE_NAME}
+user: ${LOGIN_USER}
 user_password: ${PASSWORD}
 disk_size: ${DISK_SIZE} 
 numcpus: 4
@@ -55,8 +107,15 @@ domainname: ${DOMAIN}
 offline_token: ${OFFLINE_TOKEN}
 rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
+initial_password: ${INITIAL_PASSWORD}
+freeipa_dns: ${ip_address}
 EOF
-sudo python3 profile_generator/profile_generator.py update_yaml rhel9-step-ca rhel9-step-ca/template.yaml  --vars-file /tmp/vm_vars.yaml
+  sudo python3 profile_generator/profile_generator.py update_yaml step-ca-server step-ca-server/template.yaml  --vars-file /tmp/vm_vars.yaml
+else
+  echo "Correct IMAGE_NAME: $IMAGE_NAME not set"
+  exit 1
+fi
+
 #cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml

@@ -1,4 +1,4 @@
-image: centos9stream
+image: centos9streaml
 user: admin
 user_password: secret
 disk_size: 30

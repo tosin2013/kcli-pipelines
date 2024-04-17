@@ -101,33 +101,35 @@ sudo -E ./device-edge-workshops/configure-kcli-profile.sh || exit $?
 echo "Configuring microshift-demos type"
 echo "*********************************************"
 sudo -E ./microshift-demos/configure-kcli-profile.sh  || exit $?
-echo "Configuring mirror-registry type"
-echo "*********************************************"
-sudo -E ./mirror-registry/configure-kcli-profile.sh || exit $?
 echo "Configuring kubernetes type"
 echo "*********************************************"
 sudo -E ./kubernetes/configure-kcli-profile.sh || exit $?
 echo "Configuring jupyterlab type"
 echo "*********************************************"
 sudo -E ./jupyterlab/configure-kcli-profile.sh || exit $?
-echo "Configuring harbor type"
-echo "*********************************************"
-sudo -E ./harbor/configure-kcli-profile.sh || exit $?
 echo "Configuring ceph-cluster type"
 echo "*********************************************"
 sudo -E ./ceph-cluster/configure-kcli-profile.sh || exit $?
 echo "Configuring rhel9-pxe type"
 echo "*********************************************"
 sudo -E ./rhel9-pxe/configure-kcli-profile.sh || exit $?
-echo "Configuring rhel9-step-ca type"
+echo "Configuring step-ca-server type"
 echo "*********************************************"
-sudo -E ./rhel9-step-ca/configure-kcli-profile.sh || exit $?
+sudo -E ./step-ca-server/configure-kcli-profile.sh || exit $?
 echo "Configuring ubuntu type"
 echo "*********************************************"
 sudo -E ./ubuntu/configure-kcli-profile.sh || exit $?
+if [[ ! -z "$CUSTOM_PROFILE" ]];
+then 
+    echo "Configuring ${VM_PROFILE} type"
+    echo "*********************************************"
+    sudo -E ./${VM_PROFILE}/configure-kcli-profile.sh || exit $?
+fi
 echo "*********************************************"
 cat ~/.kcli/profiles.yml | tee /tmp/kcli-profiles.yml > /dev/null
 echo "*********************************************"
+
+
 #read -n 1 -s -r -p "Press any key to continue"
 #sleep 15s
 if [ $KCLI_USER != "root" ];

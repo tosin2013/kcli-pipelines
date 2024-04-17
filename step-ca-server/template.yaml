@@ -29,14 +29,6 @@
     - subscription-manager refresh
     - subscription-manager attach --auto
     - dnf install git vim unzip wget tar python3 python3-pip util-linux-user tmux firewalld  ansible-core jq -y 
-    - mkdir -p /opt/scripts 
-    - cd /opt/scripts && curl -OL https://raw.githubusercontent.com/tosin2013/openshift-4-deployment-notes/master/aws/configure-aws-cli.sh && chmod +x configure-aws-cli.sh 
-    - cd /tmp/ && curl -OL https://raw.githubusercontent.com/tosin2013/openshift-4-deployment-notes/master/pre-steps/configure-openshift-packages.sh
-    - chmod +x /tmp/configure-openshift-packages.sh && /tmp/configure-openshift-packages.sh -i
-    - wget https://dl.smallstep.com/cli/docs-ca-install/latest/step-cli_amd64.rpm && sudo rpm -i step-cli_amd64.rpm
-    - wget https://dl.smallstep.com/certificates/docs-ca-install/latest/step-ca_amd64.rpm && sudo rpm -i step-ca_amd64.rpm
-    - ansible-galaxy collection install maxhoesel.smallstep>=0.25.2
-    - hostnamectl set-hostname step-ca.{{ domain }}
-
-
-
+    - cd /tmp/ && curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/step-ca-server/configure-step-ca-local.sh
+    - echo "{{ initial_password }}" > /tmp/initial_password || exit $?
+    - chmod +x /tmp/configure-step-ca-local.sh && bash -x /tmp/configure-step-ca-local.sh  {{ domainname }} {{ freeipa_dns }} || tee -a /tmp/install-step-ca.log
