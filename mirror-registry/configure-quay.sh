@@ -66,7 +66,7 @@ else
         sudo mkdir -p "${SSH_KEY_DIR}"
         sudo chmod 700 "${SSH_KEY_DIR}"
         rm -rf /root/.ssh/id_rsa 
-        ssh-keygen -f  /root/.ssh/id_rsa -t rsa -N '' -y || exit $?
+        ssh-keygen -f  /root/.ssh/id_rsa -t rsa -N '' || exit $?
     else
         echo "SSH key already exists at ${KEY_PATH}."
         sudo chmod 600 "${KEY_PATH}" # Ensure the key has correct permissions
