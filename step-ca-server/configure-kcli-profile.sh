@@ -91,7 +91,7 @@ domainname: ${DOMAIN}
 initial_password: ${INITIAL_PASSWORD}
 freeipa_dns: ${ip_address}
 EOF
-  sudo python3 profile_generator/profile_generator.py update-yaml step-ca-server step-ca-server/template-centos.yaml --vars-file /tmp/vm_vars.yaml
+  sudo python3 profile_generator/profile_generator.py update_yaml step-ca-server step-ca-server/template-centos.yaml --vars-file /tmp/vm_vars.yaml
 elif [ "$IMAGE_NAME" == "rhel8" ]; then
   echo "Using RHEL version"
 cat >/tmp/vm_vars.yaml<<EOF
