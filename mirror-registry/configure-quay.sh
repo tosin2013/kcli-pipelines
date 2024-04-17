@@ -53,7 +53,9 @@ if check_known_host "$IP_ADDRESS"; then
         exit 0
     else
         echo "SSH connection failed, but host is known. Check authentication."
-        exit 1
+        rm -rf "${SSH_KEY_DIR}/known_hosts"
+        sudo ssh-keygen -f "${KEY_PATH}" -t rsa -N ''
+        sshpass -p "$SSH_PASSWORD" ssh-copy-id -o StrictHostKeyChecking=no cloud-user@"${IP_ADDRESS}"
     fi
 else
     echo "Host ${IP_ADDRESS} is not known. Proceeding with key setup."
@@ -117,7 +119,7 @@ if [ -f /tmp/initial_password ]; then
     cp /tmp/initial_password /etc/step/initial_password
 fi
 
-if [ ! -f /root/${DOMAIN}.crt ];
+if [ ! -f /root/quay-certs/${DOMAIN}.crt ];
 then
   mkdir /root/quay-certs
   cd /root/quay-certs
