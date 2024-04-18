@@ -1,7 +1,6 @@
 #!/bin/bash
 # https://ypbind.de/maus/notes/real_life_step-ca_with_multiple_users/
-
-set -eo pipefail
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 set -x
 
 function check_dependencies() {
