@@ -37,6 +37,10 @@ function setup_certificate_authority() {
     mv .step/config/ca.json .step/config/ca.json.bak
     mv .step/config/ca.json.tmp .step/config/ca.json
 
+    curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/step-ca-server/step-ca-service.sh
+    chmod +x step-ca-service.sh
+    ./step-ca-service.sh
+
     #nohup step-ca $(step path)/config/ca.json --password-file=/etc/step/initial_password > step-ca.log 2>&1 &
     #cat step-ca.log
     #echo "step-ca $(step path)/config/ca.json"
