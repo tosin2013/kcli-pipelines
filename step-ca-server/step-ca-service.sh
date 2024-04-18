@@ -15,8 +15,8 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=/usr/bin/step-ca /root/.step/config/ca.json --password-file=/etc/step/initial_password
-StandardOutput=file:/tmp/step-ca.log
-StandardError=file:/tmp/step-ca.log
+StandardOutput=file:/var/log/step-ca.log
+StandardError=file:/var/log/step-ca.log
 Restart=always
 RestartSec=10s
 User=root
