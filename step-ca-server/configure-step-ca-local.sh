@@ -27,8 +27,10 @@ function setup_certificate_authority() {
     ansible-galaxy collection install maxhoesel.smallstep>=0.25.2
     sudo hostnamectl set-hostname step-ca-server.${DOMAIN}
 
-    step ca init --dns=step-ca-server.${DOMAIN} --address='[::]:443' --address=0.0.0.0:443 --name="Certificate authority for internal.${DOMAIN}" \
-        --deployment-type=standalone --provisioner="root@internal.${DOMAIN} " --password-file=/etc/step/initial_password || exit $?
+    step ca init  --dns=step-ca-server.${DOMAIN} --address='[::]:443'  \
+    --address=0.0.0.0:443  --name="Certificate authority for internal.${DOMAIN}" \
+    --deployment-type=standalone --provisioner="root@internal.${DOMAIN} " --password-file=/etc/step/initial_password
+
     
     step ca provisioner add acme --type ACME
 
