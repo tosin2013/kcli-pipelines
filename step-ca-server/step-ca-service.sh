@@ -6,6 +6,10 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
+jq '.authority.provisioners[0].claims = {"minTLSCertDuration": "5m", "maxTLSCertDuration": "2000h", "defaultTLSCertDuration": "2000h"}' .step/config/ca.json > .step/config/ca.json.tmp
+mv .step/config/ca.json .step/config/ca.json.bak
+mv .step/config/ca.json.tmp .step/config/ca.json
+
 # Create the systemd service file
 cat > /etc/systemd/system/step-ca.service << EOF
 [Unit]
