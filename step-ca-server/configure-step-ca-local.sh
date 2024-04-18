@@ -37,6 +37,7 @@ function setup_certificate_authority() {
     mv .step/config/ca.json .step/config/ca.json.bak
     mv .step/config/ca.json.tmp .step/config/ca.json
 
+    cd /tmp
     curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/step-ca-server/step-ca-service.sh
     chmod +x step-ca-service.sh
     ./step-ca-service.sh
