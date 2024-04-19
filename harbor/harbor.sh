@@ -108,7 +108,7 @@ fi
 cd /root/harbor
 cp harbor.yml.tmpl harbor.yml
 sed -i "s/reg.mydomain.com/$IPorFQDN/g" harbor.yml
-sed -i "s/# external_url:.*/external_url: https://$IPorFQDN/g" harbor.yml
+sed -i "s|# external_url:.*|external_url: https://$IPorFQDN|g" harbor.yml
 sed -i "s|certificate: /your/certificate/path|certificate: /root/harbor.${DOMAIN}.crt|" harbor.yml
 sed -i "s|private_key: /your/private/key/path|private_key: /root/harbor.${DOMAIN}.key|"  harbor.yml
 cat harbor.yml
