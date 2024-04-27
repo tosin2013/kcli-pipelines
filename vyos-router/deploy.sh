@@ -61,7 +61,7 @@ function create(){
     fi
     
 
-    VM_NAME=$(basename $HOME/$1  | sed 's/.qcow2//g')
+    VM_NAME=vyos-router
     sudo mv $HOME/${VM_NAME}.qcow2 /var/lib/libvirt/images/
     curl -OL http://${IPADDR}/seed.iso
     sudo mv $HOME/seed.iso /var/lib/libvirt/images/seed.iso
@@ -83,7 +83,7 @@ sudo virt-install -n ${VM_NAME} \
 }
 
 function delete(){
-    VM_NAME=$(basename $HOME/$1  | sed 's/.qcow2//g')
+    VM_NAME=vyos-router
     sudo virsh destroy ${VM_NAME}
     sudo virsh undefine ${VM_NAME}
     sudo rm -rf /var/lib/libvirt/images/$1

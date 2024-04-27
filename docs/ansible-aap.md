@@ -40,6 +40,7 @@ export TARGET_SERVER="rhel8-equinix" # equinix
 export VM_PROFILE=ansible-aap
 export VM_NAME="ansible-aap"
 export  ACTION="create" # create, delete
+export COMMUNITY_VERSION="false" # Set to true if you do not have access to Red Hat Activation Keys\r\n\r\nhttps://access.redhat.com/articles/1378093"
 EOF
 
 or 

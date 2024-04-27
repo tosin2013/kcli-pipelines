@@ -16,6 +16,7 @@ $ sudo su -
 $ cat >notouch.env<<EOF
 export CICD_PIPELINE="true" 
 export TARGET_SERVER="rhel8-equinix" # equinix 
+export COMMUNITY_VERSION="false" # Set to true if you do not have access to Red Hat Activation Keys\r\n\r\nhttps://access.redhat.com/articles/1378093"
 EOF
 
 $ curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/configure-kcli-profiles.sh && chmod +x configure-kcli-profiles.sh
