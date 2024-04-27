@@ -19,7 +19,7 @@ if [ ! -z "$CICD_PIPELINE" ]; then
 fi
 
 function create_livirt_networks(){
-    array=( vyos-network-1  vyos-network-2 )
+    array=( "1924" "1925" "1926" "1927"  "1928" )
     for i in "${array[@]}"
     do
         echo "$i"
@@ -74,9 +74,12 @@ sudo virt-install -n ${VM_NAME} \
    --vcpus 2 \
    --cdrom /var/lib/libvirt/images/seed.iso \
    --os-variant debian10 \
-   --network bridge=default,model=e1000e,mac=$(date +%s | md5sum | head -c 6 | sed -e 's/\([0-9A-Fa-f]\{2\}\)/\1:/g' -e 's/\(.*\):$/\1/' | sed -e 's/^/52:54:00:/') \
-   --network network=vyos-network-1,model=e1000e \
-   --network network=vyos-network-2,model=e1000e \
+   --network network=default,model=e1000e,mac=$(date +%s | md5sum | head -c 6 | sed -e 's/\([0-9A-Fa-f]\{2\}\)/\1:/g' -e 's/\(.*\):$/\1/' | sed -e 's/^/52:54:00:/') \
+   --network network=1924,model=e1000e \
+   --network network=1925,model=e1000e \
+   --network network=1926,model=e1000e \
+   --network network=1927,model=e1000e \
+   --network network=1928,model=e1000e \
    --graphics vnc \
    --hvm \
    --virt-type kvm \
@@ -89,7 +92,7 @@ function destroy(){
     VM_NAME=vyos-router
     sudo virsh destroy ${VM_NAME}
     sudo virsh undefine ${VM_NAME}
-    sudo rm -rf /var/lib/libvirt/images/$1
+    sudo rm -rf /var/lib/libvirt/images/$VM_NAME.qcow2
     sudo rm -rf /var/lib/libvirt/images/seed.iso
 }
 
