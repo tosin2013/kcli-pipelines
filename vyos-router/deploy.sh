@@ -63,8 +63,11 @@ function create(){
 
     VM_NAME=vyos-router
     sudo mv $HOME/${VM_NAME}.qcow2 /var/lib/libvirt/images/
-    curl -OL http://${IPADDR}/seed.iso
+    sudo cp $HOME/vyos-${VYOS_VERSION}-amd64.iso $HOME/seed.iso
     sudo mv $HOME/seed.iso /var/lib/libvirt/images/seed.iso
+
+    # generate qcow2 blank image $VM_NAME.qcow2
+    sudo qemu-img create -f qcow2 /var/lib/libvirt/images/$VM_NAME.qcow2 20G
 
 sudo virt-install -n ${VM_NAME} \
    --ram 4096 \
@@ -82,7 +85,7 @@ sudo virt-install -n ${VM_NAME} \
    --noautoconsole
 }
 
-function delete(){
+function destroy(){
     VM_NAME=vyos-router
     sudo virsh destroy ${VM_NAME}
     sudo virsh undefine ${VM_NAME}
