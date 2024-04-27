@@ -159,6 +159,9 @@ then
     elif  [[ $VM_NAME == "kubernetes" ]];
     then 
       kubernetes/deploy.sh create
+    elif  [[ $VM_NAME == "vyos-router" ]];
+    then 
+      vyos-router/deploy.sh create
     else
         check_idm idm.$DOMAIN_NAME || exit $?
         DNS_ADDRESS=$(sudo kcli info vm freeipa freeipa | grep ip: | awk '{print $2}' | head -1)
@@ -217,6 +220,9 @@ then
     elif [[ $VM_NAME == "ocp4-disconnected-helper" ]];
     then
       /opt/kcli-pipelines/ocp4-disconnected-helper/destroy.sh
+    elif [[ $VM_NAME == "vyos-router" ]];
+    then
+       vyos-router/deploy.sh delete
     else
       TARGET_VM=$(sudo kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
       IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
