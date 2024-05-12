@@ -30,7 +30,12 @@ if [ ! -z "$CICD_PIPELINE" ]; then
 fi
 
 
-DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+if [ ! -z ${ZONE_NAME} ];
+then
+  DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+else
+  DOMAIN=${ZONE_NAME}
+fi
 
 function create(){
     ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
