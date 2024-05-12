@@ -36,28 +36,27 @@ else
   DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 fi
 
+CLUSTER_FILE_PATH="/opt/openshift-agent-install/examples/bond0-signal-vlan/cluster.yml"
+
 function create(){
     ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
     #yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}" > openshift_pull.json
-    ${USE_SUDO} yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}" | sudo tee openshift_pull.json >/dev/null
+    ${USE_SUDO} yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}" | sudo tee ~/ocp-install-pull-secret.json >/dev/null
 
-    #cat openshift_pull.json
-    ${USE_SUDO} ln -s /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/${DEPLOYMENT_CONFIG}  lab.yml
-    ${USE_SUDO} yq eval ".domain = \"$DOMAIN\"" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/${DEPLOYMENT_CONFIG} || exit $?
-    ${USE_SUDO} /opt/kcli-pipelines/kcli-openshift4-baremetal/env-checks.sh  || exit $?
-    cat lab.yml
-    ${USE_SUDO} kcli create plan --paramfile  lab.yml lab
+    cat  ~/ocp-install-pull-secret.json
+    dnf install nmstate -y
+    ansible-galaxy install -r playbooks/collections/requirements.yml
+    ./hack/create-iso.sh $FOLDER_NAME
 }
 
 
 function destroy(){
-    ${USE_SUDO} kcli delete plan lab --y
-    ${USE_SUDO} rm -rf lab.yml
-    export VM_PROFILE=freeipa
-    export VM_NAME="freeipa"
-    export  ACTION="delete" # create, delete
+    rm -rf /opt/openshift-agent-install/playbooks/ge
+    #export VM_PROFILE=freeipa
+    #export VM_NAME="freeipa"
+    #export  ACTION="delete" # create, delete
 
-    /opt/kcli-pipelines/deploy-vm.sh
+    #/opt/kcli-pipelines/deploy-vm.sh
 }
 
 if [ $ACTION == "create" ];
