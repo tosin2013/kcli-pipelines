@@ -29,7 +29,6 @@ if [ ! -z "$CICD_PIPELINE" ]; then
   export USE_SUDO="sudo"
 fi
 
-
 if [ ! -z ${ZONE_NAME} ];
 then
   DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
