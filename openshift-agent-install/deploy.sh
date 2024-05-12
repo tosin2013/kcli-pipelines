@@ -36,7 +36,15 @@ else
   DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 fi
 
-CLUSTER_FILE_PATH="/opt/openshift-agent-install/examples/bond0-signal-vlan/cluster.yml"
+if [ ! -z ${FOLDER_NAME} ];
+then
+  FOLDER_NAME=${FOLDER_NAME}
+else
+  echo "FOLDER_NAME is not set"
+  exit 1
+fi
+
+CLUSTER_FILE_PATH="/opt/openshift-agent-install/examples/${FOLDER_NAME}/cluster.yml"
 
 function create(){
     ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
