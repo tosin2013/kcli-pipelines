@@ -8,15 +8,15 @@ else
   exit 1
 fi
 
-if [ ! -d /opt/kcli-openshift4-baremetal ];
+if [ ! -d /opt/openshift-agent-install ];
 then 
     cd /opt/
-    git clone https://github.com/karmab/kcli-openshift4-baremetal
-    cd kcli-openshift4-baremetal
+    git clone https://github.com/tosin2013/openshift-agent-install.git
+    cd openshift-agent-install
 else
-    cd /opt/kcli-openshift4-baremetal
+    cd /opt/openshift-agent-install
     git config pull.rebase false
-    git config --global --add safe.directory /opt/kcli-openshift4-baremetal
+    git config --global --add safe.directory /opt/openshift-agent-install
     git pull
 fi 
 
