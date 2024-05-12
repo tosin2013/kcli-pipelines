@@ -223,6 +223,9 @@ then
     elif [[ $VM_NAME == "vyos-router" ]];
     then
        vyos-router/deploy.sh delete
+    elif [[ $VM_NAME == "openshift-agent-install" ]];
+    then 
+      openshift-agent-install/deploy.sh destroy
     else
       TARGET_VM=$(sudo kcli list vm  | grep  ${VM_NAME} | awk '{print $2}')
       IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
