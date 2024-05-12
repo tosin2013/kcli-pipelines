@@ -31,7 +31,8 @@ fi
 
 if [ ! -z ${ZONE_NAME} ];
 then
-  DOMAIN=${ZONE_NAME}
+  DOMAIN=${GUID}.${ZONE_NAME}
+  ${USE_SUDO} yq e -i '.domain = "'${DOMAIN}'"' /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml
 else
   DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 fi
