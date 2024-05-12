@@ -55,11 +55,14 @@ function create(){
     dnf install nmstate -y
     ansible-galaxy install -r playbooks/collections/requirements.yml
     ./hack/create-iso.sh $FOLDER_NAME
+    ./hack/deploy-on-kvm.sh examples/$FOLDER_NAME/nodes.yml
+    ./bin/openshift-install agent wait-for bootstrap-complete --dir ./playbooks/generated_manifests/ocp4/ --log-level debug
+    ./bin/openshift-install agent wait-for install-complete --dir ./playbooks/generated_manifests/ocp4/ --log-level debug
 }
 
 
 function destroy(){
-    rm -rf /opt/openshift-agent-install/playbooks/ge
+    rm -rf /opt/openshift-agent-install/playbooks/generated_manifests/
     #export VM_PROFILE=freeipa
     #export VM_NAME="freeipa"
     #export  ACTION="delete" # create, delete
