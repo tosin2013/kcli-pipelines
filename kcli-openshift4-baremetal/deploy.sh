@@ -31,9 +31,9 @@ fi
 
 if [ ! -z ${ZONE_NAME} ];
 then
-  DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
-else
   DOMAIN=${ZONE_NAME}
+else
+  DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 fi
 
 function create(){

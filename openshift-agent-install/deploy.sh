@@ -30,10 +30,10 @@ if [ ! -z "$CICD_PIPELINE" ]; then
 fi
 
 if [ ! -z ${ZONE_NAME} ];
-then 
-  DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
-else 
+then
   DOMAIN=${ZONE_NAME}
+else
+  DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 fi
 
 function create(){
