@@ -41,7 +41,7 @@ function create_dns_entries(){
     ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
     API_ENDPOINT=$(yq eval '.api_vips' "$CLUSTER_FILE_PATH" | sed 's/^- //')
     CLUSTER_NAME=$(yq eval '.cluster_name' "$CLUSTER_FILE_PATH")
-    APPS_ENDPOINT==$(yq eval '.app_vips' "$CLUSTER_FILE_PATH" | sed 's/^- //')
+    APPS_ENDPOINT=$(yq eval '.app_vips' "$CLUSTER_FILE_PATH" | sed 's/^- //')
     ANSIBLE_PLAYBOOK="sudo -E /usr/local/bin/ansible-playbook"
     DOMAIN_NAME=api.${CLUSTER_NAME}.${DOMAIN}
     # Update the DNS using the add_ipa_entry.yaml playbook
