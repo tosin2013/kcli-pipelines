@@ -56,6 +56,7 @@ function create(){
     ansible-galaxy install -r playbooks/collections/requirements.yml
     ./hack/create-iso.sh $FOLDER_NAME
     ./hack/deploy-on-kvm.sh examples/$FOLDER_NAME/nodes.yml
+    ./hack/hack/watch-and-reboot-kvm-vms.sh examples/$FOLDER_NAME/nodes.yml
     ./bin/openshift-install agent wait-for bootstrap-complete --dir ./playbooks/generated_manifests/ocp4/ --log-level debug
     ./bin/openshift-install agent wait-for install-complete --dir ./playbooks/generated_manifests/ocp4/ --log-level debug
 }
