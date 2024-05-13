@@ -71,11 +71,11 @@ function create(){
 function destroy(){
     ./hack/destroy-on-kvm.sh examples/$FOLDER_NAME/nodes.yml
     rm -rf /opt/openshift-agent-install/playbooks/generated_manifests/
-    #export VM_PROFILE=freeipa
-    #export VM_NAME="freeipa"
-    #export  ACTION="delete" # create, delete
+    export VM_PROFILE=freeipa
+    export VM_NAME="freeipa"
+    export  ACTION="delete" # create, delete
 
-    #/opt/kcli-pipelines/deploy-vm.sh
+    /opt/kcli-pipelines/deploy-vm.sh
 }
 
 if [ $ACTION == "create" ];
