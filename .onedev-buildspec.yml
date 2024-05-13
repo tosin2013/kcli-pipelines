@@ -980,6 +980,13 @@ jobs:
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   - !CommandStep
+    name: Deploy DNS Server
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export TARGET_SERVER=@param:TARGET_SERVER@\nexport VM_NAME=freeipa\nexport VM_PROFILE=freeipa\nexport ACTION=@param:ACTION@\nexport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\nif [ @param:ACTION@ == \"create\" ];\nthen \n\tcd /opt/kcli-pipelines/\n\t./deploy-vm.sh\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
     name: Deploy Vyos-Router
     runInContainer: false
     interpreter: !DefaultInterpreter
@@ -1050,31 +1057,6 @@ jobs:
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   - !CommandStep
-    name: Configure oc binary
-    runInContainer: false
-    interpreter: !ShellInterpreter
-      shell: bash
-      commands: "#!/bin/bash\n\n# Check if oc is installed\nif ! command -v oc &>/dev/null; then\n    echo \"oc is not installed, downloading and running OpenShift package configuration script...\"\n    \n    # Download the configuration script\n    curl -OL https://raw.githubusercontent.com/tosin2013/openshift-4-deployment-notes/master/pre-steps/configure-openshift-packages.sh\n    \n    # Make the script executable\n    chmod +x configure-openshift-packages.sh\n    \n    # Run the script with the -i flag\n    ./configure-openshift-packages.sh -i\nelse\n    echo \"oc is already installed, skipping OpenShift package configuration.\"\nfi\n"
-    useTTY: true
-    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
-  - !CommandStep
-    name: Deploy OpenShift
-    runInContainer: false
-    interpreter: !DefaultInterpreter
-      commands: |
-        export TARGET_SERVER=@param:TARGET_SERVER@
-        export VM_NAME=@param:VM_PROFILE@
-        export VM_PROFILE=@param:VM_PROFILE@
-        export ACTION=@param:ACTION@
-        export DEPLOY_OPENSHIFT=@param:DEPLOY_OPENSHIFT@
-        export COMMUNITY_VERSION=@param:COMMUNITY_VERSION@
-        export FOLDER_NAME=@param:FOLDER_NAME@
-        export ZONE_NAME=@param:ZONE_NAME@
-        cd /opt/kcli-pipelines/
-        ./deploy-vm.sh
-    useTTY: true
-    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
-  - !CommandStep
     name: Configure Vyos Routes
     runInContainer: false
     interpreter: !ShellInterpreter
@@ -1104,6 +1086,86 @@ jobs:
         echo "Applying changes..."
         sudo systemctl restart NetworkManager
         echo "Routes added successfully to the profile '$profile_name'."
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Wait for Vyos Route 192.168.50.1
+    runInContainer: false
+    interpreter: !ShellInterpreter
+      shell: bash
+      commands: |
+        #!/bin/bash
+
+        # Function to check if the IP is accessible
+        check_ip() {
+            ping -c 1 $1 > /dev/null 2>&1
+            return $?
+        }
+
+        # Set the IP address to check
+        IP_ADDRESS="192.168.50.1"
+        MAX_WAIT_TIME=1800  # 30 minutes in seconds
+        WAIT_INTERVAL=300    # 5 minutes in seconds
+
+        # Start the timer
+        start_time=$(date +%s)
+        end_time=$((start_time + MAX_WAIT_TIME))
+
+        echo "Waiting for $IP_ADDRESS to be accessible..."
+
+        while true; do
+            # Check if the IP is accessible
+            check_ip $IP_ADDRESS
+
+            if [ $? -eq 0 ]; then
+                echo "192.168.50.1 is accessible now. Continuing..."
+                break
+            else
+                current_time=$(date +%s)
+                remaining_time=$((end_time - current_time))
+
+                if [ $remaining_time -gt 0 ]; then
+                    echo "Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md"
+                    echo "Remaining time: $((remaining_time / 60)) minutes"
+                    sleep $WAIT_INTERVAL
+                else
+                    echo "Timeout reached. Router is still not accessible."
+                    exit 1
+                fi
+            fi
+        done
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure DNS Entries
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export TARGET_SERVER=@param:TARGET_SERVER@\nexport VM_NAME=@param:VM_PROFILE@\nexport VM_PROFILE=@param:VM_PROFILE@\nexport ACTION=@param:ACTION@\nexport DEPLOY_OPENSHIFT=@param:DEPLOY_OPENSHIFT@\nexport FOLDER_NAME=@param:FOLDER_NAME@\n\nif [ @param:ACTION@ == \"create\" ];\nthen \n\tcd /opt/kcli-pipelines/\n\t./openshift-agent-install/configure_dns_entries.sh\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure oc binary
+    runInContainer: false
+    interpreter: !ShellInterpreter
+      shell: bash
+      commands: "#!/bin/bash\n\n# Check if oc is installed\nif ! command -v oc &>/dev/null; then\n    echo \"oc is not installed, downloading and running OpenShift package configuration script...\"\n    \n    # Download the configuration script\n    curl -OL https://raw.githubusercontent.com/tosin2013/openshift-4-deployment-notes/master/pre-steps/configure-openshift-packages.sh\n    \n    # Make the script executable\n    chmod +x configure-openshift-packages.sh\n    \n    # Run the script with the -i flag\n    ./configure-openshift-packages.sh -i\nelse\n    echo \"oc is already installed, skipping OpenShift package configuration.\"\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Deploy OpenShift
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: |
+        export TARGET_SERVER=@param:TARGET_SERVER@
+        export VM_NAME=@param:VM_PROFILE@
+        export VM_PROFILE=@param:VM_PROFILE@
+        export ACTION=@param:ACTION@
+        export DEPLOY_OPENSHIFT=@param:DEPLOY_OPENSHIFT@
+        export COMMUNITY_VERSION=@param:COMMUNITY_VERSION@
+        export FOLDER_NAME=@param:FOLDER_NAME@
+        export ZONE_NAME=@param:ZONE_NAME@
+        cd /opt/kcli-pipelines/
+        ./deploy-vm.sh
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   - !CommandStep
