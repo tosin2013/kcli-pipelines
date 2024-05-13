@@ -45,6 +45,7 @@ then
   ${USE_SUDO} yq e -i '.domain = "'${DOMAIN}'"' /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml
   ${USE_SUDO} yq e '(.dns_search_domains[0]) = "'${DOMAIN}'"' -i ${CLUSTER_FILE_PATH}
   ${USE_SUDO} yq e 'del(.dns_search_domains[1])' -i ${CLUSTER_FILE_PATH}
+  cat ${CLUSTER_FILE_PATH}
 else
   DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 fi
