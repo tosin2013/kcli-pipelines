@@ -1,5 +1,6 @@
 #!/bin/bash 
-
+set -x
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 if [ -f /opt/kcli-pipelines/helper_scripts/default.env ];
 then 
   source /opt/kcli-pipelines/helper_scripts/default.env
