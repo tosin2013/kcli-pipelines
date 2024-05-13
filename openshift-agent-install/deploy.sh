@@ -48,8 +48,6 @@ then
   ${USE_SUDO} yq e -i '.dns_servers[0] = "8.8.8.8"' ${CLUSTER_FILE_PATH}
   ${USE_SUDO} yq e -i '.dns_search_domains[0] = "'${DOMAIN}'"' ${CLUSTER_FILE_PATH}
   ${USE_SUDO} yq e -i 'del(.dns_search_domains[1])' ${CLUSTER_FILE_PATH}
-  cat ${CLUSTER_FILE_PATH}
-  exit 1
 else
   DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 fi
