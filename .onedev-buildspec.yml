@@ -1059,33 +1059,18 @@ jobs:
   - !CommandStep
     name: Configure Vyos Routes
     runInContainer: false
-    interpreter: !ShellInterpreter
-      shell: bash
+    interpreter: !DefaultInterpreter
       commands: |
-        #!/bin/bash
-        # Define the routes to be added
-        declare -a routes=(
-            "192.168.49.0/24 192.168.122.2"
-            "192.168.50.0/24 192.168.122.2"
-            "192.168.51.0/24 192.168.122.2"
-            "192.168.52.0/24 192.168.122.2"
-            "192.168.53.0/24 192.168.122.2"
-            "192.168.54.0/24 192.168.122.2"
-            "192.168.55.0/24 192.168.122.2"
-            "192.168.56.0/24 192.168.122.2"
-            "192.168.57.0/24 192.168.122.2"
-            "192.168.58.0/24 192.168.122.2"
-        )
-
-        # Add routes to the profile
-        for route in "${routes[@@]}"; do
-            nmcli connection modify virbr0 +ipv4.routes "$route"
-        done
-
-        # Restart the NetworkManager to apply changes
-        echo "Applying changes..."
-        sudo systemctl restart NetworkManager
-        echo "Routes added successfully to the profile '$profile_name'."
+        sudo ip route add 192.168.49.0/24 via 192.168.122.2
+        sudo ip route add 192.168.50.0/24 via 192.168.122.2
+        sudo ip route add 192.168.51.0/24 via 192.168.122.2
+        sudo ip route add 192.168.52.0/24 via 192.168.122.2
+        sudo ip route add 192.168.53.0/24 via 192.168.122.2
+        sudo ip route add 192.168.54.0/24 via 192.168.122.2
+        sudo ip route add 192.168.55.0/24 via 192.168.122.2
+        sudo ip route add 192.168.56.0/24 via 192.168.122.2
+        sudo ip route add 192.168.57.0/24 via 192.168.122.2
+        sudo ip route add 192.168.58.0/24 via 192.168.122.2
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   - !CommandStep
