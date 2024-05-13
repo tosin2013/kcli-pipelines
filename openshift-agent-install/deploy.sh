@@ -29,13 +29,6 @@ if [ ! -z "$CICD_PIPELINE" ]; then
   export USE_SUDO="sudo"
 fi
 
-if [ ! -z ${ZONE_NAME} ];
-then
-  DOMAIN=${ZONE_NAME}
-else
-  DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
-fi
-
 if [ ! -z ${FOLDER_NAME} ];
 then
   FOLDER_NAME=${FOLDER_NAME}
@@ -45,6 +38,16 @@ else
 fi
 
 CLUSTER_FILE_PATH="/opt/openshift-agent-install/examples/${FOLDER_NAME}/cluster.yml"
+
+if [ ! -z ${ZONE_NAME} ];
+then
+  DOMAIN=${GUID}.${ZONE_NAME}
+  ${USE_SUDO} yq e -i '.domain = "'${DOMAIN}'"' /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml
+  ${USE_SUDO} yq e '(.dns_search_domains[0]) = "'${DOMAIN}'"' -i ${CLUSTER_FILE_PATH}
+  ${USE_SUDO} yq e 'del(.dns_search_domains[1])' -i ${CLUSTER_FILE_PATH}
+else
+  DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+fi
 
 function create(){
     ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
