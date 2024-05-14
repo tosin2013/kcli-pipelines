@@ -1160,6 +1160,14 @@ jobs:
       commands: "cat >/tmp/requirements.yml<<EOF\n---\nroles: \n  - name: openshift-forwarder\n    src: https://github.com/tosin2013/openshift-forwarder.git\n    version: main\nEOF\nansible-galaxy install -r /tmp/requirements.yml --force -vv\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure openshift-forwarder
+    runInContainer: false
+    interpreter: !ShellInterpreter
+      shell: bash
+      commands: "#!/bin/bash\ncd /opt/openshift-agent-install\n\n# Path to the original YAML file\ninput_file=\"examples/@param:FOLDER_NAME@/nodes.yml\"\n\n# Output directory\noutput_dir=\"$HOME/vars\"\nmkdir -p $output_dir\n\n# Extract control plane and app node IPs using yq\ncontrol_plane_ips=($(yq e '.nodes[] | select(.role == \"master\") | .networkConfig.interfaces[] | select(.name == \"bond0.1924\").ipv4.address[].ip' $input_file))\napp_node_ips=($(yq e '.nodes[] | select(.role == \"worker\") | .networkConfig.interfaces[] | select(.name == \"bond0.1924\").ipv4.address[].ip' $input_file))\n\n# Create the Ansible playbook\ncat > /tmp/openshift-forwarder.yml <<EOF\n- hosts: localhost\n  become: true\n  roles:\n   - openshift-forwarder\nEOF\n\n# Start writing the output vars file\ncat > $output_dir/vars.yml <<EOF\n---\n# defaults file for openshift-forwarder\nhaproxy_log_address: \"127.0.0.1\"\nhaproxy_chroot_directory: \"/var/lib/haproxy\"\nhaproxy_pidfile: \"/var/run/haproxy.pid\"\nhaproxy_max_connections: 4000\nhaproxy_stats_socket: \"/var/lib/haproxy/stats\"\ndefault_retries: 3\ndefault_timeout_http_request: \"10s\"\ndefault_timeout_queue: \"1m\"\ndefault_timeout_connect: \"10s\"\ndefault_timeout_client: \"1m\"\ndefault_timeout_server: \"1m\"\ndefault_timeout_http_keep_alive: \"10s\"\ndefault_timeout_check: \"10s\"\ndefault_max_connections: 3000\nmasters:\nEOF\n\n# Add control plane IPs to the vars file\nfor ip in \"${control_plane_ips[@@]}\"; do\n    echo \"  - ip: \\\"$ip\\\"\" >> $output_dir/vars.yml\ndone\n\n# Add worker IPs to the vars file\nif [ ${#app_node_ips[@@]} -gt 0 ]; then\n    echo \"workers:\" >> $output_dir/vars.yml\n    for ip in \"${app_node_ips[@@]}\"; do\n        echo \"  - ip: \\\"$ip\\\"\" >> $output_dir/vars.yml\n    done\nfi\n\n\n# Run the Ansible playbook if the action is not \"delete\"\nif [ \"@param:ACTION@\" != \"delete\" ]; then \n    ansible-playbook /tmp/openshift-forwarder.yml --extra-vars \"@@$output_dir/vars.yml\" -e \"ansible_python_interpreter=/usr/libexec/platform-python\" -v\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   paramSpecs:
   - !TextParam
     name: GIT_REPO
