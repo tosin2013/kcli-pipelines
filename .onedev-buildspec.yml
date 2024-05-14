@@ -1,4 +1,4 @@
-version: 30
+version: 33
 jobs:
 - name: Deploy VM
   jobExecutor: default-executor
@@ -14,14 +14,14 @@ jobs:
     name: Configure KCLI Profiles
     runInContainer: false
     interpreter: !DefaultInterpreter
-      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\nif [ @param:VM_PROFILE@ == \"freeipa\" ];\nthen \n  export VM_NAME=\"@param:VM_PROFILE@\"\nelse\n  export VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nfi \nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\nif [ @param:VM_PROFILE@ == \"freeipa\" ] || [ @param:VM_PROFILE@ == \"vyos-router\" ];\nthen \n  export VM_NAME=\"@param:VM_PROFILE@\"\nelse\n  export VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nfi \nexport  ACTION=\"@param:ACTION@\" # create, delete\necho \"Current VM PROFILE ${VM_PROFILE}\"\necho \"Current VM NAME ${VM_NAME}\"\necho \"********************************\"\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   - !CommandStep
     name: Deploy VM
     runInContainer: false
     interpreter: !DefaultInterpreter
-      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\nif [ @param:VM_PROFILE@ == \"freeipa\" ];\nthen \n  export VM_NAME=\"@param:VM_PROFILE@\"\nelse\n  export VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nfi \n\nif [ @param:ACTION@ == \"delete\" ] &&  [ @param:VM_PROFILE@ != \"freeipa\" ];\nthen \n   export VM_NAME=\"@param:VM_NAME_INSTANCE@\"\nelif [ @param:ACTION@ == \"delete\" ] &&  [ @param:VM_PROFILE@ == \"freeipa\" ];\nthen\n\texport VM_NAME=\"@param:VM_PROFILE@\"\nfi \n\nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./deploy-vm.sh\n"
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\nif [ @param:VM_PROFILE@ == \"freeipa\" ] || [ @param:VM_PROFILE@ == \"vyos-router\" ] ;\nthen \n  export VM_NAME=\"@param:VM_PROFILE@\"\nelse\n  export VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nfi \n\nif [[ \"@param:ACTION@\" == \"delete\" && ( \"@param:VM_PROFILE@\" == \"freeipa\" || \"@param:VM_PROFILE@\" == \"vyos-router\" ) ]]; then\n   export VM_NAME=\"@param:VM_PROFILE@\"\nelif [ \"@param:ACTION@\" == \"delete\" ]; then \n   export VM_NAME=\"@param:VM_NAME_INSTANCE@\"\nelse\n\techo \"Skipping delete\"\nfi\n\n\nexport  ACTION=\"@param:ACTION@\" # create, delete\necho \"Current VM PROFILE ${VM_PROFILE}\"\necho \"Current VM NAME ${VM_NAME}\"\necho \"********************************\"\ncd /opt/kcli-pipelines/\n./deploy-vm.sh\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   paramSpecs:
@@ -53,15 +53,17 @@ jobs:
       choices:
       - value: freeipa
         color: '#0d87e9'
+      - value: vyos-router
+        color: '#0d87e9'
       - value: rhel8
         color: '#0d87e9'
       - value: rhel9
         color: '#0d87e9'
+      - value: openshift-jumpbox
+        color: '#0d87e9'
       - value: fedora39
         color: '#0d87e9'
       - value: ubuntu
-        color: '#0d87e9'
-      - value: openshift-jumpbox
         color: '#0d87e9'
       - value: jupyterlab
         color: '#0d87e9'
@@ -99,7 +101,7 @@ jobs:
   maxRetries: 3
   retryDelay: 30
   timeout: 3600
-- name: kcli-openshift4-baremetal
+- name: Internal - kcli-openshift4-baremetal
   jobExecutor: default-executor
   steps:
   - !CommandStep
@@ -273,6 +275,229 @@ jobs:
         color: '#0d87e9'
     defaultValueProvider: !SpecifiedDefaultValue
       value: 'false'
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 7200
+- name: External - kcli-openshift4-baremetal
+  jobExecutor: default-executor
+  steps:
+  - !CommandStep
+    name: Download kcli-pipelines
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "if [ ! -d /opt/kcli-pipelines ];\nthen \n  cd /opt/\n  git clone @param:GIT_REPO@\nelse\n  cd /opt/kcli-pipelines\n  git pull\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure KCLI Profiles
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\nif [ @param:VM_PROFILE@ == \"freeipa\" ];\nthen \n  export VM_NAME=\"@param:VM_PROFILE@\"\nelse\n  export VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nfi \nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Download ansible-role-update-ip-route53
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "cat >/tmp/requirements.yml<<EOF\n---\ncollections:\n  -  amazon.aws\nroles: \n  - name: ansible_role_update_ip_route53\n    src: https://github.com/tosin2013/ansible-role-update-ip-route53.git\n    version: master\nEOF\nansible-galaxy install -r /tmp/requirements.yml --force -vv\npip3 install boto3 botocore\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Populate DNS Zone
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "CLUSTER_NAME=$(yq eval '. | .cluster' /opt/qubinode_navigator/inventories/@param:TARGET_SERVER@/group_vars/control/@param:DEPLOYMENT_CONFIG@)\ncat >/tmp/playbook.yml<<EOF\n- name: Populate OpenShift DNS Entries\n  hosts: localhost\n  connection: local\n  become: yes\n\n  vars:\n  - update_ip_r53_aws_access_key:  @param:AWS_ACCESS_KEY@\n  - update_ip_r53_aws_secret_key: @param:AWS_SECRET_KEY@\n  - use_public_ip: true\n  - private_ip: \"@param:IP_ADDRESS@\"\n  - update_ip_r53_records:\n    - zone: @param:ZONE_NAME@\n      record: api.${CLUSTER_NAME}.@param:GUID@.@param:ZONE_NAME@\n    - zone: @param:ZONE_NAME@\n      record: \"*.apps.${CLUSTER_NAME}.@param:GUID@.@param:ZONE_NAME@\"\n  roles:\n  - ansible_role_update_ip_route53\nEOF\n\nif [ \"@param:ACTION@\" != \"delete\" ]; then \n  ansible-playbook  /tmp/playbook.yml @param:VERBOSE_LEVEL@ || exit $?\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Deploy OpenShift
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: |
+        export TARGET_SERVER=@param:TARGET_SERVER@
+        export VM_NAME=@param:VM_PROFILE@
+        export VM_PROFILE=@param:VM_PROFILE@
+        export ACTION=@param:ACTION@
+        export DEPLOY_OPENSHIFT=@param:DEPLOY_OPENSHIFT@
+        export LAUNCH_STEPS=@param:LAUNCH_STEPS@
+        export TAG=@param:TAG@
+        export DISCONNECTED_INSTALL=@param:DISCONNECTED_INSTALL@
+        export DEPLOYMENT_CONFIG=@param:DEPLOYMENT_CONFIG@
+        export COMMUNITY_VERSION=@param:COMMUNITY_VERSION@
+        cd /opt/kcli-pipelines/
+        ./deploy-vm.sh
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Download openshift-forwarder
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "cat >/tmp/requirements.yml<<EOF\n---\nroles: \n  - name: openshift-forwarder\n    src: https://github.com/tosin2013/openshift-forwarder.git\n    version: main\nEOF\nansible-galaxy install -r /tmp/requirements.yml --force -vv\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure openshift-forwarder
+    runInContainer: false
+    interpreter: !ShellInterpreter
+      shell: bash
+      commands: "cat >/tmp/openshift-forwarder.yml<<EOF\n- hosts: localhost\n  become: true\n  roles:\n   - openshift-forwarder\nEOF\n\n# Path to the original YAML file\ninput_file=\"/opt/qubinode_navigator/inventories/@param:TARGET_SERVER@/group_vars/control/@param:DEPLOYMENT_CONFIG@\"\n\n# Output directory\noutput_dir=\"$HOME/vars\"\nmkdir -p $output_dir\n\n# Extract IPs using yq\nips=($(yq e '.baremetal_ips[]' $input_file))\n\n# Start writing the output vars file\ncat > $output_dir/vars.yml <<EOF\n---\n# defaults file for openshift-forwarder\nhaproxy_log_address: \"127.0.0.1\"\nhaproxy_chroot_directory: \"/var/lib/haproxy\"\nhaproxy_pidfile: \"/var/run/haproxy.pid\"\nhaproxy_max_connections: 4000\nhaproxy_stats_socket: \"/var/lib/haproxy/stats\"\ndefault_retries: 3\ndefault_timeout_http_request: \"10s\"\ndefault_timeout_queue: \"1m\"\ndefault_timeout_connect: \"10s\"\ndefault_timeout_client: \"1m\"\ndefault_timeout_server: \"1m\"\ndefault_timeout_http_keep_alive: \"10s\"\ndefault_timeout_check: \"10s\"\ndefault_max_connections: 3000\nmasters:\nEOF\n\n# Decide how many masters and workers based on the number of IPs\nnum_ips=${#ips[@@]}\nif [ $num_ips -ge 3 ]; then\n    for i in {0..2}; do\n        echo \"  - ip: \\\"${ips[$i]}\\\"\" >> $output_dir/vars.yml\n    done\n    if [ $num_ips -gt 3 ]; then\n        echo \"workers:\" >> $output_dir/vars.yml\n        for (( i=3; i<$num_ips; i++ )); do\n            echo \"  - ip: \\\"${ips[$i]}\\\"\" >> $output_dir/vars.yml\n        done\n    fi\nelif [ $num_ips -eq 1 ]; then\n    echo \"  - ip: \\\"${ips[0]}\\\"\" >> $output_dir/vars.yml\n    echo \"workers:\" >> $output_dir/vars.yml\n    echo \"  - ip: \\\"${ips[0]}\\\"\" >> $output_dir/vars.yml\nfi\n\necho \"EOF\" \n\nif [ \"@param:ACTION@\" != \"delete\" ]; then \n\tansible-playbook /tmp/openshift-forwarder.yml --extra-vars \"@@$output_dir/vars.yml\" -e \"ansible_python_interpreter=/usr/libexec/platform-python\" -v\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  paramSpecs:
+  - !TextParam
+    name: GIT_REPO
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: https://github.com/tosin2013/kcli-pipelines.git
+  - !TextParam
+    name: CICD_PIPELINE
+    description: 'CICD_PIPELINE '
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'true'
+  - !ChoiceParam
+    name: ACTION
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: create
+        color: '#0d87e9'
+      - value: delete
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: create
+  - !TextParam
+    name: GUID
+    description: Server GUID from demo.redhat.com
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: x0c0f
+  - !TextParam
+    name: IP_ADDRESS
+    description: Equinix Metal baremetal IP
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 192.168.10.100
+  - !TextParam
+    name: ZONE_NAME
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: sandbox000.opentlc.com
+  - !SecretParam
+    name: AWS_ACCESS_KEY
+  - !SecretParam
+    name: AWS_SECRET_KEY
+  - !TextParam
+    name: TARGET_SERVER
+    description: TARGET_SERVER
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: rhel8-equinix
+  - !ChoiceParam
+    name: DEPLOY_OPENSHIFT
+    description: '''Deploy The OpenShit Cluster on Launch'
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: 'true'
+        color: '#0d87e9'
+      - value: 'false'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'true'
+  - !ChoiceParam
+    name: VM_PROFILE
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: kcli-openshift4-baremetal
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: kcli-openshift4-baremetal
+  - !ChoiceParam
+    name: LAUNCH_STEPS
+    description: Auto deploy Steps
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: 'true'
+        color: '#0d87e9'
+      - value: 'false'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'true'
+  - !ChoiceParam
+    name: TAG
+    description: OpenShift Version
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: '4.13'
+        color: '#0d87e9'
+      - value: '4.14'
+        color: '#0d87e9'
+      - value: '4.15'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: '4.15'
+  - !ChoiceParam
+    name: DISCONNECTED_INSTALL
+    description: Enable Disconnected Install
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: 'true'
+        color: '#0d87e9'
+      - value: 'false'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'false'
+  - !ChoiceParam
+    name: DEPLOYMENT_CONFIG
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: cnv-kcli-openshift4-baremetal.yml
+        color: '#0d87e9'
+      - value: convereged-kcli-openshift4-baremetal.yml
+        color: '#0d87e9'
+      - value: kcli-openshift4-baremetal.yml
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: cnv-kcli-openshift4-baremetal.yml
+  - !ChoiceParam
+    name: COMMUNITY_VERSION
+    description: "Set to true if you do not have access to Red Hat Activation Keys\r\n\r\nhttps://access.redhat.com/articles/1378093\r\n"
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: 'true'
+        color: '#0d87e9'
+      - value: 'false'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'false'
+  - !TextParam
+    name: VERBOSE_LEVEL
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: -v
   retryCondition: never
   maxRetries: 3
   retryDelay: 30
@@ -503,3 +728,577 @@ jobs:
   maxRetries: 3
   retryDelay: 30
   timeout: 3600
+- name: Internal - OpenShift Agent Based Installer Helper
+  jobExecutor: default-executor
+  steps:
+  - !CommandStep
+    name: Download kcli-pipelines
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "if [ ! -d /opt/kcli-pipelines ];\nthen \n  cd /opt/\n  git clone @param:GIT_REPO@\nelse\n  cd /opt/kcli-pipelines\n  git pull\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure KCLI Profiles
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\nif [ @param:VM_PROFILE@ == \"freeipa\" ];\nthen \n  export VM_NAME=\"@param:VM_PROFILE@\"\nelse\n  export VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nfi \nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Deploy DNS Server
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export TARGET_SERVER=@param:TARGET_SERVER@\nexport VM_NAME=freeipa\nexport VM_PROFILE=freeipa\nexport ACTION=@param:ACTION@\nexport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\nif [ @param:ACTION@ == \"create\" ];\nthen \n\tcd /opt/kcli-pipelines/\n\t./deploy-vm.sh\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure DNS Entries
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export TARGET_SERVER=@param:TARGET_SERVER@\nexport VM_NAME=@param:VM_PROFILE@\nexport VM_PROFILE=@param:VM_PROFILE@\nexport ACTION=@param:ACTION@\nexport DEPLOY_OPENSHIFT=@param:DEPLOY_OPENSHIFT@\nexport FOLDER_NAME=@param:FOLDER_NAME@\n\nif [ @param:ACTION@ == \"create\" ];\nthen \n\tcd /opt/kcli-pipelines/\n\t./openshift-agent-install/configure_dns_entries.sh\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Deploy Vyos-Router
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: |
+        export TARGET_SERVER=@param:TARGET_SERVER@
+        export VM_NAME=vyos-router
+        export VM_PROFILE=vyos-router
+        export ACTION=@param:ACTION@
+        export COMMUNITY_VERSION=@param:COMMUNITY_VERSION@
+        if ! sudo kcli list vms | grep -q ${VM_NAME}; then
+            if [ "@param:ACTION@" == "create" ]; then
+                cd /opt/kcli-pipelines/
+                ./deploy-vm.sh
+            else
+                echo "Skipping deployment as vyos-router VM does not exist and ACTION is not create"
+            fi
+        else
+            echo "vyos-router VM exists, skipping deployment"
+        fi
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Wait for Vyos Router Configuration
+    runInContainer: false
+    interpreter: !ShellInterpreter
+      shell: bash
+      commands: "#!/bin/bash\n\nif [ @param:ACTION@ == \"delete\" ];\nthen \n  echo \"Skipping vyos check\"\n  exit 0\nfi \n\n\n# Function to check if the IP is accessible\ncheck_ip() {\n    ping -c 1 $1 > /dev/null 2>&1\n    return $?\n}\n\n# Set the IP address to check\nIP_ADDRESS=\"192.168.122.2\"\nMAX_WAIT_TIME=1800  # 30 minutes in seconds\nWAIT_INTERVAL=300    # 5 minutes in seconds\n\n# Start the timer\nstart_time=$(date +%s)\nend_time=$((start_time + MAX_WAIT_TIME))\n\necho \"Waiting for $IP_ADDRESS to be accessible...\"\n\nwhile true; do\n    # Check if the IP is accessible\n    check_ip $IP_ADDRESS\n\n    if [ $? -eq 0 ]; then\n        echo \"Router is accessible now. Continuing...\"\n        break\n    else\n        current_time=$(date +%s)\n        remaining_time=$((end_time - current_time))\n\n        if [ $remaining_time -gt 0 ]; then\n            echo \"Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md\"\n            echo \"Remaining time: $((remaining_time / 60)) minutes\"\n            sleep $WAIT_INTERVAL\n        else\n            echo \"Timeout reached. Router is still not accessible.\"\n            exit 1\n        fi\n    fi\ndone\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure oc binary
+    runInContainer: false
+    interpreter: !ShellInterpreter
+      shell: bash
+      commands: "#!/bin/bash\n\n# Check if oc is installed\nif ! command -v oc &>/dev/null; then\n    echo \"oc is not installed, downloading and running OpenShift package configuration script...\"\n    \n    # Download the configuration script\n    curl -OL https://raw.githubusercontent.com/tosin2013/openshift-4-deployment-notes/master/pre-steps/configure-openshift-packages.sh\n    \n    # Make the script executable\n    chmod +x configure-openshift-packages.sh\n    \n    # Run the script with the -i flag\n    ./configure-openshift-packages.sh -i\nelse\n    echo \"oc is already installed, skipping OpenShift package configuration.\"\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Deploy OpenShift
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: |
+        export TARGET_SERVER=@param:TARGET_SERVER@
+        export VM_NAME=@param:VM_PROFILE@
+        export VM_PROFILE=@param:VM_PROFILE@
+        export ACTION=@param:ACTION@
+        export DEPLOY_OPENSHIFT=@param:DEPLOY_OPENSHIFT@
+        export COMMUNITY_VERSION=@param:COMMUNITY_VERSION@
+        export FOLDER_NAME=@param:FOLDER_NAME@
+        cd /opt/kcli-pipelines/
+        ./deploy-vm.sh
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure Vyos Routes
+    runInContainer: false
+    interpreter: !ShellInterpreter
+      shell: bash
+      commands: |
+        #!/bin/bash
+        # Define the routes to be added
+        declare -a routes=(
+            "192.168.49.0/24 192.168.122.2"
+            "192.168.50.0/24 192.168.122.2"
+            "192.168.51.0/24 192.168.122.2"
+            "192.168.52.0/24 192.168.122.2"
+            "192.168.53.0/24 192.168.122.2"
+            "192.168.54.0/24 192.168.122.2"
+            "192.168.55.0/24 192.168.122.2"
+            "192.168.56.0/24 192.168.122.2"
+            "192.168.57.0/24 192.168.122.2"
+            "192.168.58.0/24 192.168.122.2"
+        )
+
+        # Add routes to the profile
+        for route in "${routes[@@]}"; do
+            nmcli connection modify virbr0 +ipv4.routes "$route"
+        done
+
+        # Restart the NetworkManager to apply changes
+        echo "Applying changes..."
+        sudo systemctl restart NetworkManager
+        echo "Routes added successfully to the profile '$profile_name'."
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  paramSpecs:
+  - !TextParam
+    name: GIT_REPO
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: https://github.com/tosin2013/kcli-pipelines.git
+  - !TextParam
+    name: CICD_PIPELINE
+    description: 'CICD_PIPELINE '
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'true'
+  - !TextParam
+    name: TARGET_SERVER
+    description: TARGET_SERVER
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: rhel8-equinix
+  - !ChoiceParam
+    name: VM_PROFILE
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: openshift-agent-install
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: openshift-agent-install
+  - !ChoiceParam
+    name: FOLDER_NAME
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: bond0-signal-vlan
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: bond0-signal-vlan
+  - !ChoiceParam
+    name: ACTION
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: create
+        color: '#0d87e9'
+      - value: delete
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: create
+  - !ChoiceParam
+    name: DEPLOY_OPENSHIFT
+    description: '''Deploy The OpenShit Cluster on Launch'
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: 'true'
+        color: '#0d87e9'
+      - value: 'false'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'true'
+  - !ChoiceParam
+    name: DISCONNECTED_INSTALL
+    description: Enable Disconnected Install
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: 'true'
+        color: '#0d87e9'
+      - value: 'false'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'false'
+  - !ChoiceParam
+    name: COMMUNITY_VERSION
+    description: "Set to true if you do not have access to Red Hat Activation Keys\r\n\r\nhttps://access.redhat.com/articles/1378093\r\n"
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: 'true'
+        color: '#0d87e9'
+      - value: 'false'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'false'
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 7200
+- name: External - OpenShift Agent Based Installer Helper
+  jobExecutor: default-executor
+  steps:
+  - !CommandStep
+    name: Download kcli-pipelines
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "if [ ! -d /opt/kcli-pipelines ];\nthen \n  cd /opt/\n  git clone @param:GIT_REPO@\nelse\n  cd /opt/kcli-pipelines\n  git pull\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure KCLI Profiles
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export CICD_PIPELINE=\"@param:CICD_PIPELINE@\" \nexport TARGET_SERVER=\"@param:TARGET_SERVER@\" # equinix \nexport VM_PROFILE=@param:VM_PROFILE@\nexport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\nif [ @param:VM_PROFILE@ == \"freeipa\" ];\nthen \n  export VM_NAME=\"@param:VM_PROFILE@\"\nelse\n  export VM_NAME=\"@param:VM_PROFILE@-$(echo $RANDOM | md5sum | head -c 5; echo;)\"\nfi \nexport  ACTION=\"@param:ACTION@\" # create, delete\ncd /opt/kcli-pipelines/\n./configure-kcli-profiles.sh\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Download openshift-agent-install
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "if [ ! -d /opt/openshift-agent-install ];\nthen \n  cd /opt/\n  git clone https://github.com/tosin2013/openshift-agent-install.git\nelse\n  cd /opt/openshift-agent-install\n  git pull\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Download ansible-role-update-ip-route53
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "cat >/tmp/requirements.yml<<EOF\n---\ncollections:\n  -  amazon.aws\nroles: \n  - name: ansible_role_update_ip_route53\n    src: https://github.com/tosin2013/ansible-role-update-ip-route53.git\n    version: master\nEOF\nansible-galaxy install -r /tmp/requirements.yml --force -vv\npip3 install boto3 botocore\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Populate DNS Zone
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "CLUSTER_FILE_PATH=\"/opt/openshift-agent-install/examples/@param:FOLDER_NAME@/cluster.yml\"\nCLUSTER_NAME=$(yq e '.cluster_name' ${CLUSTER_FILE_PATH})\necho \"Setting DNS Records below\"\necho \"api.${CLUSTER_NAME}.@param:GUID@.@param:ZONE_NAME@\"\necho  \"*.apps.${CLUSTER_NAME}.@param:GUID@.@param:ZONE_NAME@\"\ncat >/tmp/playbook.yml<<EOF\n- name: Populate OpenShift DNS Entries\n  hosts: localhost\n  connection: local\n  become: yes\n\n  vars:\n  - update_ip_r53_aws_access_key:  @param:AWS_ACCESS_KEY@\n  - update_ip_r53_aws_secret_key: @param:AWS_SECRET_KEY@\n  - use_public_ip: true\n  - private_ip: \"@param:IP_ADDRESS@\"\n  - update_ip_r53_records:\n    - zone: @param:ZONE_NAME@\n      record: api.${CLUSTER_NAME}.@param:GUID@.@param:ZONE_NAME@\n    - zone: @param:ZONE_NAME@\n      record: \"*.apps.${CLUSTER_NAME}.@param:GUID@.@param:ZONE_NAME@\"\n  roles:\n  - ansible_role_update_ip_route53\nEOF\n\nif [ \"@param:ACTION@\" != \"delete\" ]; then \n  ansible-playbook  /tmp/playbook.yml @param:VERBOSE_LEVEL@ || exit $?\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Deploy DNS Server
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export TARGET_SERVER=@param:TARGET_SERVER@\nexport VM_NAME=freeipa\nexport VM_PROFILE=freeipa\nexport ACTION=@param:ACTION@\nexport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\nexport ZONE_NAME=@param:ZONE_NAME@\nCLUSTER_FILE_PATH=\"/opt/openshift-agent-install/examples/@param:FOLDER_NAME@/cluster.yml\"\nif [ ! -z ${ZONE_NAME} ];\nthen\n  DOMAIN=@param:GUID@.@param:ZONE_NAME@\n  yq e -i '.domain = \"'${DOMAIN}'\"' /opt/qubinode_navigator/inventories/@param:TARGET_SERVER@/group_vars/all.yml\n  yq e -i '.base_domain = \"'${DOMAIN}'\"' ${CLUSTER_FILE_PATH}\n  yq e -i '.dns_search_domains[0] = \"'${DOMAIN}'\"' ${CLUSTER_FILE_PATH}\n  yq e -i 'del(.dns_search_domains[1])' ${CLUSTER_FILE_PATH}\nelse\n  DOMAIN=$(yq eval '.domain' \"${ANSIBLE_ALL_VARIABLES}\")\nfi\nif [ @param:ACTION@ == \"create\" ];\nthen \n\tcd /opt/kcli-pipelines/\n\t./deploy-vm.sh\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Deploy Vyos-Router
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: |
+        export TARGET_SERVER=@param:TARGET_SERVER@
+        export VM_NAME=vyos-router
+        export VM_PROFILE=vyos-router
+        export ACTION=@param:ACTION@
+        export COMMUNITY_VERSION=@param:COMMUNITY_VERSION@
+        if ! sudo kcli list vms | grep -q ${VM_NAME}; then
+            if [ "@param:ACTION@" == "create" ]; then
+                cd /opt/kcli-pipelines/
+                ./deploy-vm.sh
+            else
+                echo "Skipping deployment as vyos-router VM does not exist and ACTION is not create"
+            fi
+        else
+            echo "vyos-router VM exists, skipping deployment"
+        fi
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Wait for Vyos Router Configuration
+    runInContainer: false
+    interpreter: !ShellInterpreter
+      shell: bash
+      commands: |
+        #!/bin/bash
+
+        # Function to check if the IP is accessible
+        check_ip() {
+            ping -c 1 $1 > /dev/null 2>&1
+            return $?
+        }
+
+        # Set the IP address to check
+        IP_ADDRESS="192.168.122.2"
+        MAX_WAIT_TIME=1800  # 30 minutes in seconds
+        WAIT_INTERVAL=300    # 5 minutes in seconds
+
+        # Start the timer
+        start_time=$(date +%s)
+        end_time=$((start_time + MAX_WAIT_TIME))
+
+        echo "Waiting for $IP_ADDRESS to be accessible..."
+
+        while true; do
+            # Check if the IP is accessible
+            check_ip $IP_ADDRESS
+
+            if [ $? -eq 0 ]; then
+                echo "Router is accessible now. Continuing..."
+                break
+            else
+                current_time=$(date +%s)
+                remaining_time=$((end_time - current_time))
+
+                if [ $remaining_time -gt 0 ]; then
+                    echo "Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md"
+                    echo "Remaining time: $((remaining_time / 60)) minutes"
+                    sleep $WAIT_INTERVAL
+                else
+                    echo "Timeout reached. Router is still not accessible."
+                    exit 1
+                fi
+            fi
+        done
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure Vyos Routes
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: |
+        sudo ip route add 192.168.49.0/24 via 192.168.122.2
+        sudo ip route add 192.168.50.0/24 via 192.168.122.2
+        sudo ip route add 192.168.51.0/24 via 192.168.122.2
+        sudo ip route add 192.168.52.0/24 via 192.168.122.2
+        sudo ip route add 192.168.53.0/24 via 192.168.122.2
+        sudo ip route add 192.168.54.0/24 via 192.168.122.2
+        sudo ip route add 192.168.55.0/24 via 192.168.122.2
+        sudo ip route add 192.168.56.0/24 via 192.168.122.2
+        sudo ip route add 192.168.57.0/24 via 192.168.122.2
+        sudo ip route add 192.168.58.0/24 via 192.168.122.2
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Wait for Vyos Route 192.168.50.1
+    runInContainer: false
+    interpreter: !ShellInterpreter
+      shell: bash
+      commands: |
+        #!/bin/bash
+
+        # Function to check if the IP is accessible
+        check_ip() {
+            ping -c 1 $1 > /dev/null 2>&1
+            return $?
+        }
+
+        # Set the IP address to check
+        IP_ADDRESS="192.168.50.1"
+        MAX_WAIT_TIME=1800  # 30 minutes in seconds
+        WAIT_INTERVAL=300    # 5 minutes in seconds
+
+        # Start the timer
+        start_time=$(date +%s)
+        end_time=$((start_time + MAX_WAIT_TIME))
+
+        echo "Waiting for $IP_ADDRESS to be accessible..."
+
+        while true; do
+            # Check if the IP is accessible
+            check_ip $IP_ADDRESS
+
+            if [ $? -eq 0 ]; then
+                echo "192.168.50.1 is accessible now. Continuing..."
+                break
+            else
+                current_time=$(date +%s)
+                remaining_time=$((end_time - current_time))
+
+                if [ $remaining_time -gt 0 ]; then
+                    echo "Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md"
+                    echo "Remaining time: $((remaining_time / 60)) minutes"
+                    sleep $WAIT_INTERVAL
+                else
+                    echo "Timeout reached. Router is still not accessible."
+                    exit 1
+                fi
+            fi
+        done
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure DNS Entries
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "export TARGET_SERVER=@param:TARGET_SERVER@\nexport VM_NAME=@param:VM_PROFILE@\nexport VM_PROFILE=@param:VM_PROFILE@\nexport ACTION=@param:ACTION@\nexport DEPLOY_OPENSHIFT=@param:DEPLOY_OPENSHIFT@\nexport FOLDER_NAME=@param:FOLDER_NAME@\nexport ZONE_NAME=@param:ZONE_NAME@\nif [ @param:ACTION@ == \"create\" ];\nthen \n\tcd /opt/kcli-pipelines/\n\t./openshift-agent-install/configure_dns_entries.sh\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure oc binary
+    runInContainer: false
+    interpreter: !ShellInterpreter
+      shell: bash
+      commands: "#!/bin/bash\n\n# Check if oc is installed\nif ! command -v oc &>/dev/null; then\n    echo \"oc is not installed, downloading and running OpenShift package configuration script...\"\n    \n    # Download the configuration script\n    curl -OL https://raw.githubusercontent.com/tosin2013/openshift-4-deployment-notes/master/pre-steps/configure-openshift-packages.sh\n    \n    # Make the script executable\n    chmod +x configure-openshift-packages.sh\n    \n    # Run the script with the -i flag\n    ./configure-openshift-packages.sh -i\nelse\n    echo \"oc is already installed, skipping OpenShift package configuration.\"\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Deploy OpenShift
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: |
+        export TARGET_SERVER=@param:TARGET_SERVER@
+        export VM_NAME=@param:VM_PROFILE@
+        export VM_PROFILE=@param:VM_PROFILE@
+        export ACTION=@param:ACTION@
+        export DEPLOY_OPENSHIFT=@param:DEPLOY_OPENSHIFT@
+        export COMMUNITY_VERSION=@param:COMMUNITY_VERSION@
+        export FOLDER_NAME=@param:FOLDER_NAME@
+        export ZONE_NAME=@param:ZONE_NAME@
+        cd /opt/kcli-pipelines/
+        ./deploy-vm.sh
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Download openshift-forwarder
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "cat >/tmp/requirements.yml<<EOF\n---\nroles: \n  - name: openshift-forwarder\n    src: https://github.com/tosin2013/openshift-forwarder.git\n    version: main\nEOF\nansible-galaxy install -r /tmp/requirements.yml --force -vv\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: Configure openshift-forwarder
+    runInContainer: false
+    interpreter: !ShellInterpreter
+      shell: bash
+      commands: "#!/bin/bash\ncd /opt/openshift-agent-install\n\n# Path to the original YAML file\ninput_file=\"examples/@param:FOLDER_NAME@/nodes.yml\"\n\n# Output directory\noutput_dir=\"$HOME/vars\"\nmkdir -p $output_dir\n\n# Extract control plane and app node IPs using yq\ncontrol_plane_ips=($(yq e '.nodes[] | select(.role == \"master\") | .networkConfig.interfaces[] | select(.name == \"bond0.1924\").ipv4.address[].ip' $input_file))\napp_node_ips=($(yq e '.nodes[] | select(.role == \"worker\") | .networkConfig.interfaces[] | select(.name == \"bond0.1924\").ipv4.address[].ip' $input_file))\n\n# Create the Ansible playbook\ncat > /tmp/openshift-forwarder.yml <<EOF\n- hosts: localhost\n  become: true\n  roles:\n   - openshift-forwarder\nEOF\n\n# Start writing the output vars file\ncat > $output_dir/vars.yml <<EOF\n---\n# defaults file for openshift-forwarder\nhaproxy_log_address: \"127.0.0.1\"\nhaproxy_chroot_directory: \"/var/lib/haproxy\"\nhaproxy_pidfile: \"/var/run/haproxy.pid\"\nhaproxy_max_connections: 4000\nhaproxy_stats_socket: \"/var/lib/haproxy/stats\"\ndefault_retries: 3\ndefault_timeout_http_request: \"10s\"\ndefault_timeout_queue: \"1m\"\ndefault_timeout_connect: \"10s\"\ndefault_timeout_client: \"1m\"\ndefault_timeout_server: \"1m\"\ndefault_timeout_http_keep_alive: \"10s\"\ndefault_timeout_check: \"10s\"\ndefault_max_connections: 3000\nmasters:\nEOF\n\n# Add control plane IPs to the vars file\nfor ip in \"${control_plane_ips[@@]}\"; do\n    echo \"  - ip: \\\"$ip\\\"\" >> $output_dir/vars.yml\ndone\n\n# Add worker IPs to the vars file\nif [ ${#app_node_ips[@@]} -gt 0 ]; then\n    echo \"workers:\" >> $output_dir/vars.yml\n    for ip in \"${app_node_ips[@@]}\"; do\n        echo \"  - ip: \\\"$ip\\\"\" >> $output_dir/vars.yml\n    done\nfi\n\n\n# Run the Ansible playbook if the action is not \"delete\"\nif [ \"@param:ACTION@\" != \"delete\" ]; then \n    ansible-playbook /tmp/openshift-forwarder.yml --extra-vars \"@@$output_dir/vars.yml\" -e \"ansible_python_interpreter=/usr/libexec/platform-python\" -v\nfi\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  paramSpecs:
+  - !TextParam
+    name: GIT_REPO
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: https://github.com/tosin2013/kcli-pipelines.git
+  - !TextParam
+    name: CICD_PIPELINE
+    description: 'CICD_PIPELINE '
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'true'
+  - !ChoiceParam
+    name: ACTION
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: create
+        color: '#0d87e9'
+      - value: delete
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: create
+  - !TextParam
+    name: GUID
+    description: Server GUID from demo.redhat.com
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: x0c0f
+  - !TextParam
+    name: IP_ADDRESS
+    description: Equinix Metal bare metal IP
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 192.168.10.100
+  - !TextParam
+    name: ZONE_NAME
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: sandbox000.opentlc.com
+  - !SecretParam
+    name: AWS_ACCESS_KEY
+  - !SecretParam
+    name: AWS_SECRET_KEY
+  - !ChoiceParam
+    name: VM_PROFILE
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: openshift-agent-install
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: openshift-agent-install
+  - !ChoiceParam
+    name: FOLDER_NAME
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: bond0-signal-vlan
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: bond0-signal-vlan
+  - !TextParam
+    name: TARGET_SERVER
+    description: TARGET_SERVER
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: rhel8-equinix
+  - !ChoiceParam
+    name: DEPLOY_OPENSHIFT
+    description: '''Deploy The OpenShit Cluster on Launch'
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: 'true'
+        color: '#0d87e9'
+      - value: 'false'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'true'
+  - !ChoiceParam
+    name: DISCONNECTED_INSTALL
+    description: Enable Disconnected Install
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: 'true'
+        color: '#0d87e9'
+      - value: 'false'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'false'
+  - !ChoiceParam
+    name: COMMUNITY_VERSION
+    description: "Set to true if you do not have access to Red Hat Activation Keys\r\n\r\nhttps://access.redhat.com/articles/1378093\r\n"
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: 'true'
+        color: '#0d87e9'
+      - value: 'false'
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: 'false'
+  - !ChoiceParam
+    name: VERBOSE_LEVEL
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: -v
+        color: '#0d87e9'
+      - value: -vv
+        color: '#0d87e9'
+      - value: -vvv
+        color: '#0d87e9'
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: -v
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 7200
