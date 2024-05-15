@@ -64,6 +64,7 @@ function create(){
     ./hack/create-iso.sh $FOLDER_NAME
     ./hack/deploy-on-kvm.sh examples/$FOLDER_NAME/nodes.yml
     echo "To troubleshoot installation run the commands below in a separate terminal"
+    echo "cd /opt/openshift-agent-install"
     echo "./bin/openshift-install agent wait-for bootstrap-complete --dir ./playbooks/generated_manifests/ocp4/ --log-level debug"
     echo "*********"
     sleep 15
