@@ -786,7 +786,7 @@ jobs:
     runInContainer: false
     interpreter: !ShellInterpreter
       shell: bash
-      commands: "#!/bin/bash\n\nif [ @param:ACTION@ == \"delete\" ];\nthen \n  echo \"Skipping vyos check\"\n  exit 0\nfi \n\n\n# Function to check if the IP is accessible\ncheck_ip() {\n    ping -c 1 $1 > /dev/null 2>&1\n    return $?\n}\n\n# Set the IP address to check\nIP_ADDRESS=\"192.168.122.2\"\nMAX_WAIT_TIME=1800  # 30 minutes in seconds\nWAIT_INTERVAL=300    # 5 minutes in seconds\n\n# Start the timer\nstart_time=$(date +%s)\nend_time=$((start_time + MAX_WAIT_TIME))\n\necho \"Waiting for $IP_ADDRESS to be accessible...\"\n\nwhile true; do\n    # Check if the IP is accessible\n    check_ip $IP_ADDRESS\n\n    if [ $? -eq 0 ]; then\n        echo \"Router is accessible now. Continuing...\"\n        break\n    else\n        current_time=$(date +%s)\n        remaining_time=$((end_time - current_time))\n\n        if [ $remaining_time -gt 0 ]; then\n            echo \"Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md\"\n            echo \"Remaining time: $((remaining_time / 60)) minutes\"\n            sleep $WAIT_INTERVAL\n        else\n            echo \"Timeout reached. Router is still not accessible.\"\n            exit 1\n        fi\n    fi\ndone\n"
+      commands: "#!/bin/bash\n\nif [ @param:ACTION@ == \"delete\" ];\nthen \n  echo \"Skipping vyos check\"\n  exit 0\nfi \n\n\n# Function to check if the IP is accessible\ncheck_ip() {\n    ping -c 1 $1 > /dev/null 2>&1\n    return $?\n}\n\nif [ \"@param:ACTION@\" == \"create\" ]; then\n\t# Set the IP address to check\n\tIP_ADDRESS=\"192.168.122.2\"\n\tMAX_WAIT_TIME=1800  # 30 minutes in seconds\n\tWAIT_INTERVAL=300    # 5 minutes in seconds\n\n\t# Start the timer\n\tstart_time=$(date +%s)\n\tend_time=$((start_time + MAX_WAIT_TIME))\n\n\techo \"Waiting for $IP_ADDRESS to be accessible...\"\n\n\twhile true; do\n\t\t# Check if the IP is accessible\n\t\tcheck_ip $IP_ADDRESS\n\n\t\tif [ $? -eq 0 ]; then\n\t\t\techo \"Router is accessible now. Continuing...\"\n\t\t\tbreak\n\t\telse\n\t\t\tcurrent_time=$(date +%s)\n\t\t\tremaining_time=$((end_time - current_time))\n\n\t\t\tif [ $remaining_time -gt 0 ]; then\n\t\t\t\techo \"Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md\"\n\t\t\t\techo \"Remaining time: $((remaining_time / 60)) minutes\"\n\t\t\t\tsleep $WAIT_INTERVAL\n\t\t\telse\n\t\t\t\techo \"Timeout reached. Router is still not accessible.\"\n\t\t\t\texit 1\n\t\t\tfi\n\t\tfi\n\tdone\nfi\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   - !CommandStep
@@ -818,31 +818,7 @@ jobs:
     runInContainer: false
     interpreter: !ShellInterpreter
       shell: bash
-      commands: |
-        #!/bin/bash
-        # Define the routes to be added
-        declare -a routes=(
-            "192.168.49.0/24 192.168.122.2"
-            "192.168.50.0/24 192.168.122.2"
-            "192.168.51.0/24 192.168.122.2"
-            "192.168.52.0/24 192.168.122.2"
-            "192.168.53.0/24 192.168.122.2"
-            "192.168.54.0/24 192.168.122.2"
-            "192.168.55.0/24 192.168.122.2"
-            "192.168.56.0/24 192.168.122.2"
-            "192.168.57.0/24 192.168.122.2"
-            "192.168.58.0/24 192.168.122.2"
-        )
-
-        # Add routes to the profile
-        for route in "${routes[@@]}"; do
-            nmcli connection modify virbr0 +ipv4.routes "$route"
-        done
-
-        # Restart the NetworkManager to apply changes
-        echo "Applying changes..."
-        sudo systemctl restart NetworkManager
-        echo "Routes added successfully to the profile '$profile_name'."
+      commands: "#!/bin/bash\nnetworks=(\n    \"192.168.49.0/24\"\n    \"192.168.50.0/24\"\n    \"192.168.51.0/24\"\n\t\"192.168.52.0/24\"\n\t\"192.168.53.0/24\"\n\t\"192.168.54.0/24\"\n\t\"192.168.55.0/24\"\n\t\"192.168.56.0/24\"\n\t\"192.168.57.0/24\"\n\t\"192.168.58.0/24\"\n)\n\ngateway=\"192.168.122.2\"\n\nfor net in \"${networks[@@]}\"; do\n    if ! ip route show | grep -q \"$net\"; then  # Check if route DOES NOT exist\n        sudo ip route add \"$net\" via \"$gateway\"\n        echo \"Route for $net added.\"\n    else\n        echo \"Route for $net already exists.\"\n    fi\ndone\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   paramSpecs:
@@ -1013,64 +989,15 @@ jobs:
     runInContainer: false
     interpreter: !ShellInterpreter
       shell: bash
-      commands: |
-        #!/bin/bash
-
-        # Function to check if the IP is accessible
-        check_ip() {
-            ping -c 1 $1 > /dev/null 2>&1
-            return $?
-        }
-
-        # Set the IP address to check
-        IP_ADDRESS="192.168.122.2"
-        MAX_WAIT_TIME=1800  # 30 minutes in seconds
-        WAIT_INTERVAL=300    # 5 minutes in seconds
-
-        # Start the timer
-        start_time=$(date +%s)
-        end_time=$((start_time + MAX_WAIT_TIME))
-
-        echo "Waiting for $IP_ADDRESS to be accessible..."
-
-        while true; do
-            # Check if the IP is accessible
-            check_ip $IP_ADDRESS
-
-            if [ $? -eq 0 ]; then
-                echo "Router is accessible now. Continuing..."
-                break
-            else
-                current_time=$(date +%s)
-                remaining_time=$((end_time - current_time))
-
-                if [ $remaining_time -gt 0 ]; then
-                    echo "Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md"
-                    echo "Remaining time: $((remaining_time / 60)) minutes"
-                    sleep $WAIT_INTERVAL
-                else
-                    echo "Timeout reached. Router is still not accessible."
-                    exit 1
-                fi
-            fi
-        done
+      commands: "#!/bin/bash\n\n# Function to check if the IP is accessible\ncheck_ip() {\n    ping -c 1 $1 > /dev/null 2>&1\n    return $?\n}\n\nif [ \"@param:ACTION@\" == \"create\" ]; then\n\t# Set the IP address to check\n\tIP_ADDRESS=\"192.168.122.2\"\n\tMAX_WAIT_TIME=1800  # 30 minutes in seconds\n\tWAIT_INTERVAL=300    # 5 minutes in seconds\n\n\t# Start the timer\n\tstart_time=$(date +%s)\n\tend_time=$((start_time + MAX_WAIT_TIME))\n\n\techo \"Waiting for $IP_ADDRESS to be accessible...\"\n\n\twhile true; do\n\t\t# Check if the IP is accessible\n\t\tcheck_ip $IP_ADDRESS\n\n\t\tif [ $? -eq 0 ]; then\n\t\t\techo \"Router is accessible now. Continuing...\"\n\t\t\tbreak\n\t\telse\n\t\t\tcurrent_time=$(date +%s)\n\t\t\tremaining_time=$((end_time - current_time))\n\n\t\t\tif [ $remaining_time -gt 0 ]; then\n\t\t\t\techo \"Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md\"\n\t\t\t\techo \"Remaining time: $((remaining_time / 60)) minutes\"\n\t\t\t\tsleep $WAIT_INTERVAL\n\t\t\telse\n\t\t\t\techo \"Timeout reached. Router is still not accessible.\"\n\t\t\t\texit 1\n\t\t\tfi\n\t\tfi\n\tdone\nfi\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   - !CommandStep
     name: Configure Vyos Routes
     runInContainer: false
-    interpreter: !DefaultInterpreter
-      commands: |
-        sudo ip route add 192.168.49.0/24 via 192.168.122.2
-        sudo ip route add 192.168.50.0/24 via 192.168.122.2
-        sudo ip route add 192.168.51.0/24 via 192.168.122.2
-        sudo ip route add 192.168.52.0/24 via 192.168.122.2
-        sudo ip route add 192.168.53.0/24 via 192.168.122.2
-        sudo ip route add 192.168.54.0/24 via 192.168.122.2
-        sudo ip route add 192.168.55.0/24 via 192.168.122.2
-        sudo ip route add 192.168.56.0/24 via 192.168.122.2
-        sudo ip route add 192.168.57.0/24 via 192.168.122.2
-        sudo ip route add 192.168.58.0/24 via 192.168.122.2
+    interpreter: !ShellInterpreter
+      shell: bash
+      commands: "#!/bin/bash\nnetworks=(\n    \"192.168.49.0/24\"\n    \"192.168.50.0/24\"\n    \"192.168.51.0/24\"\n\t\"192.168.52.0/24\"\n\t\"192.168.53.0/24\"\n\t\"192.168.54.0/24\"\n\t\"192.168.55.0/24\"\n\t\"192.168.56.0/24\"\n\t\"192.168.57.0/24\"\n\t\"192.168.58.0/24\"\n)\n\ngateway=\"192.168.122.2\"\n\nfor net in \"${networks[@@]}\"; do\n    if ! ip route show | grep -q \"$net\"; then  # Check if route DOES NOT exist\n        sudo ip route add \"$net\" via \"$gateway\"\n        echo \"Route for $net added.\"\n    else\n        echo \"Route for $net already exists.\"\n    fi\ndone\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   - !CommandStep
@@ -1078,47 +1005,7 @@ jobs:
     runInContainer: false
     interpreter: !ShellInterpreter
       shell: bash
-      commands: |
-        #!/bin/bash
-
-        # Function to check if the IP is accessible
-        check_ip() {
-            ping -c 1 $1 > /dev/null 2>&1
-            return $?
-        }
-
-        # Set the IP address to check
-        IP_ADDRESS="192.168.50.1"
-        MAX_WAIT_TIME=1800  # 30 minutes in seconds
-        WAIT_INTERVAL=300    # 5 minutes in seconds
-
-        # Start the timer
-        start_time=$(date +%s)
-        end_time=$((start_time + MAX_WAIT_TIME))
-
-        echo "Waiting for $IP_ADDRESS to be accessible..."
-
-        while true; do
-            # Check if the IP is accessible
-            check_ip $IP_ADDRESS
-
-            if [ $? -eq 0 ]; then
-                echo "192.168.50.1 is accessible now. Continuing..."
-                break
-            else
-                current_time=$(date +%s)
-                remaining_time=$((end_time - current_time))
-
-                if [ $remaining_time -gt 0 ]; then
-                    echo "Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md"
-                    echo "Remaining time: $((remaining_time / 60)) minutes"
-                    sleep $WAIT_INTERVAL
-                else
-                    echo "Timeout reached. Router is still not accessible."
-                    exit 1
-                fi
-            fi
-        done
+      commands: "#!/bin/bash\n\n# Function to check if the IP is accessible\ncheck_ip() {\n    ping -c 1 $1 > /dev/null 2>&1\n    return $?\n}\nif [ \"@param:ACTION@\" == \"create\" ]; then\n\t# Set the IP address to check\n\tIP_ADDRESS=\"192.168.50.1\"\n\tMAX_WAIT_TIME=1800  # 30 minutes in seconds\n\tWAIT_INTERVAL=300    # 5 minutes in seconds\n\n\t# Start the timer\n\tstart_time=$(date +%s)\n\tend_time=$((start_time + MAX_WAIT_TIME))\n\n\techo \"Waiting for $IP_ADDRESS to be accessible...\"\n\n\twhile true; do\n\t\t# Check if the IP is accessible\n\t\tcheck_ip $IP_ADDRESS\n\n\t\tif [ $? -eq 0 ]; then\n\t\t\techo \"192.168.50.1 is accessible now. Continuing...\"\n\t\t\tbreak\n\t\telse\n\t\t\tcurrent_time=$(date +%s)\n\t\t\tremaining_time=$((end_time - current_time))\n\n\t\t\tif [ $remaining_time -gt 0 ]; then\n\t\t\t\techo \"Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md\"\n\t\t\t\techo \"Remaining time: $((remaining_time / 60)) minutes\"\n\t\t\t\tsleep $WAIT_INTERVAL\n\t\t\telse\n\t\t\t\techo \"Timeout reached. Router is still not accessible.\"\n\t\t\t\texit 1\n\t\t\tfi\n\t\tfi\n\tdone\nfi\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   - !CommandStep
