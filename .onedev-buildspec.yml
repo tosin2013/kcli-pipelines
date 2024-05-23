@@ -325,6 +325,7 @@ jobs:
         export DISCONNECTED_INSTALL=@param:DISCONNECTED_INSTALL@
         export DEPLOYMENT_CONFIG=@param:DEPLOYMENT_CONFIG@
         export COMMUNITY_VERSION=@param:COMMUNITY_VERSION@
+        export ZONE_NAME=@param:ZONE_NAME@
         cd /opt/kcli-pipelines/
         ./deploy-vm.sh
     useTTY: true
