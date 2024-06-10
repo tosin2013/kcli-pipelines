@@ -50,8 +50,8 @@ $ tmux attach -t deploy-vm
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
 |           Name           | Status |        Ip       |                 Source                |  Plan |         Profile          |
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
-| freeipa-server-container |   up   | 192.168.122.109 | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt | freeipa-server-container |
-|     mirror-registry      |   up   |  192.168.122.92 | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt |     mirror-registry      |
+| freeipa-server-container |   up   | 192.168.122.109 | Fedora-Server-KVM-40-1.14.x86_64.qcow2 | kvirt | freeipa-server-container |
+|     mirror-registry      |   up   |  192.168.122.92 | Fedora-Server-KVM-40-1.14.x86_64.qcow2 | kvirt |     mirror-registry      |
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
 # sudo kcli ssh mirror-registry
 ```
