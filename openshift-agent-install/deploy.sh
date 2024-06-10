@@ -40,7 +40,13 @@ fi
 
 CLUSTER_FILE_PATH="/opt/openshift-agent-install/examples/${FOLDER_NAME}/cluster.yml"
 GENERATED_ASSET_PATH="${GENERATED_ASSET_PATH:-"${HOME}"}"
-CLUSTER_NAME=$(yq eval '.cluster_name' "${CLUSTER_FILE_PATH}")
+if [ ! -z ${CLUSTER_NAME} ];
+then
+  CLUSTER_NAME=$(yq eval '.cluster_name' "${CLUSTER_FILE_PATH}")
+else
+  CLUSTER_NAME="${GENERATED_ASSET_PATH:-"ocp4"}"
+fi
+
 
 if [ ! -z ${ZONE_NAME} ];
 then
