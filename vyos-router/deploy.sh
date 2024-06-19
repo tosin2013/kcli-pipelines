@@ -18,6 +18,20 @@ if [ ! -z "$CICD_PIPELINE" ]; then
   export USE_SUDO="sudo"
 fi
 
+
+if [ ! -z ${ZONE_NAME} ];
+then
+  DOMAIN=${GUID}.${ZONE_NAME}
+  ${USE_SUDO} yq e -i '.domain = "'${DOMAIN}'"' /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml
+  ${USE_SUDO} yq e -i '.base_domain = "'${DOMAIN}'"' ${CLUSTER_FILE_PATH}
+  DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
+  ${USE_SUDO} yq e -i '.dns_servers[0] = "'${DNS_FORWARDER}'"' ${CLUSTER_FILE_PATH}
+  ${USE_SUDO} yq e -i '.dns_search_domains[0] = "'${DOMAIN}'"' ${CLUSTER_FILE_PATH}
+  ${USE_SUDO} yq e -i 'del(.dns_search_domains[1])' ${CLUSTER_FILE_PATH}
+else
+  DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+fi
+
 function create_livirt_networks(){
     array=( "1924" "1925" "1926" "1927"  "1928" )
     for i in "${array[@]}"
@@ -86,6 +100,17 @@ sudo virt-install -n ${VM_NAME} \
    --disk path=/var/lib/libvirt/images/$VM_NAME.qcow2,bus=virtio \
    --import \
    --noautoconsole
+  if [ ! -f $HOME/vyos-config.sh ];
+  then 
+    cd $HOME
+    curl -OL https://raw.githubusercontent.com/tosin2013/demo-virt/rhpds/demo.redhat.com/vyos-config-1.5.sh
+    mv vyos-config-1.5.sh vyos-config.sh
+    chmod +x vyos-config.sh
+    export vm_name="freeipa"
+    export ip_address=$(sudo kcli info vm "$vm_name" "$vm_name" | grep ip: | awk '{print $2}' | head -1)
+    sed -i "s/1.1.1.1/${ip_address}/g" vyos-config.sh
+    sed -i "s/example.com/${DOMAIN}/g" vyos-config.sh
+  fi 
 }
 
 function destroy(){

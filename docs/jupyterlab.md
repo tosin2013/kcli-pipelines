@@ -50,8 +50,8 @@ $ tmux attach -t deploy-vm
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
 |           Name           | Status |        Ip       |                 Source                |  Plan |         Profile          |
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
-| freeipa-server-container |   up   |  192.168.1.119  | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt | freeipa-server-container |
-|     jupyterlab-f0547     |   up   | 192.168.122.183 | Fedora-Cloud-Base-38-1.6.x86_64.qcow2 | kvirt |        jupyterlab        |
+| freeipa-server-container |   up   |  192.168.1.119  | Fedora-Server-KVM-40-1.14.x86_64.qcow2 | kvirt | freeipa-server-container |
+|     jupyterlab-f0547     |   up   | 192.168.122.183 | Fedora-Server-KVM-40-1.14.x86_64.qcow2 | kvirt |        jupyterlab        |
 +--------------------------+--------+-----------------+---------------------------------------+-------+--------------------------+
 
 # sudo kcli ssh jupyterlab-f0547 

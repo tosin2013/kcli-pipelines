@@ -39,6 +39,14 @@ else
 fi
 
 CLUSTER_FILE_PATH="/opt/openshift-agent-install/examples/${FOLDER_NAME}/cluster.yml"
+GENERATED_ASSET_PATH="${GENERATED_ASSET_PATH:-"${HOME}"}"
+if [ ! -z ${CLUSTER_NAME} ];
+then
+  CLUSTER_NAME=$(yq eval '.cluster_name' "${CLUSTER_FILE_PATH}")
+else
+  CLUSTER_NAME="${GENERATED_ASSET_PATH:-"ocp4"}"
+fi
+
 
 if [ ! -z ${ZONE_NAME} ];
 then
@@ -64,11 +72,12 @@ function create(){
     ./hack/create-iso.sh $FOLDER_NAME
     ./hack/deploy-on-kvm.sh examples/$FOLDER_NAME/nodes.yml
     echo "To troubleshoot installation run the commands below in a separate terminal"
-    echo "./bin/openshift-install agent wait-for bootstrap-complete --dir ./playbooks/generated_manifests/ocp4/ --log-level debug"
+    echo "cd /opt/openshift-agent-install"
+    echo "./bin/openshift-install agent wait-for bootstrap-complete --dir ${GENERATED_ASSET_PATH}/ocp4/ --log-level debug"
     echo "*********"
     sleep 15
     ./hack/watch-and-reboot-kvm-vms.sh examples/$FOLDER_NAME/nodes.yml
-    ./bin/openshift-install agent wait-for install-complete --dir ./playbooks/generated_manifests/ocp4/ --log-level debug
+    ./bin/openshift-install agent wait-for install-complete --dir ${GENERATED_ASSET_PATH}/ocp4/ --log-level debug
 }
 
 
