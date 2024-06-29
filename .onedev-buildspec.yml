@@ -1,4 +1,4 @@
-version: 33
+version: 35
 jobs:
 - name: Deploy VM
   jobExecutor: default-executor
@@ -227,14 +227,14 @@ jobs:
     allowEmpty: false
     choiceProvider: !SpecifiedChoices
       choices:
-      - value: '4.13'
-        color: '#0d87e9'
       - value: '4.14'
         color: '#0d87e9'
       - value: '4.15'
         color: '#0d87e9'
+      - value: '4.16'
+        color: '#0d87e9'
     defaultValueProvider: !SpecifiedDefaultValue
-      value: '4.15'
+      value: '4.16'
   - !ChoiceParam
     name: DISCONNECTED_INSTALL
     description: Enable Disconnected Install
@@ -325,6 +325,7 @@ jobs:
         export DISCONNECTED_INSTALL=@param:DISCONNECTED_INSTALL@
         export DEPLOYMENT_CONFIG=@param:DEPLOYMENT_CONFIG@
         export COMMUNITY_VERSION=@param:COMMUNITY_VERSION@
+        export ZONE_NAME=@param:ZONE_NAME@
         cd /opt/kcli-pipelines/
         ./deploy-vm.sh
     useTTY: true
@@ -444,14 +445,14 @@ jobs:
     allowEmpty: false
     choiceProvider: !SpecifiedChoices
       choices:
-      - value: '4.13'
-        color: '#0d87e9'
       - value: '4.14'
         color: '#0d87e9'
       - value: '4.15'
         color: '#0d87e9'
+      - value: '4.16'
+        color: '#0d87e9'
     defaultValueProvider: !SpecifiedDefaultValue
-      value: '4.15'
+      value: '4.16'
   - !ChoiceParam
     name: DISCONNECTED_INSTALL
     description: Enable Disconnected Install
