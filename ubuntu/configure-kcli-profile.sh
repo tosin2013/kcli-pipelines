@@ -13,7 +13,7 @@ else
 fi
 
 cd $KCLI_SAMPLES_DIR
-IMAGE_NAME=ubuntu
+IMAGE_NAME=ubuntu2204
 
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
