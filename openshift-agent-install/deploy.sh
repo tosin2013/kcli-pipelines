@@ -39,7 +39,7 @@ else
 fi
 
 CLUSTER_FILE_PATH="/opt/openshift-agent-install/examples/${FOLDER_NAME}/cluster.yml"
-CLUSTER_NAME=$(yq eval '.cluster_name' "${CLUSTER_FILE_PATH}")
+export CLUSTER_NAME=$(yq eval '.cluster_name' "${CLUSTER_FILE_PATH}")
 GENERATED_ASSET_PATH="${GENERATED_ASSET_PATH:-"${HOME}"}"
 
 if [ ! -z ${ZONE_NAME} ];
