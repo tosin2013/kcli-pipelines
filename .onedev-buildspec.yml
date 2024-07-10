@@ -44,7 +44,7 @@ jobs:
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: rhel8-equinix
+      value: rhel9-equinix
   - !ChoiceParam
     name: VM_PROFILE
     allowMultiple: false
@@ -171,7 +171,7 @@ jobs:
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: rhel8-equinix
+      value: rhel9-equinix
   - !ChoiceParam
     name: VM_PROFILE
     allowMultiple: false
@@ -401,7 +401,7 @@ jobs:
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: rhel8-equinix
+      value: rhel9-equinix
   - !ChoiceParam
     name: DEPLOY_OPENSHIFT
     description: '''Deploy The OpenShit Cluster on Launch'
@@ -553,7 +553,7 @@ jobs:
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: rhel8-equinix
+      value: rhel9-equinix
   - !ChoiceParam
     name: VM_PROFILE
     allowMultiple: false
@@ -645,7 +645,7 @@ jobs:
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: rhel8-equinix
+      value: rhel9-equinix
   - !ChoiceParam
     name: VM_PROFILE
     allowMultiple: false
@@ -850,7 +850,7 @@ jobs:
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: rhel8-equinix
+      value: rhel9-equinix
   - !ChoiceParam
     name: VM_PROFILE
     allowMultiple: false
@@ -1148,7 +1148,7 @@ jobs:
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: rhel8-equinix
+      value: rhel9-equinix
   - !ChoiceParam
     name: DEPLOY_OPENSHIFT
     description: '''Deploy The OpenShit Cluster on Launch'
