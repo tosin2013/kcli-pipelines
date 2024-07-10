@@ -15,6 +15,7 @@ if [ -z "${QUAY_VERSION}" ] || [ -z "${CA_URL}" ] || [ -z "${FINGERPRINT}" ] || 
   echo "QUAY_VERSION CA_URL FINGERPRINT STEP_CA_PASSWORD env variables must be set"
   exit 1
 fi
+source helper_scripts/helper_functions.sh
 
 cd $KCLI_SAMPLES_DIR
 
@@ -68,7 +69,8 @@ ca_url: ${CA_URL}
 fingerprint: ${FINGERPRINT}
 EOF
 
-sudo python3 profile_generator/profile_generator.py update-yaml mirror-registry mirror-registry/template.yaml --vars-file /tmp/vm_vars.yaml
+determine_command_yaml
+sudo python3 profile_generator/profile_generator.py $COMMAND mirror-registry mirror-registry/template.yaml --vars-file /tmp/vm_vars.yaml
 sudo echo ${PULL_SECRET} | sudo tee pull-secret.json > /dev/null
 ##cat kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1

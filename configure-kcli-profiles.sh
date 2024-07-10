@@ -2,6 +2,7 @@
 #set -x
 #export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
+source helper_scripts/helper_functions.sh
 
 if [ -z $TARGET_SERVER ];
 then 
@@ -52,10 +53,11 @@ KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 echo "KCLI USER: $KCLI_USER" || exit $?
 rm -rf ~/.kcli/profiles.yml
 sudo rm -f /root/.kcli/profiles.yml
-sudo python3 profile_generator/profile_generator.py update-yaml rhel8 rhel8/template.yaml --vars-file rhel8/vm_vars.yml
-sudo python3 profile_generator/profile_generator.py update-yaml rhel9 rhel9/template.yaml --vars-file rhel9/vm_vars.yml
-sudo python3 profile_generator/profile_generator.py update-yaml fedora39 fedora39/template.yaml --vars-file fedora39/vm_vars.yaml
-sudo python3 profile_generator/profile_generator.py update-yaml centos9stream   centos9stream/template.yaml --vars-file centos9stream/vm_vars.yaml
+determine_command_yaml
+sudo python3 profile_generator/profile_generator.py $COMMAND rhel8 rhel8/template.yaml --vars-file rhel8/vm_vars.yml
+sudo python3 profile_generator/profile_generator.py $COMMAND rhel9 rhel9/template.yaml --vars-file rhel9/vm_vars.yml
+sudo python3 profile_generator/profile_generator.py $COMMAND fedora39 fedora39/template.yaml --vars-file fedora39/vm_vars.yaml
+sudo python3 profile_generator/profile_generator.py $COMMAND centos9stream   centos9stream/template.yaml --vars-file centos9stream/vm_vars.yaml
 
 if [ ! -d /home/$KCLI_USER/.kcli ];
 then

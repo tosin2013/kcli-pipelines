@@ -12,6 +12,8 @@ else
   exit 1
 fi
 
+source helper_scripts/helper_functions.sh
+
 # HARBOR_VERSION CA_URL FINGERPRINT env not found exit 
 if [ -z "${HARBOR_VERSION}" ] || [ -z "${CA_URL}" ] || [ -z "${FINGERPRINT}" ] || [ -z ${STEP_CA_PASSWORD} ]; then
     echo "HARBOR_VERSION CA_URL FINGERPRINT STEP_CA_PASSWORD env variables must be set"
@@ -54,8 +56,8 @@ fingerprint: ${FINGERPRINT}
 initial_password: ${STEP_CA_PASSWORD}
 EOF
 
-
-sudo python3 profile_generator/profile_generator.py update-yaml harbor harbor/template.yaml  --vars-file /tmp/vm_vars.yaml
+determine_command_yaml
+sudo python3 profile_generator/profile_generator.py $COMMAND harbor harbor/template.yaml  --vars-file /tmp/vm_vars.yaml
 #cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
