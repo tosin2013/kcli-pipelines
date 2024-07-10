@@ -11,6 +11,7 @@ else
   echo "default.env file does not exist"
   exit 1
 fi
+source helper_scripts/helper_functions.sh
 
 cd $KCLI_SAMPLES_DIR
 IMAGE_URL="https://download.fedoraproject.org/pub/fedora/linux/releases/40/Server/x86_64/images/Fedora-Server-KVM-40-1.14.x86_64.qcow2"
@@ -49,8 +50,9 @@ net_name: ${NET_NAME}
 reservedns: ${DNS_FORWARDER}
 offline_token: ${OFFLINE_TOKEN}
 EOF
+determine_command_yaml
+sudo python3 profile_generator/profile_generator.py $COMMAND openshift-jumpbox openshift-jumpbox/template.yaml  --vars-file /tmp/vm_vars.yaml
 
-sudo python3 profile_generator/profile_generator.py update-yaml openshift-jumpbox openshift-jumpbox/template.yaml  --vars-file /tmp/vm_vars.yaml
 sudo echo ${PULL_SECRET} | sudo tee pull-secret.json  > /dev/null
 #cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1

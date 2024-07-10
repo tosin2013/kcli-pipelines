@@ -20,6 +20,8 @@ else
   ANSIBLE_GALAXY=/usr/local/bin/ansible-galaxy
 fi
 
+source helper_scripts/helper_functions.sh
+
 cd $KCLI_SAMPLES_DIR
 
 
@@ -60,7 +62,8 @@ domainname: ${DOMAIN}
 freeipa_server_admin_password: ${FREEIPA_PASSWORD}
 EOF
 sudo kcli download image ${IMAGE_NAME} -u  ${IMAGE_URL}
-sudo python3 profile_generator/profile_generator.py update-yaml freeipa-server-container freeipa-server-container/template.yaml  --vars-file /tmp/vm_vars.yaml
+determine_command_yaml
+sudo python3 profile_generator/profile_generator.py $COMMAND freeipa-server-container freeipa-server-container/template.yaml  --vars-file /tmp/vm_vars.yaml
 #cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml

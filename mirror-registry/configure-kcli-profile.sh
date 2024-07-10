@@ -9,7 +9,7 @@ else
   echo "default.env file does not exist"
   exit 1
 fi
-
+source helper_scripts/helper_functions.sh
 # QUAY_VERSION CA_URL FINGERPRINT env not found exit
 if [ -z "${QUAY_VERSION}" ] || [ -z "${CA_URL}" ] || [ -z "${FINGERPRINT}" ] || [ -z ${STEP_CA_PASSWORD} ]; then
   echo "QUAY_VERSION CA_URL FINGERPRINT STEP_CA_PASSWORD env variables must be set"

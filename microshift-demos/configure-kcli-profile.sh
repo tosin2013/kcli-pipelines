@@ -11,6 +11,8 @@ else
   exit 1
 fi
 
+source helper_scripts/helper_functions.sh
+
 cd $KCLI_SAMPLES_DIR
 
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
@@ -55,7 +57,9 @@ rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
 EOF
 
-sudo python3 profile_generator/profile_generator.py update-yaml microshift-demos microshift-demos/template.yaml  --vars-file /tmp/vm_vars.yaml
+determine_command_yaml
+${USE_SUDO} python3 profile_generator/profile_generator.py $COMMAND microshift-demos microshift-demos/template.yaml  --vars-file /tmp/vm_vars.yaml
+
 sudo echo ${PULL_SECRET} | sudo tee pull-secret.json  > /dev/null
 #cat pull-secret.json
 ##cat  kcli-profiles.yml

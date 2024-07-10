@@ -18,6 +18,7 @@ if [ -z "${HARBOR_VERSION}" ] || [ -z "${CA_URL}" ] || [ -z "${FINGERPRINT}" ] |
     exit 1
 fi
 
+source helper_scripts/helper_functions.sh
 
 cd $KCLI_SAMPLES_DIR
 IMAGE_NAME=ubuntu

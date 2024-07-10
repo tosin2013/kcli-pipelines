@@ -18,6 +18,7 @@ else
   echo "vault password file does not exist"
   #exit 1
 fi
+source helper_scripts/helper_functions.sh
 
 cd $KCLI_SAMPLES_DIR
 
@@ -63,7 +64,8 @@ rhel_password: ${RHEL_PASSWORD}
 provided_sha_value: ${PROVIDED_SHA_VALUE}
 EOF
 
-sudo python3 profile_generator/profile_generator.py update-yaml ansible-aap ansible-aap/ansible-aap.yml  --vars-file /tmp/vm_vars.yaml
+determine_command_yaml
+sudo python3 profile_generator/profile_generator.py $COMMAND ansible-aap ansible-aap/ansible-aap.yml  --vars-file /tmp/vm_vars.yaml
 ####cat  kcli-profiles.yml
 sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
 sudo cp kcli-profiles.yml /root/.kcli/profiles.yml

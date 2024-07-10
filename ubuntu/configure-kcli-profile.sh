@@ -11,7 +11,7 @@ else
   echo "default.env file does not exist"
   exit 1
 fi
-
+source helper_scripts/helper_functions.sh
 cd $KCLI_SAMPLES_DIR
 IMAGE_NAME=ubuntu2204
 
@@ -40,7 +40,9 @@ reservedns: ${DNS_FORWARDER}
 domain: ${DOMAIN}
 EOF
 
-sudo python3 profile_generator/profile_generator.py update-yaml ubuntu ubuntu/template.yaml  --vars-file /tmp/vm_vars.yaml
+determine_command_yaml
+sudo python3 profile_generator/profile_generator.py $COMMAND ubuntu ubuntu/template.yaml  --vars-file /tmp/vm_vars.yaml
+
 #cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
