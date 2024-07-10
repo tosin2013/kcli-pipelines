@@ -18,7 +18,7 @@ determine_command_yaml() {
     if [[ "$OS" == "centos" || "$OS" == "rhel" || "$OS" == "rocky" ]]; then
         if [[ "$VERSION_ID" == 8* ]]; then
             COMMAND="update-yaml"
-        elif [[ "$VERSION_ID" -gt 9 ]]; then
+        elif [[ "$VERSION_ID" == 9* ]]; then
             COMMAND="update_yaml"
         else
             echo "Unsupported version: $VERSION_ID"
