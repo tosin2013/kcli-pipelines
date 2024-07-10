@@ -12,6 +12,8 @@ else
   exit 1
 fi
 
+source helper_scripts/helper_functions.sh
+
 if [ $TARGET_SERVER == "equinix" ];
 then 
   source ~/.profile 
@@ -19,8 +21,6 @@ then
 else 
   ANSIBLE_GALAXY=/usr/local/bin/ansible-galaxy
 fi
-
-source helper_scripts/helper_functions.sh
 
 cd $KCLI_SAMPLES_DIR
 
