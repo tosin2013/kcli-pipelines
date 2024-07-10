@@ -57,7 +57,16 @@ rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
 EOF
 sudo kcli download image ${IMAGE_NAME} -u  ${IMAGE_URL}
-sudo python3 profile_generator/profile_generator.py update-yaml rhel8 rhel8/template.yaml  --vars-file /tmp/vm_vars.yaml
+if [ -z "$TARGET_SERVER" ]; then
+  echo "TARGET_SERVER is empty"
+  ${USE_SUDO} python3 profile_generator/profile_generator.py update_yaml rhel8 rhel8/template.yaml  --vars-file /tmp/vm_vars.yaml
+elif [ "$TARGET_SERVER" == "rhel8-equinix" ]; then
+  echo "TARGET_SERVER is rhel8-equinix"
+  ${USE_SUDO} python3 profile_generator/profile_generator.py update_yaml rhel8 rhel8/template.yaml  --vars-file /tmp/vm_vars.yaml
+else
+  echo "TARGET_SERVER is ${TARGET_SERVER}"
+ ${USE_SUDO} python3 profile_generator/profile_generator.py update_yaml rhel8 rhel8/template.yaml  --vars-file /tmp/vm_vars.yaml
+fi
 #cat  kcli-profiles.yml
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
 sudo cp kcli-profiles.yml /home/${KCLI_USER}/.kcli/profiles.yml
