@@ -18,7 +18,7 @@ else
     sudo git pull
 fi
 
-if [ $TARGET_SERVER == "rhel8-equinix" ];
+if [ $TARGET_SERVER == "rhel8-equinix" ] || [ $TARGET_SERVER == "rhel9-equinix" ];
 then 
     sudo sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' /opt/kcli-pipelines/helper_scripts/default.env
 fi

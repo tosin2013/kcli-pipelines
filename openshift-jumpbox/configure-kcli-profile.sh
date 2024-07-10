@@ -14,9 +14,8 @@ fi
 source helper_scripts/helper_functions.sh
 
 cd $KCLI_SAMPLES_DIR
-IMAGE_URL="https://download.fedoraproject.org/pub/fedora/linux/releases/40/Server/x86_64/images/Fedora-Server-KVM-40-1.14.x86_64.qcow2"
-IMAGE_NAME=Fedora-Server-KVM-40-1.14.x86_64.qcow2
-sudo kcli download image ${IMAGE_NAME} -u  ${IMAGE_URL}
+IMAGE_NAME=fedora40
+sudo kcli download image ${IMAGE_NAME}
 
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")

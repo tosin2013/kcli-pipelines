@@ -27,9 +27,8 @@ cd $KCLI_SAMPLES_DIR
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
 FREEIPA_PASSWORD=$(yq eval '.freeipa_server_admin_password' "${ANSIBLE_VAULT_FILE}")
-IMAGE_URL="https://download.fedoraproject.org/pub/fedora/linux/releases/40/Server/x86_64/images/Fedora-Server-KVM-40-1.14.x86_64.qcow2"
 VM_NAME=freeipa-server-container-$(echo $RANDOM | md5sum | head -c 5; echo;)
-IMAGE_NAME=Fedora-Server-KVM-40-1.14.x86_64.qcow2
+IMAGE_NAME=fedora40
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50
@@ -60,7 +59,7 @@ reservedns: ${DNS_FORWARDER}
 domainname: ${DOMAIN}
 freeipa_server_admin_password: ${FREEIPA_PASSWORD}
 EOF
-sudo kcli download image ${IMAGE_NAME} -u  ${IMAGE_URL}
+sudo kcli download image ${IMAGE_NAME}
 determine_command_yaml
 sudo python3 profile_generator/profile_generator.py $COMMAND freeipa-server-container freeipa-server-container/template.yaml  --vars-file /tmp/vm_vars.yaml
 #cat  kcli-profiles.yml
