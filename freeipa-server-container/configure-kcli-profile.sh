@@ -14,9 +14,8 @@ fi
 
 source helper_scripts/helper_functions.sh
 
-if [ $TARGET_SERVER == "equinix" ];
+if [ $TARGET_SERVER == "rhel9-equinix" ] || [ $TARGET_SERVER == "rhel8-equinix" ];
 then 
-  source ~/.profile 
   ANSIBLE_GALAXY=/root/.local/bin/ansible-galaxy
 else 
   ANSIBLE_GALAXY=/usr/local/bin/ansible-galaxy
