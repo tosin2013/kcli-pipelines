@@ -869,6 +869,12 @@ jobs:
       choices:
       - value: bond0-signal-vlan
         color: '#0d87e9'
+      - value: sno-bond0-signal-vlan
+        color: '#0d87e9'
+      - value: sno-2-bond0-signal-vlan
+        color: '#0d87e9'
+      - value: sno-3-bond0-signal-vlan
+        color: '#0d87e9'
     defaultValueProvider: !SpecifiedDefaultValue
       value: bond0-signal-vlan
   - !ChoiceParam
