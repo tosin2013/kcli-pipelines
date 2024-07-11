@@ -5,6 +5,7 @@ set -x
 if [ -f /opt/kcli-pipelines/helper_scripts/default.env ];
 then 
   source /opt/kcli-pipelines/helper_scripts/default.env
+  source helper_scripts/helper_functions.sh
 else
   echo "default.env file does not exist"
   exit 1
@@ -44,7 +45,18 @@ for VM_NAME in $(yq eval '. | keys | .[]' /opt/kcli-pipelines/ceph-cluster/ceph-
   IP_ADDRESS=$(sudo kcli info vm $VM_NAME $VM_NAME | grep ip: | awk '{print $2}' | head -1)
   echo "VM $VM_NAME created with IP address $IP_ADDRESS"
   
-  ANSIBLE_PLAYBOOK="sudo -E /usr/local/bin/ansible-playbook"
+  get_os_version
+
+  if [[ "$OS" == "centos" || "$OS" == "rhel" || "$OS" == "rocky" ]]; then
+      if [[ "$VERSION_ID" == 8* ]]; then
+          ANSIBLE_PLAYBOOK="sudo -E /usr/local/bin/ansible-playbook"
+      elif [[ "$VERSION_ID" == 9* ]]; then
+        ANSIBLE_PLAYBOOK="sudo -E /usr/bin/ansible-playbook"
+      else
+          echo "Unsupported version: $VERSION_ID"
+          exit 1
+      fi
+  fi
 
   # Update the DNS using the add_ipa_entry.yaml playbook
   $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \

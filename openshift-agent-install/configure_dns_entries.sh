@@ -1,6 +1,7 @@
 if [ -f /opt/kcli-pipelines/helper_scripts/default.env ];
 then 
   source /opt/kcli-pipelines/helper_scripts/default.env
+  source helper_scripts/helper_functions.sh
 else
   echo "default.env file does not exist"
   exit 1
@@ -57,7 +58,19 @@ function create_dns_entries(){
     API_ENDPOINT=$(yq eval '.api_vips' "$CLUSTER_FILE_PATH" | sed 's/^- //')
     CLUSTER_NAME=$(yq eval '.cluster_name' "$CLUSTER_FILE_PATH")
     APPS_ENDPOINT=$(yq eval '.app_vips' "$CLUSTER_FILE_PATH" | sed 's/^- //')
-    ANSIBLE_PLAYBOOK="sudo -E /usr/local/bin/ansible-playbook"
+    get_os_version
+
+    if [[ "$OS" == "centos" || "$OS" == "rhel" || "$OS" == "rocky" ]]; then
+        if [[ "$VERSION_ID" == 8* ]]; then
+            ANSIBLE_PLAYBOOK="sudo -E /usr/local/bin/ansible-playbook"
+        elif [[ "$VERSION_ID" == 9* ]]; then
+          ANSIBLE_PLAYBOOK="sudo -E /usr/bin/ansible-playbook"
+        else
+            echo "Unsupported version: $VERSION_ID"
+            exit 1
+        fi
+    fi
+
     DOMAIN_NAME=api.${CLUSTER_NAME}.${DOMAIN}
     # Update the DNS using the add_ipa_entry.yaml playbook
     $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \

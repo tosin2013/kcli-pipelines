@@ -13,5 +13,5 @@ sudo yum install libvirt-devel -y
 
 ## Run the playbook 
 ```
-sudo -E /usr/local/bin/ansible-playbook  create-blank-instance/configure-blank-instance.yaml
+sudo -E /usr/bin/ansible-playbook  create-blank-instance/configure-blank-instance.yaml
 ```

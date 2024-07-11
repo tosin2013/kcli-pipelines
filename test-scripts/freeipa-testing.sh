@@ -3,15 +3,29 @@
 if [ -f ../helper_scripts/default.env ];
 then 
   source ../helper_scripts/default.env
+  source ../helper_scripts/helper_functions.sh
 elif [ -f helper_scripts/default.env  ];
 then 
   source helper_scripts/default.env 
+  source helper_scripts/helper_functions.sh
 else
   echo "default.env file does not exist"
   exit 1
 fi
 
-ANSIBLE_PLAYBOOK="sudo -E /usr/local/bin/ansible-playbook"
+get_os_version
+
+if [[ "$OS" == "centos" || "$OS" == "rhel" || "$OS" == "rocky" ]]; then
+    if [[ "$VERSION_ID" == 8* ]]; then
+        ANSIBLE_PLAYBOOK="sudo -E /usr/local/bin/ansible-playbook"
+    elif [[ "$VERSION_ID" == 9* ]]; then
+       ANSIBLE_PLAYBOOK="sudo -E /usr/bin/ansible-playbook"
+    else
+        echo "Unsupported version: $VERSION_ID"
+        exit 1
+    fi
+fi
+
 export ANSIBLE_HOST_KEY_CHECKING=False
 DOMAIN_NAME=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 
