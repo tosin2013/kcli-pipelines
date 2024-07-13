@@ -14,16 +14,18 @@ fi
 
 source helper_scripts/helper_functions.sh
 
-  if [[ "$OS" == "centos" || "$OS" == "rhel" || "$OS" == "rocky" ]]; then
-      if [[ "$VERSION_ID" == 8* ]]; then
-          ANSIBLE_GALAXY="sudo -E /usr/local/bin/ansible-galaxy"
-      elif [[ "$VERSION_ID" == 9* ]]; then
-        ANSIBLE_GALAXY="sudo -E /usr/bin/ansible-galaxy"
-      else
-          echo "Unsupported version: $VERSION_ID"
-          exit 1
-      fi
-  fi
+get_os_version
+
+if [[ "$OS" == "centos" || "$OS" == "rhel" || "$OS" == "rocky" ]]; then
+    if [[ "$VERSION_ID" == 8* ]]; then
+        ANSIBLE_GALAXY="sudo -E /usr/local/bin/ansible-galaxy"
+    elif [[ "$VERSION_ID" == 9* ]]; then
+      ANSIBLE_GALAXY="sudo -E /usr/bin/ansible-galaxy"
+    else
+        echo "Unsupported version: $VERSION_ID"
+        exit 1
+    fi
+fi
 
 cd $KCLI_SAMPLES_DIR
 
