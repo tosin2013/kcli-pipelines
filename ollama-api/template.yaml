@@ -1,0 +1,12 @@
+image: {{ image }}
+numcpus: {{ numcpus }}
+memory: {{ memory }}
+nets:
+  - name: {{ net_name }}
+reservedns: {{ reservedns }}
+disks:
+  - size: {{ disk_size }}
+cmds:
+  - curl -o setup.sh https://raw.githubusercontent.com/tosin2013/ollama-api/main/setup.sh
+  - chmod +x setup.sh
+  - ./setup.sh -i -c -a -s -p {{ huggingface_api_key }}

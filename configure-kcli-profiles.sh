@@ -113,6 +113,8 @@ sudo -E ./ceph-cluster/configure-kcli-profile.sh || exit $?
 echo "Configuring rhel9-pxe type"
 echo "*********************************************"
 sudo -E ./rhel9-pxe/configure-kcli-profile.sh || exit $?
+sudo -E ./ollama-api/configure-kcli-profile.sh || exit $?
+echo "Configuring ollama-api type"
 echo "Configuring step-ca-server type"
 echo "*********************************************"
 sudo -E ./step-ca-server/configure-kcli-profile.sh || exit $?
