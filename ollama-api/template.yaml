@@ -7,6 +7,7 @@ reservedns: {{ reservedns }}
 disks:
   - size: {{ disk_size }}
 cmds:
+  - cd /opt/
   - curl -o setup.sh https://raw.githubusercontent.com/tosin2013/ollama-api/main/setup.sh
   - chmod +x setup.sh
   - ./setup.sh -i -c -a -s -p {{ huggingface_api_key }}
