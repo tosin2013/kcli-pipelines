@@ -867,6 +867,8 @@ jobs:
     allowEmpty: false
     choiceProvider: !SpecifiedChoices
       choices:
+      - value: cnv-bond0-signal-vlan
+        color: '#0d87e9'
       - value: bond0-signal-vlan
         color: '#0d87e9'
       - value: sno-bond0-signal-vlan
@@ -876,7 +878,7 @@ jobs:
       - value: sno-3-bond0-signal-vlan
         color: '#0d87e9'
     defaultValueProvider: !SpecifiedDefaultValue
-      value: bond0-signal-vlan
+      value: cnv-bond0-signal-vlan
   - !ChoiceParam
     name: ACTION
     allowMultiple: false
@@ -1136,12 +1138,20 @@ jobs:
     allowEmpty: false
     choiceProvider: !SpecifiedChoices
       choices:
+      - value: cnv-bond0-signal-vlan
+        color: '#0d87e9'
       - value: bond0-signal-vlan
         color: '#0d87e9'
       - value: converged-bond0-signal-vlan
         color: '#0d87e9'
+      - value: sno-2-bond0-signal-vlan
+        color: '#0d87e9'
+      - value: sno-3-bond0-signal-vlan
+        color: '#0d87e9'
+      - value: sno-bond0-signal-vlan
+        color: '#0d87e9'
     defaultValueProvider: !SpecifiedDefaultValue
-      value: bond0-signal-vlan
+      value: cnv-bond0-signal-vlan
   - !TextParam
     name: TARGET_SERVER
     description: TARGET_SERVER
