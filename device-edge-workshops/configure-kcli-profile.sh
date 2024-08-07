@@ -34,6 +34,38 @@ PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
 VM_NAME=device-edge-deployer
 IMAGE_NAME=rhel9
 DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
+if [ ! -z ${BASE_ZONE} ];
+then
+  DOMAIN=${GUID}.${BASE_ZONE}
+  ${USE_SUDO} yq e -i '.domain = "'${BASE_ZONE}'"' /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml
+else
+  DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+fi
+
+if [ -z ${SLACK_APP_TOKEN} ];
+then
+  echo "Slack APP token not set"
+  exit 1
+fi
+
+if [ -z ${APP1_REGISTRY} ];
+then
+  echo "quay.io registry one not set"
+  exit 1
+fi
+
+if [ -z ${APP2_REGISTRY} ];
+then
+  echo "quay.io registry one not set"
+  exit 1
+fi
+
+if [ -z ${BASE64_MANIFEST} ];
+then
+  echo "Base64 manifest not set"
+  exit 1
+fi
+
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=120
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
