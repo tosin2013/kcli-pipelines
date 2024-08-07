@@ -1,0 +1,36 @@
+title: kcli-pipelines
+email: {{ secrets.SITE_EMAIL }}
+description: >- # this means to ignore newlines until "baseurl:"
+  kcli-pipelines is a repository that contains the necessary scripts and configurations to automate the setup and deployment of various environments. It leverages the capabilities of kcli (KubeVirt Command Line Interface) to manage VMs and other resources efficiently. The repository is structured to include different profiles and workflows for multiple operating systems and deployment scenarios.
+
+baseurl: "/docs" # the subpath of your site, e.g. /blog
+url: "https://tosin2013.github.io/kcli-pipelines" # the base hostname & protocol for your site, e.g. http://example.com
+twitter_username: tech0827
+github_username: tosin2013
+
+# Build settings
+theme: just-the-docs
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# Just the Docs configuration
+aux_links:
+  "View on GitHub":
+    - "https://github.com/tosin2013/kcli-pipelines"
+aux_links_new_tab: true
+heading_anchors: true
+
+# Enable collection for categories
+collections:
+  category:
+    output: true
+
+# Default layout for category pages
+defaults:
+  - scope:
+      path: ""
+      type: category
+    values:
+      layout: category
