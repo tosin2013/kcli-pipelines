@@ -95,6 +95,22 @@ EOF
 echo "Installing necessary gems..."
 bundle install
 
+# Create a basic category layout
+echo "Creating category layout..."
+mkdir -p _layouts
+cat > _layouts/category.html << EOF
+---
+layout: default
+---
+
+<div class="category">
+  <h1>{{ page.title }}</h1>
+  <div class="content">
+    {{ content }}
+  </div>
+</div>
+EOF
+
 # Create a sample documentation page
 echo "Creating a sample documentation page..."
 cat << EOF > index.md
