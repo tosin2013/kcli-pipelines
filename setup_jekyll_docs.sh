@@ -47,9 +47,8 @@ cd docs
 # Add Just the Docs theme to the Gemfile
 echo "Adding Just the Docs theme to the Gemfile..."
 echo "gem \"just-the-docs\"" >> Gemfile
- echo "gem 'jekyll-sitemap'" >> Gemfile
+echo "gem 'jekyll-sitemap'" >> Gemfile
 echo "gem 'jekyll-seo-tag'" >> Gemfile
-echo "gem 'jekyll-feed'" >> Gemfile
 
 # Update the _config.yml file
 echo "Configuring _config.yml..."
