@@ -1,5 +1,6 @@
 #!/bin/bash
-
+set -euo pipefail
+set -x 
 # Script to install Jekyll and set up a docs template with Just the Docs theme on Ubuntu 22.04 LTS
 
 # Use environment variables or default values
