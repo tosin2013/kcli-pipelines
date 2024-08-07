@@ -41,6 +41,8 @@ echo "Jekyll installation completed."
 
 # Create a new Jekyll site in the docs directory
 echo "Creating a new Jekyll site in the docs directory..."
+pwd 
+exit 1
 jekyll new docs
 cd docs
 
