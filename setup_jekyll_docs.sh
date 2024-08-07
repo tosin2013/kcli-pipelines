@@ -135,8 +135,8 @@ IFS=',' read -ra CATEGORY_ARRAY <<< "$CATEGORIES"
 nav_order=2
 for category in "${CATEGORY_ARRAY[@]}"; do
   echo "Creating category page for ${category}..."
-  mkdir -p "_category"
-  cat << EOF > "_category/${category}.md"
+  mkdir -p "${category}"
+  cat << EOF > "${category}/index.md"
 ---
 layout: category
 title: ${category^}
@@ -151,16 +151,15 @@ This is the main page for the ${category} category. Add your ${category}-related
 
 EOF
 
-  echo "- [${category^}](/${category}/)" >> index.md
+  echo "- [${category}/index.md" >> index.md
 
   # Create a sample sub-page for each category
-  mkdir -p "${category}"
   cat << EOF > "${category}/sample-${category}-page.md"
 ---
 layout: default
 title: Sample ${category^} Page
 parent: ${category^}
-nav_order: 1
+nav_order:  ${nav_order}
 ---
 
 # Sample ${category^} Page
