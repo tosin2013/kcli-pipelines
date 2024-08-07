@@ -46,10 +46,10 @@ Refer to the [deployment documentation](https://github.com/tosin2013/kcli-pipeli
 
 
 ## Categories
-- [deployment](deployment/index.md)
-- [development](deployment/index.md)
-- [configuration](deployment/index.md)
-- [troubleshooting](deployment/index.md)
+- [deployment](deployment/)
+- [development](development/)
+- [configuration](configuration/)
+- [troubleshooting](troubleshooting/)
 ## Next steps
 
 - Add more pages to your documentation
