@@ -113,13 +113,13 @@ EOF
 
 # Create a sample documentation page
 echo "Creating a sample documentation page..."
-cat << EOF > index.md
+cat << EOF > index.markdown
 ---
 layout: default
 title: Home
 nav_order: 1
 description: "Welcome to the documentation for ${SITE_TITLE}."
-permalink: /
+permalink: /${GITHUB_REPO}
 ---
 
 # Welcome to ${SITE_TITLE} Documentation
