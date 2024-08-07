@@ -59,7 +59,7 @@ description: >- # this means to ignore newlines until "baseurl:"
   ${SITE_DESCRIPTION}
 
 baseurl: "${SITE_BASEURL}" # the subpath of your site, e.g. /blog
-url: "${SITE_URL}/${GITHUB_REPO}" # the base hostname & protocol for your site, e.g. http://example.com
+url: "${SITE_URL}" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: ${TWITTER_USERNAME}
 github_username: ${GITHUB_USERNAME}
 
