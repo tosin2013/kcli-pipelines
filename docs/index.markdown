@@ -32,7 +32,7 @@ cd kcli-pipelines
 
 kcli-pipelines allows you to create KCLI profiles tailored for different environments. This configuration step is crucial for ensuring that your VMs are deployed according to your specific requirements.
 
-- Navigate to the [configuration guide](https://github.com/tosin2013/kcli-pipelines/blob/main/docs/configure-kcli-profiles.md) to set up your profiles.
+- Navigate to the [Create KCLI profiles for multiple environments](https://tosin2013.github.io/kcli-pipelines/configuration/configure-kcli-profiles.html) to set up your profiles.
 
 ### Step 3: Deploying VMs
 
@@ -42,7 +42,7 @@ Once your profiles are configured, you can deploy VMs using the provided scripts
 ./deploy-vm.sh -p <profile_name> -n <vm_name>
 ```
 
-Refer to the [deployment documentation](https://github.com/tosin2013/kcli-pipelines/blob/main/docs/deploy-vm.md) for detailed instructions.
+Refer to the [Deploy VM Workflow](https://tosin2013.github.io/kcli-pipelines/deployment/deploy-vm.html) for detailed instructions.
 
 
 ## Categories
