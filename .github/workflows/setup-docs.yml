@@ -1,0 +1,59 @@
+name: Setup Documentation
+
+on:
+  workflow_dispatch:
+    inputs:
+      setup_jekyll_docs:
+        description: 'Setup Jekyll Docs'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+        - 'true'
+        - 'false'
+  push:
+    branches:
+      - main  # or your default branch
+    paths:
+      - 'docs/**'  # Only run when changes are made to the docs folder
+
+jobs:
+  setup-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.7  # or whichever version you prefer
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential zlib1g-dev
+
+    - name: Setup Jekyll Docs
+      if: github.event_name == 'workflow_dispatch' && github.event.inputs.setup_jekyll_docs == 'true'
+      env:
+        GITHUB_USERNAME: ${{ github.repository_owner }}
+        GITHUB_REPO: ${{ github.event.repository.name }}
+        CATEGORIES: "deployment,development,configuration,troubleshooting"
+        SITE_TITLE: "kcli-pipelines"
+        SITE_EMAIL: "{{ secrets.SITE_EMAIL }}"
+        SITE_DESCRIPTION: "kcli-pipelines is a repository that contains the necessary scripts and configurations to automate the setup and deployment of various environments. It leverages the capabilities of kcli (KubeVirt Command Line Interface) to manage VMs and other resources efficiently. The repository is structured to include different profiles and workflows for multiple operating systems and deployment scenarios."
+        SITE_BASEURL: "/docs"
+        SITE_URL: "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
+        TWITTER_USERNAME: "tech0827"
+      run: |
+        chmod +x setup_jekyll_docs.sh
+        ./setup_jekyll_docs.sh
+
+    - name: Commit changes
+      if: github.event_name == 'workflow_dispatch' && github.event.inputs.setup_jekyll_docs == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add docs
+        git commit -m "Setup Jekyll docs structure" || echo "No changes to commit"
+        git push
