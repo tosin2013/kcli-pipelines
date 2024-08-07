@@ -132,6 +132,7 @@ EOF
 
 # Create category pages
 IFS=',' read -ra CATEGORY_ARRAY <<< "$CATEGORIES"
+nav_order=2
 for category in "${CATEGORY_ARRAY[@]}"; do
   echo "Creating category page for ${category}..."
   mkdir -p "_category"
@@ -139,7 +140,7 @@ for category in "${CATEGORY_ARRAY[@]}"; do
 ---
 layout: category
 title: ${category^}
-nav_order: 2
+nav_order: ${nav_order}
 has_children: true
 permalink: /${category}/
 ---
@@ -173,6 +174,9 @@ This is a sample page for the ${category} category. Add your ${category}-specifi
 3. Step 3
 
 EOF
+
+  # Increment nav_order for the next category
+  nav_order=$((nav_order + 1))
 done
 
 echo "## Next steps
