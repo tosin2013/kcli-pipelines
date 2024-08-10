@@ -46,24 +46,32 @@ if [ -z ${SLACK_APP_TOKEN} ];
 then
   echo "Slack APP token not set"
   exit 1
+else
+  export SLACK_APP_TOKEN="temp"
 fi
 
 if [ -z ${APP1_REGISTRY} ];
 then
   echo "quay.io registry one not set"
   exit 1
+else
+  export APP1_REGISTRY="temp"
 fi
 
 if [ -z ${APP2_REGISTRY} ];
 then
   echo "quay.io registry one not set"
   exit 1
+else 
+  export APP2_REGISTRY="temp"
 fi
 
 if [ -z ${BASE64_MANIFEST} ];
 then
   echo "Base64 manifest not set"
   exit 1
+else
+  export BASE64_MANIFEST="temp"
 fi
 
 DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
