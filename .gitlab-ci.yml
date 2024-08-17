@@ -1,5 +1,3 @@
-# Description: Gitlab CI/CD pipeline for FreeIPA
-# SSH_USER SSH_PASSWORD SSH_HOST will be passed through the pipeline
 stages:
   - check_env
   - configure-kcli-profiles
@@ -7,31 +5,30 @@ stages:
 
 check_env:
   stage: check_env
-  image: python:3.10
+  tags:
+    - shared
   script:
-    - python3 check_env.py
+    - ls -lath .
 
 configure-kcli-profiles:
   stage: configure-kcli-profiles
-  image: fedora:37
+  tags:
+    - shared
   variables:
     CICD_PIPELINE: "true"
     SSH_USER: admin
     TARGET_SERVER: "${TARGET_SERVER}"
   allow_failure: false
   script:
-    - dnf install wget openssh-clients sshpass -y
-    - mkdir -p ~/.ssh/
-    - ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ""
-    - sshpass -p "$SSH_PASSWORD" ssh-copy-id -o StrictHostKeyChecking=no "$SSH_USER"@"$SSH_HOST"
-    - ssh "$SSH_USER"@"$SSH_HOST"  'env CICD_PIPELINE="'$CICD_PIPELINE'" TARGET_SERVER="'$TARGET_SERVER'" bash -s' < configure-kcli-profiles.sh || exit $?
+    - ls -lath .
   only:
     variables:
-    - $JOB_TYPE == "configure-vm-profiles"
+      - $JOB_TYPE == "configure-vm-profiles"
 
 deploy-vm:
   stage: deploy-vm
-  image: fedora:37
+  tags:
+    - shared
   variables:
     CICD_PIPELINE: "true"
     SSH_USER: "${SSH_USER}"
@@ -41,11 +38,7 @@ deploy-vm:
     ACTION: "${ACTION}"
   allow_failure: false
   script:
-    - dnf install wget openssh-clients sshpass -y
-    - mkdir -p ~/.ssh/
-    - ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ""
-    - sshpass -p "$SSH_PASSWORD" ssh-copy-id -o StrictHostKeyChecking=no "$SSH_USER"@"$SSH_HOST"
-    - ssh "$SSH_USER"@"$SSH_HOST"  'env CICD_PIPELINE="'$CICD_PIPELINE'" TARGET_SERVER="'$TARGET_SERVER'"  VM_NAME="'$VM_NAME'" VM_PROFILE="'$VM_PROFILE'" ACTION="'$ACTION'"  bash -s' < deploy-vm.sh || exit $?
+    - ls -lath .
   only:
     variables:
-    - $JOB_TYPE == "deploy-vm"
+      - $JOB_TYPE == "deploy-vm"
