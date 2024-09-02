@@ -121,7 +121,8 @@ else:
         st.text_input("Git Repository", key="GIT_REPO", value=existing_variables['GIT_REPO'] if existing_variables else config['DEFAULT_GIT_REPO'])
         st.text_input("CICD Pipeline", key="CICD_PIPELINE", value=existing_variables['CICD_PIPELINE'] if existing_variables else config['DEFAULT_CICD_PIPELINE'])
         st.text_input("Target Server", key="TARGET_SERVER", value=existing_variables['TARGET_SERVER'] if existing_variables else config['DEFAULT_TARGET_SERVER'])
-        st.text_input("VM Profile", key="VM_PROFILE", value=existing_variables['VM_PROFILE'] if existing_variables else config['DEFAULT_VM_PROFILE'])
+        st.selectbox("VM Profile", ["freeipa","vyos-router", "rhel8", "rhel9", "openshift-jumpbox", "fedora39", "ubuntu", "centos9stream"], key="VM_PROFILE", index=["freeipa","vyos-router", "rhel8", "rhel9", "openshift-jumpbox", "fedora39", "ubuntu", "centos9stream"].index(existing_variables['VM_PROFILE']) if existing_variables else 0)
+        st.text_input("Launch Steps", key="LAUNCH_STEPS", value=existing_variables['LAUNCH_STEPS'] if existing_variables else config['DEFAULT_LAUNCH_STEPS'])
         st.selectbox("Action", ["create", "delete"], key="ACTION", index=0 if existing_variables and existing_variables['ACTION'] == 'create' else 1 if existing_variables and existing_variables['ACTION'] == 'delete' else 0)
         st.selectbox("Community Version", ["true", "false"], key="COMMUNITY_VERSION", index=0 if existing_variables and existing_variables['COMMUNITY_VERSION'] == 'true' else 1 if existing_variables and existing_variables['COMMUNITY_VERSION'] == 'false' else 0)
 
@@ -148,6 +149,7 @@ else:
     if submit_button:
         variables = {
             'ref': config['DEFAULT_REF'],  # Add the ref here
+            'CI_PIPELINE_SOURCE': 'trigger',  # Add CI_PIPELINE_SOURCE as 'trigger'
             'GIT_REPO': st.session_state.GIT_REPO,
             'CICD_PIPELINE': st.session_state.CICD_PIPELINE,
             'TARGET_SERVER': st.session_state.TARGET_SERVER,
@@ -156,6 +158,10 @@ else:
             'COMMUNITY_VERSION': st.session_state.COMMUNITY_VERSION
         }
 
+        if job_type == 'Deploy VM':
+            variables.update({
+                'LAUNCH_STEPS': st.session_state.LAUNCH_STEPS
+            })
         if job_type == 'Internal KCLI OpenShift4 Baremetal' or job_type == 'External KCLI OpenShift4 Baremetal':
             variables.update({
                 'DEPLOY_OPENSHIFT': st.session_state.DEPLOY_OPENSHIFT,
