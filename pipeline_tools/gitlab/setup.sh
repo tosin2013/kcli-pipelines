@@ -18,3 +18,8 @@ source $VENV_DIR/bin/activate
 echo "source $VENV_DIR/bin/activate"
 export STREAMLIT_SERVER_ADDRESS=localhost
 streamlit run pipeline_tools/gitlab/app.py
+#USER=gitlab-runner
+#usermod -aG wheel ${USER}
+#echo "${USER} ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/${USER}
+#chmod 0440 /etc/sudoers.d/${USER}
+
