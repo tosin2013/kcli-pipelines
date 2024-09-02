@@ -1,44 +1,233 @@
 stages:
-  - check_env
-  - configure-kcli-profiles
-  - deploy-vm
+  - deploy
+  - internal
+  - external
 
-check_env:
-  stage: check_env
-  tags:
-    - shared
+deploy_vm:
+  stage: deploy
   script:
-    - ls -lath .
-
-configure-kcli-profiles:
-  stage: configure-kcli-profiles
+    - if [ ! -d /opt/kcli-pipelines ]; then 
+        cd /opt/;
+         sudo git clone ${GIT_REPO};
+      else
+        cd /opt/kcli-pipelines;
+         sudo git config --global --add safe.directory /opt/kcli-pipelines;
+         sudo git pull;
+      fi
+    - |
+      export CICD_PIPELINE="${CICD_PIPELINE}"
+      export TARGET_SERVER="${TARGET_SERVER}"
+      export VM_PROFILE=${VM_PROFILE}
+      export COMMUNITY_VERSION=${COMMUNITY_VERSION}
+      if [[ "${VM_PROFILE}" == "freeipa" || "${VM_PROFILE}" == "vyos-router" ]]; then 
+        export VM_NAME="${VM_PROFILE}"
+      else
+        export VM_NAME="${VM_PROFILE}-$(echo $RANDOM | md5sum | head -c 5; echo;)"
+      fi
+      export ACTION="${ACTION}"
+      echo "Current VM PROFILE ${VM_PROFILE}"
+      echo "Current VM NAME ${VM_NAME}"
+      echo "********************************"
+      cd /opt/kcli-pipelines/
+       sudo -E ./configure-kcli-profiles.sh
+    - |
+      export CICD_PIPELINE="${CICD_PIPELINE}"
+      export TARGET_SERVER="${TARGET_SERVER}"
+      export VM_PROFILE=${VM_PROFILE}
+      export COMMUNITY_VERSION=${COMMUNITY_VERSION}
+      if [[ "${VM_PROFILE}" == "freeipa" || "${VM_PROFILE}" == "vyos-router" ]]; then 
+        export VM_NAME="${VM_PROFILE}"
+      else
+        export VM_NAME="${VM_PROFILE}-$(echo $RANDOM | md5sum | head -c 5; echo;)"
+      fi
+      if [[ "${ACTION}" == "delete" && ("${VM_PROFILE}" == "freeipa" || "${VM_PROFILE}" == "vyos-router") ]]; then
+        export VM_NAME="${VM_PROFILE}"
+      elif [ "${ACTION}" == "delete" ]; then 
+        export VM_NAME="${VM_NAME_INSTANCE}"
+      else
+        echo "Skipping delete"
+      fi
+      export ACTION="${ACTION}"
+      echo "Current VM PROFILE ${VM_PROFILE}"
+      echo "Current VM NAME ${VM_NAME}"
+      echo "********************************"
+      cd /opt/kcli-pipelines/
+      sudo -E ./deploy-vm.sh
   tags:
     - shared
   variables:
-    CICD_PIPELINE: "true"
-    SSH_USER: admin
-    TARGET_SERVER: "${TARGET_SERVER}"
-  allow_failure: false
-  script:
-    - ls -lath .
-  only:
-    variables:
-      - $JOB_TYPE == "configure-vm-profiles"
+    GIT_REPO: ${GIT_REPO}
+    CICD_PIPELINE: ${CICD_PIPELINE}
+    TARGET_SERVER: ${TARGET_SERVER}
+    VM_PROFILE: ${VM_PROFILE}
+    ACTION: ${ACTION}
+    COMMUNITY_VERSION: ${COMMUNITY_VERSION}
 
-deploy-vm:
-  stage: deploy-vm
+internal_kcli_openshift4_baremetal:
+  stage: internal
+  script:
+    - if [ ! -d /opt/kcli-pipelines ]; then 
+        cd /opt/;
+        git clone ${GIT_REPO};
+      else
+        cd /opt/kcli-pipelines;
+        git config --global --add safe.directory /opt/kcli-pipelines;
+        git pull;
+      fi
+    - |
+      export CICD_PIPELINE="${CICD_PIPELINE}"
+      export TARGET_SERVER="${TARGET_SERVER}"
+      export VM_PROFILE=${VM_PROFILE}
+      export COMMUNITY_VERSION=${COMMUNITY_VERSION}
+      if [[ "${VM_PROFILE}" == "freeipa" ]]; then 
+        export VM_NAME="${VM_PROFILE}"
+      else
+        export VM_NAME="${VM_PROFILE}-$(echo $RANDOM | md5sum | head -c 5; echo;)"
+      fi
+      export ACTION="${ACTION}"
+      cd /opt/kcli-pipelines/
+      ./configure-kcli-profiles.sh
+    - |
+      export TARGET_SERVER=${TARGET_SERVER}
+      export VM_NAME=${VM_PROFILE}
+      export VM_PROFILE=${VM_PROFILE}
+      export ACTION=${ACTION}
+      export DEPLOY_OPENSHIFT=${DEPLOY_OPENSHIFT}
+      export LAUNCH_STEPS=${LAUNCH_STEPS}
+      export TAG=${TAG}
+      export DISCONNECTED_INSTALL=${DISCONNECTED_INSTALL}
+      export DEPLOYMENT_CONFIG=${DEPLOYMENT_CONFIG}
+      export COMMUNITY_VERSION=${COMMUNITY_VERSION}
+      cd /opt/kcli-pipelines/
+      ./deploy-vm.sh
+    - |
+      export TARGET_SERVER=${TARGET_SERVER}
+      export VM_NAME=freeipa
+      export VM_PROFILE=freeipa
+      export ACTION=${ACTION}
+      export COMMUNITY_VERSION=${COMMUNITY_VERSION}
+      if [ "${ACTION}" == "create" ]; then 
+        cd /opt/kcli-pipelines/
+        ./deploy-vm.sh
+      fi
+    - |
+      export TARGET_SERVER=${TARGET_SERVER}
+      export VM_NAME=${VM_PROFILE}
+      export VM_PROFILE=${VM_PROFILE}
+      export ACTION=${ACTION}
+      export DEPLOY_OPENSHIFT=${DEPLOY_OPENSHIFT}
+      export LAUNCH_STEPS=${LAUNCH_STEPS}
+      export TAG=${TAG}
+      export DISCONNECTED_INSTALL=${DISCONNECTED_INSTALL}
+      export DEPLOYMENT_CONFIG=${DEPLOYMENT_CONFIG}
+      export COMMUNITY_VERSION=${COMMUNITY_VERSION}
+      cd /opt/kcli-pipelines/
+      ./kcli-openshift4-baremetal/configure_dns_entries.sh
   tags:
     - shared
   variables:
-    CICD_PIPELINE: "true"
-    SSH_USER: "${SSH_USER}"
-    TARGET_SERVER: "${TARGET_SERVER}"
-    VM_NAME: "${VM_NAME}"
-    VM_PROFILE: "${VM_PROFILE}"
-    ACTION: "${ACTION}"
-  allow_failure: false
+    GIT_REPO: ${GIT_REPO}
+    CICD_PIPELINE: ${CICD_PIPELINE}
+    TARGET_SERVER: ${TARGET_SERVER}
+    VM_PROFILE: ${VM_PROFILE}
+    ACTION: ${ACTION}
+    COMMUNITY_VERSION: ${COMMUNITY_VERSION}
+    DEPLOY_OPENSHIFT: ${DEPLOY_OPENSHIFT}
+    LAUNCH_STEPS: ${LAUNCH_STEPS}
+    TAG: ${TAG}
+    DISCONNECTED_INSTALL: ${DISCONNECTED_INSTALL}
+    DEPLOYMENT_CONFIG: ${DEPLOYMENT_CONFIG}
+
+external_kcli_openshift4_baremetal:
+  stage: external
   script:
-    - ls -lath .
-  only:
-    variables:
-      - $JOB_TYPE == "deploy-vm"
+    - if [ ! -d /opt/kcli-pipelines ]; then 
+        cd /opt/;
+        git clone ${GIT_REPO};
+      else
+        cd /opt/kcli-pipelines;
+        git pull;
+      fi
+    - |
+      export CICD_PIPELINE="${CICD_PIPELINE}"
+      export TARGET_SERVER="${TARGET_SERVER}"
+      export VM_PROFILE=${VM_PROFILE}
+      export COMMUNITY_VERSION=${COMMUNITY_VERSION}
+      if [[ "${VM_PROFILE}" == "freeipa" ]]; then 
+        export VM_NAME="${VM_PROFILE}"
+      else
+        export VM_NAME="${VM_PROFILE}-$(echo $RANDOM | md5sum | head -c 5; echo;)"
+      fi
+      export ACTION="${ACTION}"
+      cd /opt/kcli-pipelines/
+      ./configure-kcli-profiles.sh
+    - |
+      cat >/tmp/requirements.yml<<EOF
+      ---
+      collections:
+        - amazon.aws
+      roles: 
+        - name: ansible_role_update_ip_route53
+          src: https://github.com/tosin2013/ansible-role-update-ip-route53.git
+          version: master
+      EOF
+      ansible-galaxy install -r /tmp/requirements.yml --force -vv
+      pip3 install boto3 botocore
+    - |
+      CLUSTER_NAME=$(yq eval '.cluster' /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/${DEPLOYMENT_CONFIG})
+      cat >/tmp/playbook.yml<<EOF
+      - name: Populate OpenShift DNS Entries
+        hosts: localhost
+        connection: local
+        become: yes
+
+        vars:
+        - update_ip_r53_aws_access_key:  ${AWS_ACCESS_KEY}
+        - update_ip_r53_aws_secret_key: ${AWS_SECRET_KEY}
+        - use_public_ip: true
+        - private_ip: "${IP_ADDRESS}"
+        - update_ip_r53_records:
+          - zone: ${ZONE_NAME}
+            record: api.${CLUSTER_NAME}.${GUID}.${ZONE_NAME}
+          - zone: ${ZONE_NAME}
+            record: "*.apps.${CLUSTER_NAME}.${GUID}.${ZONE_NAME}"
+        roles:
+        - ansible_role_update_ip_route53
+      EOF
+      if [ "${ACTION}" != "delete" ]; then 
+        ansible-playbook  /tmp/playbook.yml ${VERBOSE_LEVEL} || exit $?
+      fi
+    - |
+      export TARGET_SERVER=${TARGET_SERVER}
+      export VM_NAME=${VM_PROFILE}
+      export VM_PROFILE=${VM_PROFILE}
+      export ACTION=${ACTION}
+      export DEPLOY_OPENSHIFT=${DEPLOY_OPENSHIFT}
+      export LAUNCH_STEPS=${LAUNCH_STEPS}
+      export TAG=${TAG}
+      export DISCONNECTED_INSTALL=${DISCONNECTED_INSTALL}
+      export DEPLOYMENT_CONFIG=${DEPLOYMENT_CONFIG}
+      export COMMUNITY_VERSION=${COMMUNITY_VERSION}
+      export ZONE_NAME=${ZONE_NAME}
+      cd /opt/kcli-pipelines/
+      ./deploy-vm.sh
+  tags:
+    - shared
+  variables:
+    GIT_REPO: ${GIT_REPO}
+    CICD_PIPELINE: ${CICD_PIPELINE}
+    TARGET_SERVER: ${TARGET_SERVER}
+    VM_PROFILE: ${VM_PROFILE}
+    ACTION: ${ACTION}
+    COMMUNITY_VERSION: ${COMMUNITY_VERSION}
+    DEPLOY_OPENSHIFT: ${DEPLOY_OPENSHIFT}
+    LAUNCH_STEPS: ${LAUNCH_STEPS}
+    TAG: ${TAG}
+    DISCONNECTED_INSTALL: ${DISCONNECTED_INSTALL}
+    DEPLOYMENT_CONFIG: ${DEPLOYMENT_CONFIG}
+    GUID: ${GUID}
+    IP_ADDRESS: ${IP_ADDRESS}
+    ZONE_NAME: ${ZONE_NAME}
+    AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+    AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+    VERBOSE_LEVEL: ${VERBOSE_LEVEL}
