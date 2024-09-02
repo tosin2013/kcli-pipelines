@@ -122,8 +122,8 @@ else:
         st.text_input("CICD Pipeline", key="CICD_PIPELINE", value=existing_variables['CICD_PIPELINE'] if existing_variables else config['DEFAULT_CICD_PIPELINE'])
         st.text_input("Target Server", key="TARGET_SERVER", value=existing_variables['TARGET_SERVER'] if existing_variables else config['DEFAULT_TARGET_SERVER'])
         st.text_input("VM Profile", key="VM_PROFILE", value=existing_variables['VM_PROFILE'] if existing_variables else config['DEFAULT_VM_PROFILE'])
-        st.text_input("Action", key="ACTION", value=existing_variables['ACTION'] if existing_variables else config['DEFAULT_ACTION'])
-        st.text_input("Community Version", key="COMMUNITY_VERSION", value=existing_variables['COMMUNITY_VERSION'] if existing_variables else config['DEFAULT_COMMUNITY_VERSION'])
+        st.selectbox("Action", ["create", "delete"], key="ACTION", index=0 if existing_variables and existing_variables['ACTION'] == 'create' else 1 if existing_variables and existing_variables['ACTION'] == 'delete' else 0)
+        st.selectbox("Community Version", ["true", "false"], key="COMMUNITY_VERSION", index=0 if existing_variables and existing_variables['COMMUNITY_VERSION'] == 'true' else 1 if existing_variables and existing_variables['COMMUNITY_VERSION'] == 'false' else 0)
 
         if job_type == 'Internal KCLI OpenShift4 Baremetal' or job_type == 'External KCLI OpenShift4 Baremetal':
             st.text_input("Deploy OpenShift", key="DEPLOY_OPENSHIFT", value=existing_variables['DEPLOY_OPENSHIFT'] if existing_variables else config['DEFAULT_DEPLOY_OPENSHIFT'])
