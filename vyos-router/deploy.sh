@@ -67,7 +67,7 @@ function create(){
     # Vyos nightly builds 
     # https://github.com/vyos/vyos-rolling-nightly-builds/releases
     VYOS_VERSION=1.5-rolling-202409250007
-    ISO_LOC=https://github.com/vyos/vyos-nightly-build/releases/download/${VYOS_VERSION}/${VYOS_VERSION}-generic-amd64.iso
+    ISO_LOC=https://github.com/vyos/vyos-nightly-build/releases/download/${VYOS_VERSION}/vyos-${VYOS_VERSION}-generic-amd64.iso
     if [ ! -f $HOME/vyos-${VYOS_VERSION}-amd64.iso ];
     then
         cd $HOME
@@ -77,7 +77,7 @@ function create(){
 
     VM_NAME=vyos-router
     sudo mv $HOME/${VM_NAME}.qcow2 /var/lib/libvirt/images/
-    sudo cp $HOME/vyos-${VYOS_VERSION}-amd64.iso $HOME/seed.iso
+    sudo cp $HOME/vyos-${VYOS_VERSION}-generic-amd64.iso $HOME/seed.iso
     sudo mv $HOME/seed.iso /var/lib/libvirt/images/seed.iso
 
     # generate qcow2 blank image $VM_NAME.qcow2
