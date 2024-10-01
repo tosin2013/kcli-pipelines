@@ -66,8 +66,8 @@ function create(){
     IPADDR=$(sudo virsh net-dhcp-leases default | grep vyos-builder  | sort -k1 -k2 | tail -1 | awk '{print $5}' | sed 's/\/24//g')
     # Vyos nightly builds 
     # https://github.com/vyos/vyos-rolling-nightly-builds/releases
-    VYOS_VERSION=1.5-rolling-202410010007
-    ISO_LOC=https://github.com/vyos/vyos-rolling-nightly-builds/releases/download/${VYOS_VERSION}/vyos-${VYOS_VERSION}-amd64.iso
+    VYOS_VERSION=1.5-rolling-202409250007
+    ISO_LOC=https://github.com/vyos/vyos-nightly-build/releases/download/${VYOS_VERSION}/${VYOS_VERSION}-generic-amd64.iso
     if [ ! -f $HOME/vyos-${VYOS_VERSION}-amd64.iso ];
     then
         cd $HOME
