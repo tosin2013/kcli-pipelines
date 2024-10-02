@@ -41,7 +41,7 @@ on:
       community_version:
         description: 'Use community version of software (true/false)'
         required: true
-        default: 'true'
+        default: 'false'
         type: choice
         options:
           - true
