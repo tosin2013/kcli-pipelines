@@ -55,16 +55,16 @@ jobs:
 
       - name: Configure kcli profiles on ${{ inputs.runner_name }}
         run: | 
-          if [ -d "/opt/kcli-pipelines" ]; then
-            cd /opt/kcli-pipelines
+          if [ -d "/home/github_runner/kcli-pipelines" ]; then
+            cd /home/github_runner/kcli-pipelines
             git config pull.rebase false
             git pull
           else
-            cd /opt/
+            cd /home/github_runner/
             git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
-          /opt/kcli-pipelines/configure-kcli-profiles.sh
+          /home/github_runner/kcli-pipelines/configure-kcli-profiles.sh
 
   deploy-vm:
     runs-on: self-hosted # Use the runner name at the job level
