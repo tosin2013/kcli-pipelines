@@ -47,7 +47,7 @@ env:
 
 jobs:
   configure-kcli-profiles:
-    runs-on: ${{ inputs.runner_name }} # Use the runner name at the job level
+    runs-on: self-hosted # Use the runner name at the job level
     timeout-minutes: 30
     if: ${{ inputs.runner == 'self-hosted' }}
     steps:
@@ -68,7 +68,7 @@ jobs:
           /opt/kcli-pipelines/configure-kcli-profiles.sh
 
   deploy-vm:
-    runs-on: ${{ inputs.runner_name }} # Use the runner name at the job level
+    runs-on: self-hosted # Use the runner name at the job level
     timeout-minutes: 45
     needs: configure-kcli-profiles # Ensure the previous job runs first
     if: ${{ inputs.runner == 'self-hosted' }}
