@@ -41,7 +41,7 @@ env:
    
 jobs:
   deploy-vm:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     timeout-minutes: 45
     steps:
     - name: Deploying  ${{ inputs.vm_name }} on KVM
