@@ -1,6 +1,6 @@
 #!/bin/bash
-#set -x
-#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -x
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
 source helper_scripts/helper_functions.sh
 
