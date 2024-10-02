@@ -38,6 +38,10 @@ on:
         description: 'Self-hosted runner name'
         required: true
         default: 't9rq8-github-runner'
+      community_version:
+        description: 'Use community version of software (true/false)'
+        required: false
+        default: 'true'
 
 env:
   TARGET_SERVER: ${{ inputs.target_server }}
