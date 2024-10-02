@@ -48,6 +48,8 @@ env:
   VM_NAME: ${{ inputs.vm_name }}
   ACTION: ${{ inputs.action }}
   RUNNER: ${{ inputs.runner }}
+  COMMUNITY_VERSION: ${{ inputs.community_version }}
+
 
 jobs:
   configure-kcli-profiles:
