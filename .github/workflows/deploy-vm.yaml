@@ -38,19 +38,10 @@ on:
         description: 'Runner'
         required: true
         default: 'self-hosted'
-env:
-    TARGET_SERVER: ${{ inputs.target_server }}
-    VM_NAME: ${{ inputs.vm_name }}
-    ACTION: ${{ inputs.action }}
-    RUNNER: ${{ inputs.runner }}
-    RUNNER_TYPE: ${{ inputs.runner_type }}
-   
-jobs:
-  deploy-vm:
-    runs-on: ${{ inputs.runner }}
-    timeout-minutes: 45
-    if: ${{ inputs.runner == 'self-hosted' && inputs.runner_type == 'centos' }}
-    steps:
+      runner_name:
+        description: 'Self-hosted runner name'
+        required: true
+        default: 't9rq8-github-runner' 
 env:
     TARGET_SERVER: ${{ inputs.target_server }}
     VM_NAME: ${{ inputs.vm_name }}
@@ -59,8 +50,9 @@ env:
    
 jobs:
   deploy-vm:
-    runs-on: ${{ inputs.runner }}
+    runs-on: ${{ inputs.runner_name }} # Directly use the runner name
     timeout-minutes: 45
+    if: ${{ inputs.runner == 'self-hosted'  }}
     steps:
     - name: Deploying  ${{ inputs.vm_name }} on KVM
       uses: appleboy/ssh-action@v0.1.10
@@ -85,6 +77,5 @@ jobs:
           export VM_PROFILE=${{ env.VM_NAME }}
           export ACTION=${{ env.ACTION }}
           export RUNNER_HOSTNAME=$(hostname)
-          export RUNNER_TYPE=${{ env.RUNNER_TYPE }}
           echo "::set-output name=runner_hostname::$RUNNER_HOSTNAME"
           /opt/kcli-pipelines/deploy-vm.sh
