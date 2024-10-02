@@ -2,14 +2,10 @@ name: Deploy VMs on KVM
 on:
   workflow_dispatch:
     inputs:
-      hostname:
-        description: 'hostname'
-        required: true
-        default: hostname
       target_server:
         description: 'target_server'
         required: true
-        default: rhel8-equinix
+        default: rhel9-equinix
       action:
         description: 'action'
         required: true
