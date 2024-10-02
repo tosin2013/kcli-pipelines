@@ -40,8 +40,12 @@ on:
         default: 't9rq8-github-runner'
       community_version:
         description: 'Use community version of software (true/false)'
-        required: false
+        required: true
         default: 'true'
+        type: choice
+        options:
+          - true
+          - false
 
 env:
   TARGET_SERVER: ${{ inputs.target_server }}
