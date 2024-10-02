@@ -34,20 +34,25 @@ on:
           - rhel8
           - rhel9
           - ocp4-disconnected-helper
+      runner:
+        description: 'Runner'
+        required: true
+        default: 'self-hosted'
 env:
     TARGET_SERVER: ${{ inputs.target_server }}
     VM_NAME: ${{ inputs.vm_name }}
     ACTION: ${{ inputs.action }}
+    RUNNER: ${{ inputs.runner }}
    
 jobs:
   deploy-vm:
-    runs-on: ${{ inputs.runner }}
+    runs-on: self-hosted
     timeout-minutes: 45
     steps:
     - name: Deploying  ${{ inputs.vm_name }} on KVM
       uses: appleboy/ssh-action@v0.1.10
       with:
-        host: ${{ inputs.hostname }}
+        host: ${{ github.event.inputs.hostname  }}
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
@@ -66,4 +71,6 @@ jobs:
           export VM_NAME=${{ env.VM_NAME }}
           export VM_PROFILE=${{ env.VM_NAME }}
           export ACTION=${{ env.ACTION }}
+          export RUNNER_HOSTNAME=$(hostname)
+          echo "::set-output name=runner_hostname::$RUNNER_HOSTNAME"
           /opt/kcli-pipelines/deploy-vm.sh
