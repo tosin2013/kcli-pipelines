@@ -49,6 +49,7 @@ env:
   ACTION: ${{ inputs.action }}
   RUNNER: ${{ inputs.runner }}
   COMMUNITY_VERSION: ${{ inputs.community_version }}
+  DEFAULT_RUNNER_USER: "github_runner"
 
 
 jobs:
@@ -61,16 +62,16 @@ jobs:
 
       - name: Configure kcli profiles on ${{ inputs.runner_name }}
         run: | 
-          if [ -d "/home/github_runner/kcli-pipelines" ]; then
-            cd /home/github_runner/kcli-pipelines
+          if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
+            cd /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
             git config pull.rebase false
             git pull
           else
-            cd /home/github_runner/
+            cd /home/${{ env.DEFAULT_RUNNER_USER }}/
             git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
-          /home/github_runner/kcli-pipelines/configure-kcli-profiles.sh
+          /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/configure-kcli-profiles.sh
 
   deploy-vm:
     runs-on: self-hosted # Use the runner name at the job level
@@ -82,16 +83,16 @@ jobs:
 
       - name: Deploying ${{ inputs.vm_name }} on KVM
         run: | 
-          if [ -d "/home/runner/kcli-pipelines" ]; then
-            cd /home/runner/kcli-pipelines
+          if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
+            cd /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
             git config pull.rebase false
             git pull
           else
-            cd /home/runner
+            cd /home/${{ env.DEFAULT_RUNNER_USER }}
             git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_NAME=${{ env.VM_NAME }}
           export VM_PROFILE=${{ env.VM_NAME }}
           export ACTION=${{ env.ACTION }}
-          /home/runner/kcli-pipelines/deploy-vm.sh
+          /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/deploy-vm.sh
