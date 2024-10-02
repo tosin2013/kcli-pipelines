@@ -68,6 +68,7 @@ jobs:
   deploy-vm:
     runs-on: ${{ inputs.runner_name }} # Directly use the runner name
     timeout-minutes: 45
+    needs: configure-kcli-profiles # Make sure configure-kcli-profiles job runs before this job
     if: ${{ inputs.runner == 'self-hosted'  }}
     steps:
     - name: Deploying  ${{ inputs.vm_name }} on KVM
