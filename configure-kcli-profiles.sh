@@ -31,7 +31,7 @@ fi
 if [ ! -f  ~/.ssh/id_rsa ];
 then
     echo "SSH key does not exist"
-    exit 1
+    ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N "" -C "kcli-pipelines@${HOSTNAME}"
 else
     eval $(ssh-agent)
     ssh-add ~/.ssh/id_rsa
