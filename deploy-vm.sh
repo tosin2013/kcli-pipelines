@@ -139,29 +139,29 @@ then
     then
         if vm_exists "$VM_NAME"; then
           #sudo kcli create vm -p $VM_PROFILE $VM_NAME --wait || exit $?
-          /opt/kcli-pipelines/freeipa/deploy-freeipa.sh create
+          sudo -E /opt/kcli-pipelines/freeipa/deploy-freeipa.sh create
         else
           echo "VM $VM_NAME already exists."
           exit 0
         fi
     elif  [[ $VM_NAME == "kcli-openshift4-baremetal" ]];
     then 
-      kcli-openshift4-baremetal/deploy.sh create
+      sudo -E kcli-openshift4-baremetal/deploy.sh create
     elif  [[ $VM_NAME == "ocp4-disconnected-helper" ]];
     then 
-      ocp4-disconnected-helper/deploy.sh create
+      sudo -E ocp4-disconnected-helper/deploy.sh create
     elif [[ $VM_NAME == "openshift-agent-install" ]];
     then 
-      openshift-agent-install/deploy.sh
+      sudo -E openshift-agent-install/deploy.sh
     elif  [[ $VM_NAME == "ceph-cluster" ]];
     then 
-      ceph-cluster/deploy.sh create
+      sudo -E ceph-cluster/deploy.sh create
     elif  [[ $VM_NAME == "kubernetes" ]];
     then 
-      kubernetes/deploy.sh create
+      sudo -E kubernetes/deploy.sh create
     elif  [[ $VM_NAME == "vyos-router" ]];
     then 
-      vyos-router/deploy.sh create
+      sudo -E vyos-router/deploy.sh create
     else
         check_idm idm.$DOMAIN_NAME || exit $?
         DNS_ADDRESS=$(sudo kcli info vm freeipa freeipa | grep ip: | awk '{print $2}' | head -1)
