@@ -45,6 +45,26 @@ env:
     RUNNER: ${{ inputs.runner }}
    
 jobs:
+  configure-kcli-profiles:
+    runs-on: ${{ inputs.runner_name }} # Directly use the runner name
+    timeout-minutes: 30
+    if: ${{ inputs.runner == 'self-hosted'  }}
+    steps:
+    - name: Configure kcli profiles on ${{ inputs.runner_name }}
+      runs-on: ${{ inputs.runner_name }}
+      script: | 
+        sudo yum install -y git
+        if [ -d "/opt/kcli-pipelines" ]; then
+          cd /opt/kcli-pipelines
+          git config pull.rebase false
+          git pull
+        else
+          cd /opt/
+          git clone https://github.com/tosin2013/kcli-pipelines.git
+        fi
+        export TARGET_SERVER=${{ env.TARGET_SERVER }}
+        /opt/kcli-pipelines/configure-kcli-profiles.sh
+
   deploy-vm:
     runs-on: ${{ inputs.runner_name }} # Directly use the runner name
     timeout-minutes: 45
