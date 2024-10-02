@@ -8,6 +8,7 @@ import os
 # Load configuration from config.yaml
 with open('pipeline_tools/gitlab/config.yaml', 'r') as file:
     config = yaml.safe_load(file)
+    DEFAULT_DOMAIN = config.get('DEFAULT_DOMAIN', '')
 
 # Set up SQLite database
 conn = sqlite3.connect('pipeline_variables.db')
@@ -113,17 +114,26 @@ else:
     # Collecting input variables from the user
     st.title("GitLab CI/CD Pipeline Trigger")
 
-    job_type = st.selectbox('Select Job Type', ['Deploy VM', 'Internal KCLI OpenShift4 Baremetal', 'External KCLI OpenShift4 Baremetal'])
+    job_type = st.selectbox('Select Job Type', ['Deploy VM', 'Internal KCLI OpenShift4 Baremetal', 'External KCLI OpenShift4 Baremetal', 'Step CA Server Setup', 'Deploy Registry', 'Internal - OpenShift Agent Based Installer Helper', 'External - OpenShift Agent Based Installer Helper'])
 
-    existing_variables = load_existing_variables(job_type)
+    existing_variables = load_existing_variables(job_type) or {}
 
     with st.form(key='pipeline_form'):
         st.text_input("Git Repository", key="GIT_REPO", value=existing_variables['GIT_REPO'] if existing_variables else config['DEFAULT_GIT_REPO'])
         st.text_input("CICD Pipeline", key="CICD_PIPELINE", value=existing_variables['CICD_PIPELINE'] if existing_variables else config['DEFAULT_CICD_PIPELINE'])
         st.text_input("Target Server", key="TARGET_SERVER", value=existing_variables['TARGET_SERVER'] if existing_variables else config['DEFAULT_TARGET_SERVER'])
-        st.text_input("VM Profile", key="VM_PROFILE", value=existing_variables['VM_PROFILE'] if existing_variables else config['DEFAULT_VM_PROFILE'])
-        st.text_input("Action", key="ACTION", value=existing_variables['ACTION'] if existing_variables else config['DEFAULT_ACTION'])
-        st.text_input("Community Version", key="COMMUNITY_VERSION", value=existing_variables['COMMUNITY_VERSION'] if existing_variables else config['DEFAULT_COMMUNITY_VERSION'])
+        st.selectbox("VM Profile", ["freeipa","vyos-router", "rhel8", "rhel9", "openshift-jumpbox", "fedora39", "ubuntu", "centos9stream", "step-ca-server"], key="VM_PROFILE", index=["freeipa","vyos-router", "rhel8", "rhel9", "openshift-jumpbox", "fedora39", "ubuntu", "centos9stream", "step-ca-server"].index(existing_variables['VM_PROFILE']) if existing_variables else 0)
+        st.text_input("Launch Steps", key=f"LAUNCH_STEPS_{job_type}", value=existing_variables['LAUNCH_STEPS'] if existing_variables else config['DEFAULT_LAUNCH_STEPS'])
+        st.text_input("Domain", key="DOMAIN", value=existing_variables.get('DOMAIN', DEFAULT_DOMAIN))
+        st.text_input("Initial Password", key="INITIAL_PASSWORD", type="password", value=existing_variables.get('INITIAL_PASSWORD', config['DEFAULT_INITIAL_PASSWORD']))
+        if job_type == 'Deploy Registry':
+            st.text_input("Harbor Version", key="HARBOR_VERSION", value=existing_variables.get('HARBOR_VERSION', config.get('DEFAULT_HARBOR_VERSION', '')))
+            st.text_input("Quay Version", key="QUAY_VERSION", value=existing_variables.get('QUAY_VERSION', config.get('DEFAULT_QUAY_VERSION', '')))
+            st.text_input("CA URL", key="CA_URL", value=existing_variables.get('CA_URL', config.get('DEFAULT_CA_URL', '')))
+            st.text_input("Fingerprint", key="FINGERPRINT", value=existing_variables.get('FINGERPRINT', config.get('DEFAULT_FINGERPRINT', '')))
+            st.text_input("Step CA Password", key="STEP_CA_PASSWORD", type="password", value=existing_variables.get('STEP_CA_PASSWORD', config.get('DEFAULT_STEP_CA_PASSWORD', '')))
+        st.selectbox("Action", ["create", "delete"], key="ACTION", index=0 if existing_variables and existing_variables['ACTION'] == 'create' else 1 if existing_variables and existing_variables['ACTION'] == 'delete' else 0)
+        st.selectbox("Community Version", ["true", "false"], key="COMMUNITY_VERSION", index=0 if existing_variables and existing_variables['COMMUNITY_VERSION'] == 'true' else 1 if existing_variables and existing_variables['COMMUNITY_VERSION'] == 'false' else 0)
 
         if job_type == 'Internal KCLI OpenShift4 Baremetal' or job_type == 'External KCLI OpenShift4 Baremetal':
             st.text_input("Deploy OpenShift", key="DEPLOY_OPENSHIFT", value=existing_variables['DEPLOY_OPENSHIFT'] if existing_variables else config['DEFAULT_DEPLOY_OPENSHIFT'])
@@ -148,14 +158,21 @@ else:
     if submit_button:
         variables = {
             'ref': config['DEFAULT_REF'],  # Add the ref here
+            'CI_PIPELINE_SOURCE': 'trigger',  # Add CI_PIPELINE_SOURCE as 'trigger'
             'GIT_REPO': st.session_state.GIT_REPO,
             'CICD_PIPELINE': st.session_state.CICD_PIPELINE,
             'TARGET_SERVER': st.session_state.TARGET_SERVER,
             'VM_PROFILE': st.session_state.VM_PROFILE,
             'ACTION': st.session_state.ACTION,
-            'COMMUNITY_VERSION': st.session_state.COMMUNITY_VERSION
+            'COMMUNITY_VERSION': st.session_state.COMMUNITY_VERSION,
+            'DOMAIN': st.session_state.DOMAIN,
+            'INITIAL_PASSWORD': st.session_state.INITIAL_PASSWORD
         }
 
+        if job_type == 'Deploy VM':
+            variables.update({
+                'LAUNCH_STEPS': st.session_state[f"LAUNCH_STEPS_{job_type}"]
+            })
         if job_type == 'Internal KCLI OpenShift4 Baremetal' or job_type == 'External KCLI OpenShift4 Baremetal':
             variables.update({
                 'DEPLOY_OPENSHIFT': st.session_state.DEPLOY_OPENSHIFT,
@@ -170,6 +187,42 @@ else:
                 'GUID': st.session_state.GUID,
                 'IP_ADDRESS': st.session_state.IP_ADDRESS,
                 'ZONE_NAME': st.session_state.ZONE_NAME,
+                'VERBOSE_LEVEL': st.session_state.VERBOSE_LEVEL
+            })
+        if job_type == 'Deploy Registry':
+            variables.update({
+                'HARBOR_VERSION': st.session_state.HARBOR_VERSION,
+                'QUAY_VERSION': st.session_state.QUAY_VERSION,
+                'CA_URL': st.session_state.CA_URL,
+                'FINGERPRINT': st.session_state.FINGERPRINT,
+                'STEP_CA_PASSWORD': st.session_state.STEP_CA_PASSWORD
+            })
+        elif job_type == 'Internal - OpenShift Agent Based Installer Helper':
+            variables.update({
+                'GIT_REPO': st.session_state.GIT_REPO,
+                'CICD_PIPELINE': st.session_state.CICD_PIPELINE,
+                'TARGET_SERVER': st.session_state.TARGET_SERVER,
+                'VM_PROFILE': 'openshift-agent-install',
+                'ACTION': st.session_state.ACTION,
+                'COMMUNITY_VERSION': st.session_state.COMMUNITY_VERSION,
+                'FOLDER_NAME': st.session_state.FOLDER_NAME,
+                'DEPLOY_OPENSHIFT': st.session_state.DEPLOY_OPENSHIFT
+            })
+        elif job_type == 'External - OpenShift Agent Based Installer Helper':
+            variables.update({
+                'GIT_REPO': st.session_state.GIT_REPO,
+                'CICD_PIPELINE': st.session_state.CICD_PIPELINE,
+                'TARGET_SERVER': st.session_state.TARGET_SERVER,
+                'VM_PROFILE': 'openshift-agent-install',
+                'ACTION': st.session_state.ACTION,
+                'COMMUNITY_VERSION': st.session_state.COMMUNITY_VERSION,
+                'FOLDER_NAME': st.session_state.FOLDER_NAME,
+                'DEPLOY_OPENSHIFT': st.session_state.DEPLOY_OPENSHIFT,
+                'GUID': st.session_state.GUID,
+                'IP_ADDRESS': st.session_state.IP_ADDRESS,
+                'ZONE_NAME': st.session_state.ZONE_NAME,
+                'AWS_ACCESS_KEY': st.session_state.AWS_ACCESS_KEY,
+                'AWS_SECRET_KEY': st.session_state.AWS_SECRET_KEY,
                 'VERBOSE_LEVEL': st.session_state.VERBOSE_LEVEL
             })
 
