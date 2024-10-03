@@ -105,6 +105,11 @@ configure_kcli_profiles() {
         sudo mkdir -p "/home/$KCLI_USER/.kcli"
     fi
 
+    if [ ! -d "/home/$USER/.kcli" ]; then
+        log "/home/$USER/.kcli directory does not exist"
+        sudo mkdir -p "/home/$USER/.kcli"
+    fi
+
     if [ ! -d /root/.kcli ]; then
         log "/root/.kcli directory does not exist"
         sudo mkdir -p /root/.kcli
@@ -115,8 +120,9 @@ configure_kcli_profiles() {
         exit 1
     fi
 
-    cp "/home/github_runner/kcli-pipelines/kcli-profiles.yml" "/home/$KCLI_USER/.kcli/profiles.yml"
-    cp "/home/github_runner/kcli-pipelines/kcli-profiles.yml" /root/.kcli/profiles.yml
+    sudo cp "/home/github_runner/kcli-pipelines/kcli-profiles.yml" "/home/$KCLI_USER/.kcli/profiles.yml"
+    sudo cp "/home/github_runner/kcli-pipelines/kcli-profiles.yml" "/home/$USER/.kcli/profiles.yml"
+    sudo cp "/home/github_runner/kcli-pipelines/kcli-profiles.yml" /root/.kcli/profiles.yml
 
     sudo -E ./freeipa-server-container/configure-kcli-profile.sh || { log "Failed to configure freeipa-server-container"; exit 1; }
     sudo -E ./openshift-jumpbox/configure-kcli-profile.sh || { log "Failed to configure openshift-jumpbox"; exit 1; }
@@ -137,8 +143,9 @@ configure_kcli_profiles() {
 
     cat ~/.kcli/profiles.yml | tee /tmp/kcli-profiles.yml > /dev/null
 
-    if [ "$KCLI_USER" != "root" ]; then
+    if [ "$USER" != "root" ]; then
         sudo cp kcli-profiles.yml "/home/$KCLI_USER/.kcli/profiles.yml"
+        sudo cp kcli-profiles.yml "/home/$USER/.kcli/profiles.yml"
     fi
     sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 }
