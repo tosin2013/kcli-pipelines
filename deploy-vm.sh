@@ -51,7 +51,7 @@ function configure_idm_container() {
     if grep -q "$ip_address" /etc/hosts; then
       echo "$ip_address already exists in the hosts file."
     else
-      sudo tee -a /etc/hosts << EOF
+      sudo tee -a /etc/hosts <<EOF
 $ip_address idm.${domain_name}
 EOF
       echo "Added $ip_address to the hosts file."
@@ -60,7 +60,7 @@ EOF
     if grep -q "nameserver $ip_address" /etc/resolv.conf; then
       echo "$ip_address already exists in the resolv.conf file."
     else
-      sudo tee /etc/resolv.conf << EOF
+      sudo tee /etc/resolv.conf <<EOF
 search ${domain_name}
 domain ${domain_name}
 nameserver $ip_address
