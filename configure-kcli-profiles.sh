@@ -79,7 +79,7 @@ remote_tmp = /tmp/ansible-$USER
 EOF
     fi
 
-    source "${HOME}/helper_scripts/helper_functions.sh"
+    source "${HOME}/kcli-pipelines/helper_scripts/helper_functions.sh"
 }
 
 # Function to generate profiles
