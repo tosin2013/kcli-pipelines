@@ -10,22 +10,22 @@ then
     exit 1
 fi
 
-if [ ! -d /opt/kcli-pipelines ];
+if [ ! -d ${HOME}/kcli-pipelines ];
 then 
-    sudo git clone $GIT_REPO /opt/kcli-pipelines || exit $?
+    sudo git clone $GIT_REPO ${HOME}/kcli-pipelines || exit $?
 else 
-    cd /opt/kcli-pipelines
+    cd ${HOME}/kcli-pipelines
     sudo git pull
 fi
 
 if [ $TARGET_SERVER == "rhel8-equinix" ] || [ $TARGET_SERVER == "rhel9-equinix" ];
 then 
-    sudo sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' /opt/kcli-pipelines/helper_scripts/default.env
+    sudo sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' ${HOME}/kcli-pipelines/helper_scripts/default.env
 fi
 
 if [ $VM_PROFILE == "kcli-openshift4-baremetal" ];
 then 
-    sudo sed -i 's/NET_NAME=.*/NET_NAME=lab-baremetal/g' /opt/kcli-pipelines/helper_scripts/default.env
+    sudo sed -i 's/NET_NAME=.*/NET_NAME=lab-baremetal/g' ${HOME}/kcli-pipelines/helper_scripts/default.env
 fi
 
 if [ ! -f  ~/.ssh/id_rsa ];
@@ -38,15 +38,15 @@ else
 fi
 
 
-if [ ! -f /opt/kcli-pipelines/ansible.cfg ];
+if [ ! -f ${HOME}/kcli-pipelines/ansible.cfg ];
 then
-   cat >/opt/kcli-pipelines/ansible.cfg<<EOF
+   cat >${HOME}/kcli-pipelines/ansible.cfg<<EOF
 [defaults]
 remote_tmp = /tmp/ansible-$USER
 EOF
 fi
 
-cd /opt/kcli-pipelines
+cd ${HOME}/kcli-pipelines
 sudo sed -i 's|export INVENTORY=localhost|export INVENTORY="'${TARGET_SERVER}'"|g' helper_scripts/default.env
 source helper_scripts/default.env 
 KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
@@ -71,14 +71,14 @@ then
     sudo mkdir -p /root/.kcli
 fi
 
-if [ ! -f /opt/kcli-pipelines/kcli-profiles.yml ];
+if [ ! -f ${HOME}/kcli-pipelines/kcli-profiles.yml ];
 then
     echo "kcli-profiles.yml file does not exist"
     exit 1
 fi
 
-cp /opt/kcli-pipelines/kcli-profiles.yml /home/$KCLI_USER/.kcli/profiles.yml
-cp /opt/kcli-pipelines/kcli-profiles.yml /root/.kcli/profiles.yml
+cp ${HOME}/kcli-pipelines/kcli-profiles.yml /home/$KCLI_USER/.kcli/profiles.yml
+cp ${HOME}/kcli-pipelines/kcli-profiles.yml /root/.kcli/profiles.yml
 #echo "*********************************************"
 #cat ~/.kcli/profiles.yml
 #echo "*********************************************"
