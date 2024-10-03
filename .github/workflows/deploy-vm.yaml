@@ -46,6 +46,10 @@ on:
         options:
           - true
           - false
+      custom_vm_name:
+        description: 'Custom VM Name (Only applicable if VM Deployment is not freeipa)'
+        required: false
+        default: ''
 
 env:
   TARGET_SERVER: ${{ inputs.target_server }}
