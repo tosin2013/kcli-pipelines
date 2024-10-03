@@ -1,6 +1,14 @@
 name: Deploy kcli-openshift4-baremetal instances on KVM Internally
 on:
   workflow_dispatch:
+    runner:
+      description: 'Runner'
+      required: true
+      default: 'self-hosted'
+    runner_name:
+      description: 'Self-hosted runner name'
+      required: true
+      default: 't9rq8-github-runner'
     inputs:
       deployment_config:
         description: 'Supported Deployment Configurations'
