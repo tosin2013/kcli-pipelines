@@ -124,6 +124,7 @@ jobs:
             git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export INVENTORY=${{ env.TARGET_SERVER }}
           export VM_NAME=${{ env.VM_NAME }}
           export VM_PROFILE=${{ env.VM_NAME }}
           export ACTION=${{ env.ACTION }}
