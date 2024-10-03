@@ -14,7 +14,7 @@ on:
       target_server:
         description: 'target_server'
         required: true
-        default: rhel8-equinix
+        default: rhel9-equinix
       vm_name:
         description:  'VM Deployment'
         required: true
