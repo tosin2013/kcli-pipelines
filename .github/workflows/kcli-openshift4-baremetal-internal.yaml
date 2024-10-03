@@ -2,10 +2,6 @@ name: Deploy kcli-openshift4-baremetal instances on KVM Internally
 on:
   workflow_dispatch:
     inputs:
-      hostname:
-        description: 'hostname'
-        required: true
-        default: hostname
       deployment_config:
         description: 'Supported Deployment Configurations'
         required: true
