@@ -89,7 +89,7 @@ generate_profiles() {
     source helper_scripts/default.env
     KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
     log "KCLI USER: $KCLI_USER" || { log "Failed to get KCLI_USER"; exit 1; }
-    suo rm -rf ~/.kcli/profiles.yml
+    sudo rm -rf ~/.kcli/profiles.yml
     sudo rm -f /root/.kcli/profiles.yml
     determine_command_yaml
     sudo python3 profile_generator/profile_generator.py "$COMMAND" rhel8 rhel8/template.yaml --vars-file rhel8/vm_vars.yml
