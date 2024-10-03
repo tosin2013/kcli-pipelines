@@ -103,4 +103,7 @@ jobs:
           export VM_NAME=${{ env.VM_NAME }}
           export VM_PROFILE=${{ env.VM_NAME }}
           export ACTION=${{ env.ACTION }}
+          if [ "${{ inputs.vm_name }}" != "freeipa" ] && [ "${{ inputs.custom_vm_name }}" != "" ]; then
+            export VM_NAME=${{ inputs.custom_vm_name }}
+          fi
           /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/deploy-vm.sh
