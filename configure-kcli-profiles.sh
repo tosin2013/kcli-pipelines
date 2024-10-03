@@ -137,7 +137,7 @@ configure_kcli_profiles() {
     sudo -E ./rhel9-pxe/configure-kcli-profile.sh || { log "Failed to configure rhel9-pxe"; exit 1; }
     sudo -E ./step-ca-server/configure-kcli-profile.sh || { log "Failed to configure step-ca-server"; exit 1; }
     sudo -E ./ubuntu/configure-kcli-profile.sh || { log "Failed to configure ubuntu"; exit 1; }
-
+    echo $CUSTOM_PROFILE || exit 1
     if [[ "$CUSTOM_PROFILE"  == "true" ]]; then
         log "Configuring ${VM_PROFILE} type"
         sudo -E ./${VM_PROFILE}/configure-kcli-profile.sh || { log "Failed to configure ${VM_PROFILE}"; exit 1; }
