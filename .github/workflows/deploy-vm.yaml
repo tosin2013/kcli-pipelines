@@ -72,6 +72,7 @@ jobs:
         run: | 
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_PROFILE=${{ env.VM_NAME }}
+          export CUSTOM_PROFILE=true
           /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
   deploy-vm:
