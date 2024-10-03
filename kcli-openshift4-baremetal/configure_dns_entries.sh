@@ -7,15 +7,15 @@ else
   exit 1
 fi
 
-if [ ! -d /opt/kcli-openshift4-baremetal ];
+if [ ! -d /opt/${HOME}/kcli-pipelines ];
 then 
     cd /opt/
-    git clone https://github.com/karmab/kcli-openshift4-baremetal
-    cd kcli-openshift4-baremetal
+    git clone https://github.com/karmab/${HOME}/kcli-pipelines
+    cd ${HOME}/kcli-pipelines
 else
-    cd /opt/kcli-openshift4-baremetal
+    cd /opt/${HOME}/kcli-pipelines
     git config pull.rebase false
-    git config --global --add safe.directory /opt/kcli-openshift4-baremetal
+    git config --global --add safe.directory /opt/${HOME}/kcli-pipelines
     git pull
 fi 
 
@@ -60,7 +60,7 @@ function create_dns_entries(){
 
       # replace nameserver 127.0.0.1 in /etc/resolv.conf with the ipa server
       # this is needed for the installer to be able to resolve the api and apps endpoints
-      /opt/kcli-pipelines/configure-dns.sh
+      ${HOME}/kcli-pipelines/configure-dns.sh
 }
 
 create_dns_entries

@@ -127,7 +127,7 @@ EOF
 }
 
 
-cd /opt/kcli-pipelines
+cd ${HOME}/kcli-pipelines
 source helper_scripts/default.env 
 DOMAIN_NAME=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 echo "DOMAIN NAME: $DOMAIN_NAME" || exit $?
@@ -139,7 +139,7 @@ then
     then
         if vm_exists "$VM_NAME"; then
           #sudo kcli create vm -p $VM_PROFILE $VM_NAME --wait || exit $?
-          sudo -E /opt/kcli-pipelines/freeipa/deploy-freeipa.sh create
+          sudo -E ${HOME}/kcli-pipelines/freeipa/deploy-freeipa.sh create
         else
           echo "VM $VM_NAME already exists."
           exit 0
@@ -216,10 +216,10 @@ then
       kcli-openshift4-baremetal/deploy.sh delete
     elif [[ $VM_NAME == "freeipa" ]];
     then
-      /opt/kcli-pipelines/freeipa/deploy-freeipa.sh destroy
+      ${HOME}/kcli-pipelines/freeipa/deploy-freeipa.sh destroy
     elif [[ $VM_NAME == "ocp4-disconnected-helper" ]];
     then
-      /opt/kcli-pipelines/ocp4-disconnected-helper/destroy.sh
+      ${HOME}/kcli-pipelines/ocp4-disconnected-helper/destroy.sh
     elif [[ $VM_NAME == "vyos-router" ]];
     then
        vyos-router/deploy.sh delete
