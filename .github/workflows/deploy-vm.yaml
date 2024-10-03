@@ -79,6 +79,7 @@ jobs:
             git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_PROFILE=${{ env.VM_NAME }}
           /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
   deploy-vm:
