@@ -46,10 +46,10 @@ clone_or_pull_repo() {
         exit 1
     fi
 
-    if [ ! -d "${HOME}/kcli-pipelines" ]; then
-        sudo git clone "$GIT_REPO" "${HOME}/kcli-pipelines" || { log "Failed to clone repo"; exit 1; }
+    if [ ! -d "/home/github_runner/kcli-pipelines" ]; then
+        sudo git clone "$GIT_REPO" "/home/github_runner/kcli-pipelines" || { log "Failed to clone repo"; exit 1; }
     else
-        cd "${HOME}/kcli-pipelines"
+        cd "/home/github_runner/kcli-pipelines"
         sudo git pull || { log "Failed to pull repo"; exit 1; }
     fi
 }
@@ -57,11 +57,11 @@ clone_or_pull_repo() {
 # Function to configure the environment
 configure_environment() {
     if [ "$TARGET_SERVER" == "rhel8-equinix" ] || [ "$TARGET_SERVER" == "rhel9-equinix" ]; then
-        sudo sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' "${HOME}/kcli-pipelines/helper_scripts/default.env"
+        sudo sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' "/home/github_runner/kcli-pipelines/helper_scripts/default.env"
     fi
 
     if [ "$VM_PROFILE" == "kcli-openshift4-baremetal" ]; then
-        sudo sed -i 's/NET_NAME=.*/NET_NAME=lab-baremetal/g' "${HOME}/kcli-pipelines/helper_scripts/default.env"
+        sudo sed -i 's/NET_NAME=.*/NET_NAME=lab-baremetal/g' "/home/github_runner/kcli-pipelines/helper_scripts/default.env"
     fi
 
     if [ ! -f ~/.ssh/id_rsa ]; then
@@ -72,19 +72,19 @@ configure_environment() {
         ssh-add ~/.ssh/id_rsa
     fi
 
-    if [ ! -f "${HOME}/kcli-pipelines/ansible.cfg" ]; then
-        cat >"${HOME}/kcli-pipelines/ansible.cfg" <<EOF
+    if [ ! -f "/home/github_runner/kcli-pipelines/ansible.cfg" ]; then
+        cat >"/home/github_runner/kcli-pipelines/ansible.cfg" <<EOF
 [defaults]
 remote_tmp = /tmp/ansible-$USER
 EOF
     fi
 
-    source "${HOME}/kcli-pipelines/helper_scripts/helper_functions.sh"
+    source "/home/github_runner/kcli-pipelines/helper_scripts/helper_functions.sh"
 }
 
 # Function to generate profiles
 generate_profiles() {
-    cd "${HOME}/kcli-pipelines"
+    cd "/home/github_runner/kcli-pipelines"
     sudo sed -i "s|export INVENTORY=localhost|export INVENTORY='${TARGET_SERVER}'|g" helper_scripts/default.env
     source helper_scripts/default.env
     KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
@@ -115,8 +115,8 @@ configure_kcli_profiles() {
         exit 1
     fi
 
-    cp "${HOME}/kcli-pipelines/kcli-profiles.yml" "/home/$KCLI_USER/.kcli/profiles.yml"
-    cp "${HOME}/kcli-pipelines/kcli-profiles.yml" /root/.kcli/profiles.yml
+    cp "/home/github_runner/kcli-pipelines/kcli-profiles.yml" "/home/$KCLI_USER/.kcli/profiles.yml"
+    cp "/home/github_runner/kcli-pipelines/kcli-profiles.yml" /root/.kcli/profiles.yml
 
     sudo -E ./freeipa-server-container/configure-kcli-profile.sh || { log "Failed to configure freeipa-server-container"; exit 1; }
     sudo -E ./openshift-jumpbox/configure-kcli-profile.sh || { log "Failed to configure openshift-jumpbox"; exit 1; }
