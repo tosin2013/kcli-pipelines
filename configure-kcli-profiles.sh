@@ -2,7 +2,6 @@
 #set -x
 #export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
-source ${HOME}/helper_scripts/helper_functions.sh
 
 if [ -z $TARGET_SERVER ];
 then 
@@ -45,6 +44,8 @@ then
 remote_tmp = /tmp/ansible-$USER
 EOF
 fi
+
+source ${HOME}/helper_scripts/helper_functions.sh
 
 cd ${HOME}/kcli-pipelines
 sudo sed -i 's|export INVENTORY=localhost|export INVENTORY="'${TARGET_SERVER}'"|g' helper_scripts/default.env
