@@ -1,7 +1,7 @@
 if [ -f ${HOME}/kcli-pipelines/helper_scripts/default.env ];
 then 
   source ${HOME}/kcli-pipelines/helper_scripts/default.env
-  source helper_scripts/helper_functions.sh
+  source ${HOME}/helper_scripts/helper_functions.sh
 else
   echo "default.env file does not exist"
   exit 1
