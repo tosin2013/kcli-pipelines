@@ -206,7 +206,7 @@ function main() {
     # Check if default.env exists, if not, create a default version
     if [ ! -f "${DEFAULT_ENV_PATH}" ]; then
       echo "default.env file does not exist, creating a default version..."
-      cat <<EOF > "${DEFAULT_ENV_PATH}"
+      cat <<EOF
     # Environment Variables for all scripts 
 
     KCLI_SAMPLES_DIR="\${HOME}/kcli-pipelines/"
@@ -214,7 +214,7 @@ function main() {
     export INVENTORY=localhost
     ANSIBLE_VAULT_FILE="/opt/qubinode_navigator/inventories/\${INVENTORY}/group_vars/control/vault.yml"
     ANSIBLE_ALL_VARIABLES="/opt/qubinode_navigator/inventories/\${INVENTORY}/group_vars/all.yml"
-    EOF
+EOF
     fi
 
     # Source the default.env file
