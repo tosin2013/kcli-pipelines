@@ -92,8 +92,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Configure kcli profiles 
+      - name: Configure kcli profiles
         run: | 
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_PROFILE=${{ env.VM_NAME }}
+          if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
+            export CUSTOM_PROFILE=false
+          else 
+            export CUSTOM_PROFILE=true
+          fi
           if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
             cd /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
             git config pull.rebase false
@@ -102,8 +109,7 @@ jobs:
             cd /home/${{ env.DEFAULT_RUNNER_USER }}/
             git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
-          export TARGET_SERVER=${{ env.TARGET_SERVER }}
-          /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/configure-kcli-profiles.sh
+          /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
   kcli-openshift4-baremetal:
     runs-on: self-hosted # Use the runner name at the job level
