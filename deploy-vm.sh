@@ -201,7 +201,7 @@ function main() {
     fi
 
     cd ${HOME}/kcli-pipelines
-    source helper_scripts/default.env
+    source ${HOME}/kcli-pipelines/helper_scripts/default.env
     local domain_name=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
     echo "DOMAIN NAME: $domain_name" || exit $?
 
