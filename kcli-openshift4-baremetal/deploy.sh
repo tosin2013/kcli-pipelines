@@ -1,22 +1,22 @@
 #!/bin/bash 
 
-if [ -f /opt/kcli-pipelines/helper_scripts/default.env ];
+if [ -f ${HOME}/kcli-pipelines/helper_scripts/default.env ];
 then 
-  source /opt/kcli-pipelines/helper_scripts/default.env
+  source ${HOME}/kcli-pipelines/helper_scripts/default.env
 else
   echo "default.env file does not exist"
   exit 1
 fi
 
-if [ ! -d /opt/kcli-openshift4-baremetal ];
+if [ ! -d ${HOME}/kcli-openshift4-baremetal ];
 then 
-    cd /opt/
+    cd ${HOME}
     git clone https://github.com/karmab/kcli-openshift4-baremetal
     cd kcli-openshift4-baremetal
 else
-    cd /opt/kcli-openshift4-baremetal
+    cd ${HOME}/kcli-openshift4-baremetal 
     git config pull.rebase false
-    git config --global --add safe.directory /opt/kcli-openshift4-baremetal
+    git config --global --add safe.directory ${HOME}/kcli-openshift4-baremetal 
     git pull
 fi 
 
@@ -45,7 +45,7 @@ function create(){
     #cat openshift_pull.json
     ${USE_SUDO} ln -s /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/${DEPLOYMENT_CONFIG}  lab.yml
     ${USE_SUDO} yq eval ".domain = \"$DOMAIN\"" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/${DEPLOYMENT_CONFIG} || exit $?
-    ${USE_SUDO} /opt/kcli-pipelines/kcli-openshift4-baremetal/env-checks.sh  || exit $?
+    ${USE_SUDO} ${HOME}/kcli-pipelines/kcli-openshift4-baremetal/env-checks.sh  || exit $?
     cat lab.yml
     ${USE_SUDO} kcli create plan --paramfile  lab.yml lab
 }
@@ -58,7 +58,7 @@ function destroy(){
     export VM_NAME="freeipa"
     export  ACTION="delete" # create, delete
 
-    /opt/kcli-pipelines/deploy-vm.sh
+    ${HOME}/kcli-pipelines/deploy-vm.sh
 }
 
 if [ $ACTION == "create" ];
