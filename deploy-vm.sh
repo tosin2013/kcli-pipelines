@@ -201,7 +201,24 @@ function main() {
     fi
 
     cd ${HOME}/kcli-pipelines
-    source ${HOME}/kcli-pipelines/helper_scripts/default.env
+    DEFAULT_ENV_PATH="${HOME}/kcli-pipelines/helper_scripts/default.env"
+
+    # Check if default.env exists, if not, create a default version
+    if [ ! -f "${DEFAULT_ENV_PATH}" ]; then
+      echo "default.env file does not exist, creating a default version..."
+      cat <<EOF > "${DEFAULT_ENV_PATH}"
+    # Environment Variables for all scripts 
+
+    KCLI_SAMPLES_DIR="\${HOME}/kcli-pipelines/"
+    NET_NAME=qubinet # qubinet default bridge name default for internal network
+    export INVENTORY=localhost
+    ANSIBLE_VAULT_FILE="/opt/qubinode_navigator/inventories/\${INVENTORY}/group_vars/control/vault.yml"
+    ANSIBLE_ALL_VARIABLES="/opt/qubinode_navigator/inventories/\${INVENTORY}/group_vars/all.yml"
+    EOF
+    fi
+
+    # Source the default.env file
+    source "${DEFAULT_ENV_PATH}"
     local domain_name=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
     echo "DOMAIN NAME: $domain_name" || exit $?
 
