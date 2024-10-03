@@ -142,7 +142,7 @@ configure_kcli_profiles() {
     echo $CUSTOM_PROFILE || exit 1
     if [[ "$CUSTOM_PROFILE"  == "true" ]]; then
         log "Configuring ${VM_PROFILE} type"
-        sudo -E ./${VM_PROFILE}/configure-kcli-profile.sh || { log "Failed to configure ${VM_PROFILE}"; exit 1; }
+        sudo -E /home/github_runner/kcli-pipelines/${VM_PROFILE}/configure-kcli-profile.sh || { log "Failed to configure ${VM_PROFILE}"; exit 1; }
     fi
 
     cat ~/.kcli/profiles.yml | tee /tmp/kcli-profiles.yml > /dev/null
