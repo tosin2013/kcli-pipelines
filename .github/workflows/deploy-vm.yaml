@@ -68,10 +68,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Configure kcli profiles on ${{ inputs.runner_name }}
+      - name: Configure kcli profiles
         run: | 
+          if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
+            cd /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
+            git config pull.rebase false
+            git pull
+          else
+            cd /home/${{ env.DEFAULT_RUNNER_USER }}/
+            git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
-          /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/configure-kcli-profiles.sh
+          /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
   deploy-vm:
     runs-on: self-hosted # Use the runner name at the job level
