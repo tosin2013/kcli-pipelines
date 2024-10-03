@@ -1,5 +1,7 @@
 #!/bin/bash
 set -euo pipefail
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -x
 
 # Function to log messages
 log() {
