@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-DEFAULT_ENV_PATH="${HOME}/kcli-pipelines/helper_scripts/default.env"
+DEFAULT_ENV_PATH="/home/github_runner/kcli-pipelines/helper_scripts/default.env"
 
 # Check if default.env exists, if not, create a default version
 if [ ! -f "${DEFAULT_ENV_PATH}" ]; then
