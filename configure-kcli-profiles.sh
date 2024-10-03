@@ -144,6 +144,12 @@ configure_kcli_profiles() {
 }
 
 # Main function to orchestrate the script
+# Ensure VM_PROFILE is set
+if [ -z "$VM_PROFILE" ]; then
+    log "VM_PROFILE variable is not set"
+    exit 1
+fi
+
 main() {
     clone_or_pull_repo
     configure_environment
