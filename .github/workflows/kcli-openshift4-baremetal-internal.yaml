@@ -82,6 +82,7 @@ env:
     DISCONNECTED_INSTALL: ${{ inputs.disconnected_install }}
     DEPLOYMENT_CONFIG: ${{ inputs.deployment_config }}
     COMMUNITY_VERSION: ${{ inputs.community_version }}
+    DEFAULT_RUNNER_USER: "github_runner"
 
 jobs:
   configure-kcli-profiles:
@@ -91,7 +92,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Configure kcli profiles on ${{ inputs.runner_name }}
+      - name: Configure kcli profiles 
         run: | 
           if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
             cd /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
