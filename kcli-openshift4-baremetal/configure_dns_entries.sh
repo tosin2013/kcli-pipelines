@@ -1,23 +1,11 @@
-if [ -f /opt/kcli-pipelines/helper_scripts/default.env ];
+if [ -f ${HOME}/kcli-pipelines/helper_scripts/default.env ];
 then 
-  source /opt/kcli-pipelines/helper_scripts/default.env
+  source ${HOME}/kcli-pipelines/helper_scripts/default.env
   source helper_scripts/helper_functions.sh
 else
   echo "default.env file does not exist"
   exit 1
 fi
-
-if [ ! -d /opt/${HOME}/kcli-pipelines ];
-then 
-    cd /opt/
-    git clone https://github.com/karmab/${HOME}/kcli-pipelines
-    cd ${HOME}/kcli-pipelines
-else
-    cd /opt/${HOME}/kcli-pipelines
-    git config pull.rebase false
-    git config --global --add safe.directory /opt/${HOME}/kcli-pipelines
-    git pull
-fi 
 
 if [ "$EUID" -ne 0 ]
 then 
