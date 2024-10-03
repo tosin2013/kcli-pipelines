@@ -79,12 +79,12 @@ remote_tmp = /tmp/ansible-$USER
 EOF
     fi
 
-    source "/home/github_runner/kcli-pipelines/helper_scripts/helper_functions.sh"
+    source "${HOME}/kcli-pipelines/helper_scripts/helper_functions.sh"
 }
 
 # Function to generate profiles
 generate_profiles() {
-    cd "/home/github_runner/kcli-pipelines"
+    cd "${HOME}/kcli-pipelines"
     sudo sed -i "s|export INVENTORY=localhost|export INVENTORY='${TARGET_SERVER}'|g" helper_scripts/default.env
     source helper_scripts/default.env
     KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
