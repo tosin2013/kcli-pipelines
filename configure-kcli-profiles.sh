@@ -126,7 +126,7 @@ configure_kcli_profiles() {
     sudo cp "/home/github_runner/kcli-pipelines/kcli-profiles.yml" "/home/$USER/.kcli/profiles.yml"
     sudo cp "/home/github_runner/kcli-pipelines/kcli-profiles.yml" /root/.kcli/profiles.yml
 
-    sudo -E ./freeipa-server-container/configure-kcli-profile.sh || { log "Failed to configure freeipa-server-container"; exit 1; }
+    #sudo -E ./freeipa-server-container/configure-kcli-profile.sh || { log "Failed to configure freeipa-server-container"; exit 1; }
     sudo -E ./openshift-jumpbox/configure-kcli-profile.sh || { log "Failed to configure openshift-jumpbox"; exit 1; }
     sudo -E ./ansible-aap/configure-kcli-profile.sh || { log "Failed to configure ansible-aap"; exit 1; }
     sudo -E ./device-edge-workshops/configure-kcli-profile.sh || { log "Failed to configure device-edge-workshops"; exit 1; }
