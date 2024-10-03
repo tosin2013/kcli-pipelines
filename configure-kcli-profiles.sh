@@ -102,7 +102,7 @@ generate_profiles() {
 configure_kcli_profiles() {
     if [ ! -d "/home/$KCLI_USER/.kcli" ]; then
         log "/home/$KCLI_USER/.kcli directory does not exist"
-        mkdir -p "/home/$KCLI_USER/.kcli"
+        sudo mkdir -p "/home/$KCLI_USER/.kcli"
     fi
 
     if [ ! -d /root/.kcli ]; then
