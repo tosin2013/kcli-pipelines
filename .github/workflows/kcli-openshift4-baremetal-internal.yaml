@@ -72,10 +72,6 @@ on:
         description: 'Runner'
         required: true
         default: 'self-hosted'
-      runner_name:
-        description: 'Self-hosted runner name'
-        required: true
-        default: 't9rq8-github-runner'
 env:
     TARGET_SERVER: ${{ inputs.target_server }}
     VM_NAME: ${{ inputs.vm_name }}
