@@ -1,6 +1,13 @@
 #!/bin/bash 
 
-DEFAULT_ENV_PATH="/home/${USER}/kcli-pipelines/helper_scripts/default.env"
+if [ ! -z "${DEFAULT_RUNNER_USER}" ];
+then
+  USER_NAME=${DEFAULT_RUNNER_USER}
+else
+  USER_NAME=${USER}
+fi
+
+DEFAULT_ENV_PATH="/home/${USER_NAME}/kcli-pipelines/helper_scripts/default.env"
 
 # Check if default.env exists, if not, create a default version
 if [ ! -f "${DEFAULT_ENV_PATH}" ]; then
@@ -8,7 +15,7 @@ if [ ! -f "${DEFAULT_ENV_PATH}" ]; then
   cat <<EOF > "${DEFAULT_ENV_PATH}"
 # Environment Variables for all scripts 
 
-KCLI_SAMPLES_DIR="\/home/${USER}/kcli-pipelines/"
+KCLI_SAMPLES_DIR="\/home/${USER_NAME}/kcli-pipelines/"
 NET_NAME=qubinet # qubinet default bridge name default for internal network
 export INVENTORY=localhost
 ANSIBLE_VAULT_FILE="/opt/qubinode_navigator/inventories/\${INVENTORY}/group_vars/control/vault.yml"
@@ -19,15 +26,15 @@ fi
 # Source the default.env file
 source "${DEFAULT_ENV_PATH}"
 
-if [ ! -d /home/${USER}/kcli-openshift4-baremetal ];
+if [ ! -d /home/${USER_NAME}/kcli-openshift4-baremetal ];
 then 
-    cd /home/${USER}/
+    cd /home/${USER_NAME}/
     git clone https://github.com/karmab/kcli-openshift4-baremetal
     cd kcli-openshift4-baremetal
 else
-    cd /home/${USER}/kcli-openshift4-baremetal 
+    cd /home/${USER_NAME}/kcli-openshift4-baremetal 
     git config pull.rebase false
-    git config --global --add safe.directory /home/${USER}/kcli-openshift4-baremetal 
+    git config --global --add safe.directory /home/${USER_NAME}/kcli-openshift4-baremetal 
     git pull
 fi 
 
@@ -56,8 +63,8 @@ function create(){
     #cat openshift_pull.json
     ${USE_SUDO} ln -s /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/${DEPLOYMENT_CONFIG}  lab.yml
     ${USE_SUDO} yq eval ".domain = \"$DOMAIN\"" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/${DEPLOYMENT_CONFIG} || exit $?
-    echo ${USER}
-    ${USE_SUDO} /home/${USER}/kcli-pipelines/kcli-openshift4-baremetal/env-checks.sh  || exit $?
+    echo ${USER_NAME}
+    ${USE_SUDO} /home/${USER_NAME}/kcli-pipelines/kcli-openshift4-baremetal/env-checks.sh  || exit $?
     cat lab.yml
     ${USE_SUDO} kcli create plan --paramfile  lab.yml lab
     exit 1
@@ -71,7 +78,7 @@ function destroy(){
     export VM_NAME="freeipa"
     export  ACTION="delete" # create, delete
 
-    /home/${USER}/kcli-pipelines/deploy-vm.sh
+    /home/${USER_NAME}/kcli-pipelines/deploy-vm.sh
 }
 
 if [ $ACTION == "create" ];

@@ -145,6 +145,7 @@ jobs:
           export DISCONNECTED_INSTALL=${{ env.DISCONNECTED_INSTALL }}
           export DEPLOYMENT_CONFIG=${{ env.DEPLOYMENT_CONFIG }}
           export COMMUNITY_VERSION=${{ env.COMMUNITY_VERSION }}
+          export DEFAULT_RUNNER_USER=${{ env.DEFAULT_RUNNER_USER }}
           /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/deploy-vm.sh
 
   deploy-dns:
