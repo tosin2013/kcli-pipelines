@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-DEFAULT_ENV_PATH="/home/github_runner/kcli-pipelines/helper_scripts/default.env"
+DEFAULT_ENV_PATH="/home/${USER}/kcli-pipelines/helper_scripts/default.env"
 
 # Check if default.env exists, if not, create a default version
 if [ ! -f "${DEFAULT_ENV_PATH}" ]; then
@@ -8,7 +8,7 @@ if [ ! -f "${DEFAULT_ENV_PATH}" ]; then
   cat <<EOF > "${DEFAULT_ENV_PATH}"
 # Environment Variables for all scripts 
 
-KCLI_SAMPLES_DIR="\${HOME}/kcli-pipelines/"
+KCLI_SAMPLES_DIR="\/home/${USER}/kcli-pipelines/"
 NET_NAME=qubinet # qubinet default bridge name default for internal network
 export INVENTORY=localhost
 ANSIBLE_VAULT_FILE="/opt/qubinode_navigator/inventories/\${INVENTORY}/group_vars/control/vault.yml"
@@ -19,15 +19,15 @@ fi
 # Source the default.env file
 source "${DEFAULT_ENV_PATH}"
 
-if [ ! -d ${HOME}/kcli-openshift4-baremetal ];
+if [ ! -d /home/${USER}/kcli-openshift4-baremetal ];
 then 
-    cd ${HOME}
+    cd /home/${USER}/
     git clone https://github.com/karmab/kcli-openshift4-baremetal
     cd kcli-openshift4-baremetal
 else
-    cd ${HOME}/kcli-openshift4-baremetal 
+    cd /home/${USER}/kcli-openshift4-baremetal 
     git config pull.rebase false
-    git config --global --add safe.directory ${HOME}/kcli-openshift4-baremetal 
+    git config --global --add safe.directory /home/${USER}/kcli-openshift4-baremetal 
     git pull
 fi 
 
@@ -56,7 +56,7 @@ function create(){
     #cat openshift_pull.json
     ${USE_SUDO} ln -s /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/${DEPLOYMENT_CONFIG}  lab.yml
     ${USE_SUDO} yq eval ".domain = \"$DOMAIN\"" -i /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/control/${DEPLOYMENT_CONFIG} || exit $?
-    ${USE_SUDO} ${HOME}/kcli-pipelines/kcli-openshift4-baremetal/env-checks.sh  || exit $?
+    ${USE_SUDO} /home/${USER}/kcli-pipelines/kcli-openshift4-baremetal/env-checks.sh  || exit $?
     cat lab.yml
     ${USE_SUDO} kcli create plan --paramfile  lab.yml lab
 }
@@ -69,7 +69,7 @@ function destroy(){
     export VM_NAME="freeipa"
     export  ACTION="delete" # create, delete
 
-    ${HOME}/kcli-pipelines/deploy-vm.sh
+    /home/${USER}/kcli-pipelines/deploy-vm.sh
 }
 
 if [ $ACTION == "create" ];
