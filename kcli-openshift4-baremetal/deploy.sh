@@ -5,6 +5,7 @@ set -x
 if [ ! -z "${DEFAULT_RUNNER_USER}" ];
 then
   USER_NAME=${DEFAULT_RUNNER_USER}
+  export USE_SUDO="sudo"
 else
   USER_NAME=${USER}
 fi
