@@ -75,15 +75,15 @@ jobs:
           else 
             export CUSTOM_PROFILE=true
           fi
-          if [ -d "/opt/kcli-pipelineskcli-pipelines" ]; then
-            cd /opt/kcli-pipelineskcli-pipelines
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
             sudo git config pull.rebase false
             sudo git pull
           else
             cd /opt/
             sudo git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
-          sudo -E /opt/kcli-pipelines/kcli-pipelines/configure-kcli-profiles.sh || exit $?
+          sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
   deploy-dns:
     runs-on: self-hosted # Use the runner name at the job level
@@ -95,8 +95,8 @@ jobs:
 
       - name: Deploying freeipa on KVM
         run: | 
-          if [ -d "/opt/kcli-pipelineskcli-pipelines" ]; then
-            cd /opt/kcli-pipelineskcli-pipelines
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
             sudo git config pull.rebase false
             sudo git pull
           else
@@ -107,7 +107,7 @@ jobs:
           export VM_PROFILE=freeipa
           export ACTION=${{ env.ACTION }}
           export VM_NAME=freeipa
-          sudo -E /opt/kcli-pipelines/kcli-pipelines/deploy-vm.sh
+          sudo -E /opt/kcli-pipelines/deploy-vm.sh
 
   deploy-registry-vm:
     runs-on: self-hosted # Use the runner name at the job level
@@ -119,8 +119,8 @@ jobs:
 
       - name: Deploying ${{ inputs.vm_name }} on KVM
         run: | 
-          if [ -d "/opt/kcli-pipelineskcli-pipelines" ]; then
-            cd /opt/kcli-pipelineskcli-pipelines
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
             sudo git config pull.rebase false
             sudo git pull
           else
@@ -136,4 +136,4 @@ jobs:
           if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
             export VM_NAME=${{ inputs.vm_name }}
           fi
-          /opt/kcli-pipelines/kcli-pipelines/deploy-vm.sh
+          /opt/kcli-pipelines/deploy-vm.sh
