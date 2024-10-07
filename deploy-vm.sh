@@ -103,7 +103,7 @@ function create_vm() {
         local dns_forwarder=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
         echo "Using DNS server $dns_address"
         if vm_exists "$vm_name"; then
-          sudo kcli create vm -p $VM_PROFILE $vm_name -P dns=${dns_address} --wait || exit $?
+          sudo kcli create vm -p $VM_PROFILE $vm_name -P dns=${dns_address} --wait --console || exit $?
         else
           echo "VM $vm_name already exists."
         fi
