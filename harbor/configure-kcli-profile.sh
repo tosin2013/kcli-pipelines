@@ -15,8 +15,8 @@ fi
 source helper_scripts/helper_functions.sh
 
 # HARBOR_VERSION CA_URL FINGERPRINT env not found exit 
-if [ -z "${HARBOR_VERSION}" ] || [ -z "${CA_URL}" ] || [ -z "${FINGERPRINT}" ] || [ -z ${STEP_CA_PASSWORD} ]; then
-    echo "HARBOR_VERSION CA_URL FINGERPRINT STEP_CA_PASSWORD env variables must be set"
+if [ -z "${HARBOR_VERSION}" ] || [ -z "${EMAIL}" ]; then
+    echo "HARBOR_VERSION EMAIenv variables must be set"
     exit 1
 fi
 
