@@ -35,8 +35,9 @@ fi
 
 DOMAIN=${1}
 HARBORVERSION=${2}
-CA_URL=${3}
-FINGERPRINT=${4}
+AWS_ACCESS_KEY_ID=${3}
+AWS_SECRET_ACCESS_KEY=${4}
+EMAIL=${5}
 
 if [ -z $HARBORVERSION ]; then
     HARBORVERSION=$(curl -s https://api.github.com/repos/goharbor/harbor/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
@@ -58,7 +59,7 @@ then
         certbot/dns-route53 \
         certonly \
         --dns-route53 \
-        -d "${COCKPIT_DOMAIN}" -d "*.${COCKPIT_DOMAIN}" \
+        -d "harbor.${DOMAIN}"  \
         --agree-tos \
         --email "${EMAIL}" \
         --non-interactive
