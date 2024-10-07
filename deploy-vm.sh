@@ -109,8 +109,8 @@ function create_vm() {
         fi
         local ip_address=$(sudo kcli info vm $vm_name $vm_name | grep ip: | awk '{print $2}' | head -1)
         echo "VM $vm_name created with IP address $ip_address"
-        $ANSIBLE_PLAYBOOK helper_scripts/add_ipa_entry.yaml \
-            --vault-password-file "$HOME"/.vault_password \
+        sudo -E $ANSIBLE_PLAYBOOK helper_scripts/add_ipa_entry.yaml \
+            --vault-password-file /root/.vault_password \
             --extra-vars "@${ANSIBLE_VAULT_FILE}" \
             --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
             --extra-vars "key=${vm_name}" \
