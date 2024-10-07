@@ -84,6 +84,10 @@ jobs:
             export CUSTOM_PROFILE=true
           fi
           if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
+            ls -la /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/.git
+            sudo chown -R ${{ env.DEFAULT_RUNNER_USER }}:${{ env.DEFAULT_RUNNER_USER }} /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
+          fi
+          if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
             cd /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
             git config pull.rebase false
             git pull
@@ -118,7 +122,7 @@ jobs:
           export VM_NAME=freeipa
           /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/deploy-vm.sh
 
-  deploy-vm:
+  deploy-registry-vm:
     runs-on: self-hosted # Use the runner name at the job level
     timeout-minutes: 45
     needs: deploy-dns # Ensure the previous job runs first
