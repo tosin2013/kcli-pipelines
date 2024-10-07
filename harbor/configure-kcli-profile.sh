@@ -63,6 +63,7 @@ domain: ${DOMAIN}
 harbor_version: ${HARBOR_VERSION}
 aws_access_key_id: ${AWS_ACCESS_KEY_ID}
 aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+email: ${EMAIL}
 EOF
 
 determine_command_yaml

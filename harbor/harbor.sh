@@ -28,8 +28,8 @@ check_and_start_docker() {
     fi
 }
 
-if [ $# -ne 4 ]; then
-    echo "Usage: $0 <domain> <harbor-version> <aws_access_key_id> <aws_secret_access_key>"
+if [ $# -ne 5 ]; then
+    echo "Usage: $0 <domain> <harbor-version> <aws_access_key_id> <aws_secret_access_key> <email>"
     exit 1
 fi
 
@@ -45,9 +45,11 @@ fi
 
 hostnamectl set-hostname harbor.${DOMAIN}
 
+check_and_start_docker
+
 if [ ! -f /root/${DOMAIN}.crt ];
 then
-   echo "Using Podman"
+    echo "Using Docker"
     mkdir -p /etc/letsencrypt/
     docker run --rm -it \
         --env AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
@@ -84,8 +86,6 @@ ufw allow ssh
 # Enable UFW
 ufw enable -y
 echo "Housekeeping done"
-
-check_and_start_docker
 
 echo "Starting Harbor install"
 echo "Harbor Version: $HARBORVERSION"
