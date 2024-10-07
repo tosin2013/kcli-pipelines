@@ -116,8 +116,7 @@ jobs:
             git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
-          export VM_NAME=${{ env.VM_NAME }}
-          export VM_PROFILE=${{ env.VM_NAME }}
+          export VM_PROFILE=freeipa
           export ACTION=${{ env.ACTION }}
           export VM_NAME=freeipa
           /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/deploy-vm.sh
