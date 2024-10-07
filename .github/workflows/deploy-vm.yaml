@@ -70,9 +70,9 @@ jobs:
 
       - name: Check permissions
         run: |
-          if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
-            ls -la /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/.git
-            sudo chown -R ${{ env.DEFAULT_RUNNER_USER }}:${{ env.DEFAULT_RUNNER_USER }} /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
+          if [ -d "/opt/kcli-pipelines" ]; then
+            ls -la /opt/kcli-pipelines/.git
+            sudo chown -R ${{ env.DEFAULT_RUNNER_USER }}:${{ env.DEFAULT_RUNNER_USER }} /opt/kcli-pipelines
           fi
 
 
@@ -85,15 +85,15 @@ jobs:
           else 
             export CUSTOM_PROFILE=true
           fi
-          if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
-            cd /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
             git config pull.rebase false
             git pull
           else
-            cd /home/${{ env.DEFAULT_RUNNER_USER }}/
+            cd /opt/
             git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
-          /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/configure-kcli-profiles.sh || exit $?
+          sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
   deploy-vm:
     runs-on: self-hosted # Use the runner name at the job level
@@ -105,12 +105,12 @@ jobs:
 
       - name: Deploying ${{ inputs.vm_name }} on KVM
         run: | 
-          if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
-            cd /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
             git config pull.rebase false
             git pull
           else
-            cd /home/${{ env.DEFAULT_RUNNER_USER }}
+            cd /opt
             git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
@@ -120,4 +120,4 @@ jobs:
           if [ "${{ inputs.vm_name }}" != "freeipa" ] && [ "${{ inputs.custom_vm_name }}" != "" ]; then
             export VM_NAME=${{ inputs.custom_vm_name }}
           fi
-          sudo -E /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/deploy-vm.sh
+          sudo -E /opt/kcli-pipelines/deploy-vm.sh
