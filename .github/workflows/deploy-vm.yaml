@@ -57,7 +57,7 @@ env:
   ACTION: ${{ inputs.action }}
   RUNNER: ${{ inputs.runner }}
   COMMUNITY_VERSION: ${{ inputs.community_version }}
-  DEFAULT_RUNNER_USER: "github_runner"
+  DEFAULT_RUNNER_USER: "runner"
 
 
 jobs:

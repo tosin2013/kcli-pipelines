@@ -82,7 +82,7 @@ env:
     DISCONNECTED_INSTALL: ${{ inputs.disconnected_install }}
     DEPLOYMENT_CONFIG: ${{ inputs.deployment_config }}
     COMMUNITY_VERSION: ${{ inputs.community_version }}
-    DEFAULT_RUNNER_USER: "github_runner"
+    DEFAULT_RUNNER_USER: "runner"
 
 jobs:
   configure-kcli-profiles:
