@@ -54,6 +54,13 @@ env:
   RUNNER: ${{ inputs.runner }}
   COMMUNITY_VERSION: ${{ inputs.community_version }}
   DEFAULT_RUNNER_USER: "runner"
+  QUAY_VERSION: ${{ inputs.quay_version }}
+  TARGET_SERVER: ${{ inputs.target_server }}
+  VM_NAME: ${{ inputs.vm_name }}
+  ACTION: ${{ inputs.action }}
+  RUNNER: ${{ inputs.runner }}
+  COMMUNITY_VERSION: ${{ inputs.community_version }}
+  DEFAULT_RUNNER_USER: "runner"
 
 
 jobs:
