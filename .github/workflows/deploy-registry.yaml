@@ -1,4 +1,4 @@
-name: Deploy VMs on KVM
+name: Deploy Registry
 on:
   workflow_dispatch:
     inputs:
