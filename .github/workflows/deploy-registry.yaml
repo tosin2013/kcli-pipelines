@@ -77,11 +77,11 @@ jobs:
           fi
           if [ -d "/opt/kcli-pipelineskcli-pipelines" ]; then
             cd /opt/kcli-pipelineskcli-pipelines
-            git config pull.rebase false
-            git pull
+            sudo git config pull.rebase false
+            sudo git pull
           else
             cd /opt/
-            git clone https://github.com/tosin2013/kcli-pipelines.git
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           sudo -E /opt/kcli-pipelineskcli-pipelines/configure-kcli-profiles.sh || exit $?
 
@@ -97,11 +97,11 @@ jobs:
         run: | 
           if [ -d "/opt/kcli-pipelineskcli-pipelines" ]; then
             cd /opt/kcli-pipelineskcli-pipelines
-            git config pull.rebase false
-            git pull
+            sudo git config pull.rebase false
+            sudo git pull
           else
             cd /home/${{ env.DEFAULT_RUNNER_USER }}
-            git clone https://github.com/tosin2013/kcli-pipelines.git
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_PROFILE=freeipa
@@ -121,11 +121,11 @@ jobs:
         run: | 
           if [ -d "/opt/kcli-pipelineskcli-pipelines" ]; then
             cd /opt/kcli-pipelineskcli-pipelines
-            git config pull.rebase false
-            git pull
+            sudo git config pull.rebase false
+            sudo git pull
           else
             cd /home/${{ env.DEFAULT_RUNNER_USER }}
-            git clone https://github.com/tosin2013/kcli-pipelines.git
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_NAME=${{ env.VM_NAME }}
