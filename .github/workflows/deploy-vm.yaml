@@ -73,9 +73,9 @@ jobs:
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_PROFILE=${{ env.VM_NAME }}
           if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
-            export CUSTOM_PROFILE=false
-          else 
             export CUSTOM_PROFILE=true
+          else 
+            export CUSTOM_PROFILE=false
           fi
           if [ -d "/opt/kcli-pipelines" ]; then
             cd /opt/kcli-pipelines
