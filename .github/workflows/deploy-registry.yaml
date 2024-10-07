@@ -64,6 +64,7 @@ env:
   DEFAULT_RUNNER_USER: "runner"
   HARBOR_VERSION: ${{ inputs.harbor_version }}
   QUAY_VERSION: ${{ inputs.quay_version }}
+  GUID: ${{ inputs.guid }}
   EMAIL: ${{ inputs.email }}
 
 
@@ -144,6 +145,7 @@ jobs:
           export HARBOR_VERSION=${{ env.HARBOR_VERSION }}
           export QUAY_VERSION=${{ env.QUAY_VERSION }}
           export EMAIL=${{ env.EMAIL }}
+          export GUID=${{ env.GUID }}
           if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
             export VM_NAME=${{ inputs.vm_name }}
           fi

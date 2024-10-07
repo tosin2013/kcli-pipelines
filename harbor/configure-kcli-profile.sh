@@ -59,7 +59,7 @@ numcpus: 4
 memory: 8192
 net_name: ${NET_NAME} 
 reservedns: ${ip_address}
-domain: ${DOMAIN}
+domain: ${GUID}.${DOMAIN}
 harbor_version: ${HARBOR_VERSION}
 aws_access_key_id: ${AWS_ACCESS_KEY_ID}
 aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
