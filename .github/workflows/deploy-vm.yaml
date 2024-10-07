@@ -72,6 +72,7 @@ jobs:
         run: | 
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_PROFILE=${{ env.VM_NAME }}
+          export HARBOR_VERSION=${{ env.HARBOR_VERSION }}
           if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
             export CUSTOM_PROFILE=true
           else 

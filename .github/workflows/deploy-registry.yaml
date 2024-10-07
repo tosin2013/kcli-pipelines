@@ -75,6 +75,7 @@ jobs:
         run: | 
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_PROFILE=${{ env.VM_NAME }}
+          export EMAIL=${{ env.EMAIL }}
           if [ "${{ env.VM_NAME }}" != "freeipa" ]; then
             export CUSTOM_PROFILE=true
           else 
@@ -138,6 +139,7 @@ jobs:
           export ACTION=${{ env.ACTION }}
           export HARBOR_VERSION=${{ env.HARBOR_VERSION }}
           export QUAY_VERSION=${{ env.QUAY_VERSION }}
+          export EMAIL=${{ env.EMAIL }}
           if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
             export VM_NAME=${{ inputs.vm_name }}
           fi

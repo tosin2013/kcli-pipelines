@@ -59,11 +59,35 @@ if [ -f /tmp/initial_password ]; then
     cp /tmp/initial_password /etc/step/initial_password
 fi
 
+# Decrypt the vault file to access AWS credentials
+/usr/local/bin/ansiblesafe -f "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml" -o 2
+
+# Extract required AWS credentials using yq
+AWS_ACCESS_KEY_ID=$(yq eval '.aws_access_key' "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml")
+AWS_SECRET_ACCESS_KEY=$(yq eval '.aws_secret_key' "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml")
+
+# Re-encrypt the vault file
+/usr/local/bin/ansiblesafe -f "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml" -o 1
+
+
 if [ ! -f /root/${DOMAIN}.crt ];
 then
-  cd /root/
-  TOKEN=$(step ca token harbor.${DOMAIN} --password-file=/etc/step/initial_password --issuer="root@internal.${DOMAIN} ")
-  step ca certificate --token $TOKEN --not-after=1440h  --password-file /etc/step/initial_password  harbor.${DOMAIN}  harbor.${DOMAIN}.crt  harbor.${DOMAIN}.key 
+   echo "Using Podman"
+    mkdir -p /etc/letsencrypt/
+    podman run --rm -it \
+        --env AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+        --env AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
+        -v "/etc/letsencrypt:/etc/letsencrypt:Z" \
+        docker.io/certbot/dns-route53 \
+        certonly \
+        --dns-route53 \
+        -d "harbor.${DOMAIN}" \
+        --agree-tos \
+        --email "${EMAIL}" \
+        --non-interactive
+    CERTDIR="/etc/letsencrypt/live/${COCKPIT_DOMAIN}"
+    ls -lath $CERTDIR 
+    exit 1
 fi
 
 IPorFQDN=$(hostname -f)
