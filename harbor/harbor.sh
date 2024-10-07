@@ -28,7 +28,7 @@ check_and_start_docker() {
 }
 
 if [ $# -ne 4 ]; then
-    echo "Usage: $0 <domain> <harbor-version> <ca-url> <fingerprint>"
+    echo "Usage: $0 <domain> <harbor-version> <aws_access_key_id> <aws_secret_access_key>"
     exit 1
 fi
 
@@ -41,47 +41,21 @@ if [ -z $HARBORVERSION ]; then
     HARBORVERSION=$(curl -s https://api.github.com/repos/goharbor/harbor/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
 fi
 
-if ! command -v step >/dev/null 2>&1; then
-  wget https://dl.smallstep.com/cli/docs-ca-install/latest/step-cli_amd64.deb
-  sudo dpkg -i step-cli_amd64.deb
-fi 
 
 hostnamectl set-hostname harbor.${DOMAIN}
-
-if [ ! -f /root/.step/config/defaults.json ];
-then 
-    step ca bootstrap --ca-url ${CA_URL} --fingerprint ${FINGERPRINT}
-    step certificate install $(step path)/certs/root_ca.crt
-fi
-
-if [ -f /tmp/initial_password ]; then
-    mkdir -p /etc/step
-    cp /tmp/initial_password /etc/step/initial_password
-fi
-
-# Decrypt the vault file to access AWS credentials
-/usr/local/bin/ansiblesafe -f "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml" -o 2
-
-# Extract required AWS credentials using yq
-AWS_ACCESS_KEY_ID=$(yq eval '.aws_access_key' "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml")
-AWS_SECRET_ACCESS_KEY=$(yq eval '.aws_secret_key' "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml")
-
-# Re-encrypt the vault file
-/usr/local/bin/ansiblesafe -f "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml" -o 1
-
 
 if [ ! -f /root/${DOMAIN}.crt ];
 then
    echo "Using Podman"
     mkdir -p /etc/letsencrypt/
-    podman run --rm -it \
+    docker run --rm -it \
         --env AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
         --env AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
-        -v "/etc/letsencrypt:/etc/letsencrypt:Z" \
-        docker.io/certbot/dns-route53 \
+        -v "/etc/letsencrypt:/etc/letsencrypt" \
+        certbot/dns-route53 \
         certonly \
         --dns-route53 \
-        -d "harbor.${DOMAIN}" \
+        -d "${COCKPIT_DOMAIN}" -d "*.${COCKPIT_DOMAIN}" \
         --agree-tos \
         --email "${EMAIL}" \
         --non-interactive

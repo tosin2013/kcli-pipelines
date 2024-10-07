@@ -27,6 +27,16 @@ IMAGE_NAME=ubuntu2204
 
 /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
 PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
+# Decrypt the vault file to access AWS credentials
+/usr/local/bin/ansiblesafe -f "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml" -o 2
+
+# Extract required AWS credentials using yq
+AWS_ACCESS_KEY_ID=$(yq eval '.aws_access_key' "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml")
+AWS_SECRET_ACCESS_KEY=$(yq eval '.aws_secret_key' "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml")
+
+# Re-encrypt the vault file
+/usr/local/bin/ansiblesafe -f "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml" -o 1
+
 VM_NAME=harbor
 # FreeIPA DNS ADDRESS
 export vm_name="freeipa"
@@ -51,9 +61,8 @@ net_name: ${NET_NAME}
 reservedns: ${ip_address}
 domain: ${DOMAIN}
 harbor_version: ${HARBOR_VERSION}
-ca_url: ${CA_URL}
-fingerprint: ${FINGERPRINT}
-initial_password: ${STEP_CA_PASSWORD}
+aws_access_key_id: ${AWS_ACCESS_KEY_ID}
+aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
 EOF
 
 determine_command_yaml
