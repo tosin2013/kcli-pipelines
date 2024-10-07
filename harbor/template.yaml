@@ -12,4 +12,4 @@ cmds:
   - echo "{{ initial_password }}" > /tmp/initial_password || exit $?
   - cd /root/ && curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/harbor/harbor.sh
   - chmod +x /root/harbor.sh
-  - /root/harbor.sh {{ domain }} {{ harbor_version }} {{ aws_access_key_id }}  {{ aws_secret_access_key }}| tee /var/log/harbor_install.log   
+  - bash -xe /root/harbor.sh {{ domain }} {{ harbor_version }} {{ aws_access_key_id }}  {{ aws_secret_access_key }}| tee /var/log/harbor_install.log   
