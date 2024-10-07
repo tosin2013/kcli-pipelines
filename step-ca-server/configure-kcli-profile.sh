@@ -33,9 +33,9 @@ determine_command_yaml() {
     fi
 }
 
-if [ -f ../helper_scripts/default.env ];
+if [ -f /opt/kcli-pipelines/helper_scripts/default.env ];
 then 
-  source ../helper_scripts/default.env
+  source /opt/kcli-pipelines/helper_scripts/default.env
 elif [ -f helper_scripts/default.env  ];
 then 
   source helper_scripts/default.env 
