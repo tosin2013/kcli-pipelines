@@ -80,7 +80,7 @@ function create_vm() {
 
     if [[ $vm_name == "freeipa" ]]; then
         if vm_exists "$vm_name"; then
-          sudo -E ${HOME}/kcli-pipelines/freeipa/deploy-freeipa.sh create
+          sudo -E /opt/kcli-pipelines/freeipa/deploy-freeipa.sh create
         else
           echo "VM $vm_name already exists."
           exit 0
@@ -147,9 +147,9 @@ function delete_vm() {
     if [[ $vm_name == "kcli-openshift4-baremetal" ]]; then
       kcli-openshift4-baremetal/deploy.sh delete
     elif [[ $vm_name == "freeipa" ]]; then
-      ${HOME}/kcli-pipelines/freeipa/deploy-freeipa.sh destroy
+      /opt/kcli-pipelines/freeipa/deploy-freeipa.sh destroy
     elif [[ $vm_name == "ocp4-disconnected-helper" ]]; then
-      ${HOME}/kcli-pipelines/ocp4-disconnected-helper/destroy.sh
+      /opt/kcli-pipelines/ocp4-disconnected-helper/destroy.sh
     elif [[ $vm_name == "vyos-router" ]]; then
        vyos-router/deploy.sh delete
     elif [[ $vm_name == "openshift-agent-install" ]]; then
@@ -200,8 +200,8 @@ function main() {
       ANSIBLE_PLAYBOOK="sudo -E ansible-playbook"
     fi
 
-    cd ${HOME}/kcli-pipelines
-    DEFAULT_ENV_PATH="${HOME}/kcli-pipelines/helper_scripts/default.env"
+    cd /opt/kcli-pipelines
+    DEFAULT_ENV_PATH="/opt/kcli-pipelines/helper_scripts/default.env"
 
     # Check if default.env exists, if not, create a default version
     if [ ! -f "${DEFAULT_ENV_PATH}" ]; then
@@ -209,7 +209,7 @@ function main() {
       cat <<EOF
     # Environment Variables for all scripts 
 
-    KCLI_SAMPLES_DIR="\${HOME}/kcli-pipelines/"
+    KCLI_SAMPLES_DIR="/opt/kcli-pipelines/"
     NET_NAME=qubinet # qubinet default bridge name default for internal network
     export INVENTORY=localhost
     ANSIBLE_VAULT_FILE="/opt/qubinode_navigator/inventories/\${INVENTORY}/group_vars/control/vault.yml"
