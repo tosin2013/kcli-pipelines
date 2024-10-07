@@ -30,6 +30,10 @@ on:
         description: 'Quay version'
         required: true
         default: 'v3.12.3'
+      email:
+        description: 'Email'
+        required: true
+        default: ''
       runner:
         description: 'Runner'
         required: true
@@ -56,6 +60,7 @@ env:
   DEFAULT_RUNNER_USER: "runner"
   HARBOR_VERSION: ${{ inputs.harbor_version }}
   QUAY_VERSION: ${{ inputs.quay_version }}
+  EMAIL: ${{ inputs.email }}
 
 
 jobs:
