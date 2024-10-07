@@ -81,12 +81,12 @@ remote_tmp = /tmp/ansible-$USER
 EOF
     fi
 
-    source "${HOME}/kcli-pipelines/helper_scripts/helper_functions.sh"
+    source "/opt/kcli-pipelines/helper_scripts/helper_functions.sh"
 }
 
 # Function to generate profiles
 generate_profiles() {
-    cd "${HOME}/kcli-pipelines"
+    cd "/opt/kcli-pipelines"
     
     sudo sed -i "s|export INVENTORY=localhost|export INVENTORY='${TARGET_SERVER}'|g" helper_scripts/default.env
     sudo sed -i "s|KCLI_SAMPLES_DIR=.*|KCLI_SAMPLES_DIR="/home/${USER}/kcli-pipelines/"|g" helper_scripts/default.env
@@ -119,7 +119,7 @@ configure_kcli_profiles() {
         sudo mkdir -p /root/.kcli
     fi
 
-    if [ ! -f "${HOME}/kcli-pipelines/kcli-profiles.yml" ]; then
+    if [ ! -f "/opt/kcli-pipelines/kcli-profiles.yml" ]; then
         log "kcli-profiles.yml file does not exist"
         exit 1
     fi
