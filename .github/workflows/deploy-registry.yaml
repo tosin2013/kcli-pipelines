@@ -26,6 +26,10 @@ on:
         description: 'Harbor version'
         required: true
         default: 'v2.11.1'
+      quay_version:
+        description: 'Quay version'
+        required: true
+        default: 'v3.12.3'
       runner:
         description: 'Runner'
         required: true
