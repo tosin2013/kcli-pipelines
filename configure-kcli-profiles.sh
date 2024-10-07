@@ -89,7 +89,6 @@ generate_profiles() {
     cd "/opt/kcli-pipelines"
     
     sudo sed -i "s|export INVENTORY=localhost|export INVENTORY='${TARGET_SERVER}'|g" helper_scripts/default.env
-    sudo sed -i "s|KCLI_SAMPLES_DIR=.*|KCLI_SAMPLES_DIR="/home/${USER}/kcli-pipelines/"|g" helper_scripts/default.env
     source helper_scripts/default.env
     KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
     log "KCLI USER: $KCLI_USER" || { log "Failed to get KCLI_USER"; exit 1; }
