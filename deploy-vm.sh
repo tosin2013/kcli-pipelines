@@ -164,8 +164,8 @@ function delete_vm() {
         echo "VM $vm_name does not exist."
       fi
 
-      $ANSIBLE_PLAYBOOK helper_scripts/add_ipa_entry.yaml \
-          --vault-password-file "$HOME"/.vault_password \
+      sudo -E $ANSIBLE_PLAYBOOK helper_scripts/add_ipa_entry.yaml \
+          --vault-password-file /root/.vault_password \
           --extra-vars "@${ANSIBLE_VAULT_FILE}" \
           --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
           --extra-vars "key=${vm_name}" \
