@@ -22,6 +22,10 @@ on:
         options:
           - harbor
           - mirror-registry
+      harbor_version:
+        description: 'Harbor version'
+        required: true
+        default: 'v2.11.1'
       runner:
         description: 'Runner'
         required: true
