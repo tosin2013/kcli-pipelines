@@ -144,7 +144,7 @@ configure_kcli_profiles() {
         sudo -E /opt/kcli-pipelines/${VM_PROFILE}/configure-kcli-profile.sh || { log "Failed to configure ${VM_PROFILE}"; exit 1; }
     fi
 
-    cat ~/.kcli/profiles.yml | tee /tmp/kcli-profiles.yml > /dev/null
+    sudo cat ~/.kcli/profiles.yml | sudo tee /tmp/kcli-profiles.yml > /dev/null
 
     if [ "$USER" != "root" ]; then
         sudo cp kcli-profiles.yml "/home/$KCLI_USER/.kcli/profiles.yml"

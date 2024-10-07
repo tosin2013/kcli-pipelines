@@ -23,7 +23,7 @@ create_sushy_config() {
     sudo mkdir -p /etc/sushy/
     cat <<EOF | sudo tee /etc/sushy/sushy-emulator.conf
 SUSHY_EMULATOR_LISTEN_IP = u'0.0.0.0'
-SUSHY_EMULATOR_LISTEN_PORT = 8000
+SUSHY_EMULATOR_LISTEN_PORT = 9000
 SUSHY_EMULATOR_SSL_CERT = None
 SUSHY_EMULATOR_SSL_KEY = None
 SUSHY_EMULATOR_OS_CLOUD = None
@@ -45,7 +45,7 @@ run_sushy_container() {
     echo "Running Sushy-Emulator container for KVM..."
     export SUSHY_TOOLS_IMAGE=${SUSHY_TOOLS_IMAGE:-"quay.io/metal3-io/sushy-tools"}
     sudo podman rm -f sushy-emulator 2>/dev/null || true
-    sudo podman create --net host --privileged --name sushy-emulator -v "/etc/sushy":/etc/sushy -v "/var/run/libvirt":/var/run/libvirt "${SUSHY_TOOLS_IMAGE}" sushy-emulator -i :: -p 8000 --config /etc/sushy/sushy-emulator.conf
+    sudo podman create --net host --privileged --name sushy-emulator -v "/etc/sushy":/etc/sushy -v "/var/run/libvirt":/var/run/libvirt "${SUSHY_TOOLS_IMAGE}" sushy-emulator -i :: -p 9000 --config /etc/sushy/sushy-emulator.conf
 }
 
 # Function to create systemd service
@@ -59,14 +59,14 @@ create_systemd_service() {
 configure_firewall() {
     echo "Configuring firewall to allow Redfish API connections..."
     sudo systemctl start firewalld
-    sudo firewall-cmd --add-port=8000/tcp --permanent
+    sudo firewall-cmd --add-port=9000/tcp --permanent
     sudo firewall-cmd --reload
 }
 
 # Function to verify installation
 verify_installation() {
     echo "Verifying installation..."
-    timeout 10s curl http://localhost:8000/redfish/v1/Managers
+    timeout 10s curl http://localhost:9000/redfish/v1/Managers
     if [ $? -ne 0 ]; then
         echo "Error: Failed to verify installation. Check the Sushy-Emulator service and configuration."
         exit 1
