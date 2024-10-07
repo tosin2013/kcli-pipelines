@@ -2,6 +2,7 @@
 #Harbor on Ubuntu 18.04
 # https://gist.github.com/kacole2/95e83ac84fec950b1a70b0853d6594dc
 # https://github.com/goharbor/harbor/releases # v2.10.1
+set -x 
 
 check_and_start_docker() {
     if ! command -v docker &> /dev/null; then
