@@ -1,6 +1,7 @@
 image: {{ image }}
 numcpus: {{ numcpus }}
 memory: {{ memory }}
+wait: true
 nets:
   - name: {{ net_name }}
 reservedns: {{ reservedns }}
