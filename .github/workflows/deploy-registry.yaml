@@ -80,7 +80,7 @@ jobs:
             git config pull.rebase false
             git pull
           else
-            cd /opt/kcli-pipelines
+            cd /opt/
             git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           sudo -E /opt/kcli-pipelineskcli-pipelines/configure-kcli-profiles.sh || exit $?

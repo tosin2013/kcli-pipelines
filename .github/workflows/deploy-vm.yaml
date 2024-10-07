@@ -68,14 +68,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Check permissions
-        run: |
-          if [ -d "/opt/kcli-pipelines" ]; then
-            ls -la /opt/kcli-pipelines/.git
-            sudo chown -R ${{ env.DEFAULT_RUNNER_USER }}:${{ env.DEFAULT_RUNNER_USER }} /opt/kcli-pipelines
-          fi
-
-
       - name: Configure kcli profiles
         run: | 
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
