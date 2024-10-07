@@ -1,0 +1,136 @@
+name: Deploy VMs on KVM
+on:
+  workflow_dispatch:
+    inputs:
+      target_server:
+        description: 'Target server'
+        required: true
+        default: rhel9-equinix
+      action:
+        description: 'Action'
+        required: true
+        default: create
+        type: choice
+        options:
+          - create
+          - delete
+      vm_name:
+        description: 'VM Deployment'
+        required: true
+        default: 'freeipa'
+        type: choice
+        options:
+          - harbor
+          - mirror-registry
+      runner:
+        description: 'Runner'
+        required: true
+        default: 'self-hosted'
+      runner_name:
+        description: 'Self-hosted runner name'
+        required: true
+        default: 't9rq8-github-runner'
+      community_version:
+        description: 'Use community version of software (true/false)'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - true
+          - false
+
+env:
+  TARGET_SERVER: ${{ inputs.target_server }}
+  VM_NAME: ${{ inputs.vm_name }}
+  ACTION: ${{ inputs.action }}
+  RUNNER: ${{ inputs.runner }}
+  COMMUNITY_VERSION: ${{ inputs.community_version }}
+  DEFAULT_RUNNER_USER: "runner"
+
+
+jobs:
+  configure-kcli-profiles:
+    runs-on: self-hosted # Use the runner name at the job level
+    timeout-minutes: 30
+    if: ${{ inputs.runner == 'self-hosted' }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check permissions
+        run: |
+          if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
+            ls -la /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/.git
+            sudo chown -R ${{ env.DEFAULT_RUNNER_USER }}:${{ env.DEFAULT_RUNNER_USER }} /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
+          fi
+
+
+      - name: Configure kcli profiles
+        run: | 
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_PROFILE=${{ env.VM_NAME }}
+          if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
+            export CUSTOM_PROFILE=false
+          else 
+            export CUSTOM_PROFILE=true
+          fi
+          if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
+            cd /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
+            git config pull.rebase false
+            git pull
+          else
+            cd /home/${{ env.DEFAULT_RUNNER_USER }}/
+            git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/configure-kcli-profiles.sh || exit $?
+
+  deploy-dns:
+    runs-on: self-hosted # Use the runner name at the job level
+    timeout-minutes: 45
+    needs: kcli-openshift4-baremetal # Ensure the previous job runs first
+    if: ${{ inputs.runner == 'self-hosted' }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploying freeipa on KVM
+        run: | 
+          if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
+            cd /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
+            git config pull.rebase false
+            git pull
+          else
+            cd /home/${{ env.DEFAULT_RUNNER_USER }}
+            git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_NAME=${{ env.VM_NAME }}
+          export VM_PROFILE=${{ env.VM_NAME }}
+          export ACTION=${{ env.ACTION }}
+          export VM_NAME=freeipa
+          /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/deploy-vm.sh
+
+  deploy-vm:
+    runs-on: self-hosted # Use the runner name at the job level
+    timeout-minutes: 45
+    needs: configure-kcli-profiles # Ensure the previous job runs first
+    if: ${{ inputs.runner == 'self-hosted' }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploying ${{ inputs.vm_name }} on KVM
+        run: | 
+          if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
+            cd /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
+            git config pull.rebase false
+            git pull
+          else
+            cd /home/${{ env.DEFAULT_RUNNER_USER }}
+            git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_NAME=${{ env.VM_NAME }}
+          export VM_PROFILE=${{ env.VM_NAME }}
+          export ACTION=${{ env.ACTION }}
+          if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
+            export VM_NAME=${{ inputs.vm_name }}
+          fi
+          /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/deploy-vm.sh
