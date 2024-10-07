@@ -65,32 +65,6 @@ env:
 
 jobs:
   configure-kcli-profiles:
-  delete-registry-vm:
-    runs-on: self-hosted
-    timeout-minutes: 45
-    needs: configure-kcli-profiles
-    if: ${{ inputs.action == 'delete' }}
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Deleting ${{ inputs.vm_name }} on KVM
-        run: | 
-          if [ -d "/opt/kcli-pipelines" ]; then
-            cd /opt/kcli-pipelines
-            sudo git config pull.rebase false
-            sudo git pull
-          else
-            cd /home/${{ env.DEFAULT_RUNNER_USER }}
-            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
-          fi
-          export TARGET_SERVER=${{ env.TARGET_SERVER }}
-          export VM_NAME=${{ env.VM_NAME }}
-          export VM_PROFILE=${{ env.VM_NAME }}
-          export ACTION=${{ env.ACTION }}
-          export HARBOR_VERSION=${{ env.HARBOR_VERSION }}
-          export QUAY_VERSION=${{ env.QUAY_VERSION }}
-          export EMAIL=${{ env.EMAIL }}
-          /opt/kcli-pipelines/delete-vm.sh
     runs-on: self-hosted # Use the runner name at the job level
     timeout-minutes: 30
     if: ${{ inputs.runner == 'self-hosted' }}
@@ -144,8 +118,8 @@ jobs:
   deploy-registry-vm:
     runs-on: self-hosted # Use the runner name at the job level
     timeout-minutes: 45
-    needs: deploy-dns # Ensure the previous job runs first
-    if: ${{ inputs.runner == 'self-hosted' && inputs.action == 'create' }}
+    needs: configure-kcli-profiles # Ensure the previous job runs first
+    if: ${{ inputs.runner == 'self-hosted' && inputs.action != 'create' }}
     steps:
       - uses: actions/checkout@v3
 
