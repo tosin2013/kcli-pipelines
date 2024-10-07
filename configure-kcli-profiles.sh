@@ -48,10 +48,10 @@ clone_or_pull_repo() {
         exit 1
     fi
 
-    if [ ! -d "/home/github_runner/kcli-pipelines" ]; then
-        sudo git clone "$GIT_REPO" "/home/github_runner/kcli-pipelines" || { log "Failed to clone repo"; exit 1; }
+    if [ ! -d "/home/runner/kcli-pipelines" ]; then
+        sudo git clone "$GIT_REPO" "/home/runner/kcli-pipelines" || { log "Failed to clone repo"; exit 1; }
     else
-        cd "/home/github_runner/kcli-pipelines"
+        cd "/home/runner/kcli-pipelines"
         sudo git pull || { log "Failed to pull repo"; exit 1; }
     fi
 }
@@ -59,11 +59,11 @@ clone_or_pull_repo() {
 # Function to configure the environment
 configure_environment() {
     if [ "$TARGET_SERVER" == "rhel8-equinix" ] || [ "$TARGET_SERVER" == "rhel9-equinix" ]; then
-        sudo sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' "/home/github_runner/kcli-pipelines/helper_scripts/default.env"
+        sudo sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' "/home/runner/kcli-pipelines/helper_scripts/default.env"
     fi
 
     if [ "$VM_PROFILE" == "kcli-openshift4-baremetal" ]; then
-        sudo sed -i 's/NET_NAME=.*/NET_NAME=lab-baremetal/g' "/home/github_runner/kcli-pipelines/helper_scripts/default.env"
+        sudo sed -i 's/NET_NAME=.*/NET_NAME=lab-baremetal/g' "/home/runner/kcli-pipelines/helper_scripts/default.env"
     fi
 
     if [ ! -f ~/.ssh/id_rsa ]; then
@@ -74,8 +74,8 @@ configure_environment() {
         ssh-add ~/.ssh/id_rsa
     fi
 
-    if [ ! -f "/home/github_runner/kcli-pipelines/ansible.cfg" ]; then
-        cat >"/home/github_runner/kcli-pipelines/ansible.cfg" <<EOF
+    if [ ! -f "/home/runner/kcli-pipelines/ansible.cfg" ]; then
+        cat >"/home/runner/kcli-pipelines/ansible.cfg" <<EOF
 [defaults]
 remote_tmp = /tmp/ansible-$USER
 EOF
@@ -124,9 +124,9 @@ configure_kcli_profiles() {
         exit 1
     fi
 
-    sudo cp "/home/github_runner/kcli-pipelines/kcli-profiles.yml" "/home/$KCLI_USER/.kcli/profiles.yml"
-    sudo cp "/home/github_runner/kcli-pipelines/kcli-profiles.yml" "/home/$USER/.kcli/profiles.yml"
-    sudo cp "/home/github_runner/kcli-pipelines/kcli-profiles.yml" /root/.kcli/profiles.yml
+    sudo cp "/home/runner/kcli-pipelines/kcli-profiles.yml" "/home/$KCLI_USER/.kcli/profiles.yml"
+    sudo cp "/home/runner/kcli-pipelines/kcli-profiles.yml" "/home/$USER/.kcli/profiles.yml"
+    sudo cp "/home/runner/kcli-pipelines/kcli-profiles.yml" /root/.kcli/profiles.yml
 
     #sudo -E ./freeipa-server-container/configure-kcli-profile.sh || { log "Failed to configure freeipa-server-container"; exit 1; }
     sudo -E ./openshift-jumpbox/configure-kcli-profile.sh || { log "Failed to configure openshift-jumpbox"; exit 1; }
@@ -142,7 +142,7 @@ configure_kcli_profiles() {
     echo $CUSTOM_PROFILE || exit 1
     if [[ "$CUSTOM_PROFILE"  == "true" ]] && [ ${VM_PROFILE} != "freeipa" ]; then
         log "Configuring ${VM_PROFILE} type"
-        sudo -E /home/github_runner/kcli-pipelines/${VM_PROFILE}/configure-kcli-profile.sh || { log "Failed to configure ${VM_PROFILE}"; exit 1; }
+        sudo -E /home/runner/kcli-pipelines/${VM_PROFILE}/configure-kcli-profile.sh || { log "Failed to configure ${VM_PROFILE}"; exit 1; }
     fi
 
     cat ~/.kcli/profiles.yml | tee /tmp/kcli-profiles.yml > /dev/null

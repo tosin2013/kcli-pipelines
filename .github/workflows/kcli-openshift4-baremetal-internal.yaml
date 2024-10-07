@@ -116,6 +116,7 @@ jobs:
             cd /home/${{ env.DEFAULT_RUNNER_USER }}/
             git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
+          sudo chown -R ${{ env.DEFAULT_RUNNER_USER }}:${{ env.DEFAULT_RUNNER_USER }} /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
           /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
   kcli-openshift4-baremetal:
