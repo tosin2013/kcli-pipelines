@@ -70,8 +70,11 @@ jobs:
 
       - name: Check permissions
         run: |
-          ls -la /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/.git
-          sudo chown -R ${{ env.DEFAULT_RUNNER_USER }}:${{ env.DEFAULT_RUNNER_USER }} /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
+          if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
+            ls -la /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/.git
+            sudo chown -R ${{ env.DEFAULT_RUNNER_USER }}:${{ env.DEFAULT_RUNNER_USER }} /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
+          fi
+
 
       - name: Configure kcli profiles
         run: | 
