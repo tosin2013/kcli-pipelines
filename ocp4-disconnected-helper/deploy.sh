@@ -52,11 +52,16 @@ then
     exit 1
 fi
 
+if [ -z "$GUID" ];
+then 
+    echo "GUID does not exist"
+    exit 1
+fi
 
 # if SETUP_HARBER_REGISTRY is set to true, then run the playbook
 if [ "${SETUP_HARBER_REGISTRY}" == "true" ];
 then 
-  DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+  DOMAIN=$(yq eval '.domain' "${GUID}.${ANSIBLE_ALL_VARIABLES}")
 
   cd  /opt/ocp4-disconnected-helper
 
