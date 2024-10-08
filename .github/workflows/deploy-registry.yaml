@@ -64,6 +64,22 @@ on:
         options:
           - true
           - false
+      DOWNLOAD_TO_TAR:
+        description: 'Download to TAR'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - true
+          - false
+      PUSH_TAR_TO_REGISTRY:
+        description: 'Push TAR to Registry'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - true
+          - false
 
 env:
   TARGET_SERVER: ${{ inputs.target_server }}
