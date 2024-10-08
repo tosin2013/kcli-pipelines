@@ -70,8 +70,7 @@ env:
 
 jobs:
   configure-kcli-profiles:
-    runs-on: 
-      - labels:/${{ inputs.runner_tag }}
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level # Ensure the previous job runs first
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v3
@@ -97,7 +96,7 @@ jobs:
 
   ocp4-disconnected-helper:
     runs-on: 
-      - labels:/${{ inputs.runner_tag }}  # Use the runner name at the job level
+      - ${{ inputs.runner_tag }}  # Use the runner name at the job level
     timeout-minutes: 45
     needs: configure-kcli-profiles # Ensure the previous job runs first
     steps:
