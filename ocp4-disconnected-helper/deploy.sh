@@ -72,7 +72,7 @@ then
   # Convert YAML to JSON
   ${USE_SUDO} yq eval -o=json '.' extra_vars/setup-harbor-registry-vars.yml  > /tmp/output.json
   # CHOWN OF /tmp/output.json
-  ${USE_SUDO} chown lab-user:lab-user /tmp/output.json || exit $?
+  ${USE_SUDO} chown runner:users /tmp/output.json || exit $?
 
   # Load the certificate contents into a shell variable
   certificate=$(${USE_SUDO} cat /tmp/harbor.${DOMAIN}.bundle.crt)
@@ -84,7 +84,7 @@ then
   # Use jq to update the ssl_certificate field with the certificate
   ${USE_SUDO} jq --arg cert "$certificate" '.ssl_certificate = $cert' /tmp/output.json > /tmp/1.json || exit $?
   # CHOWN OF /tmp/1.json
-  ${USE_SUDO} chown lab-user:lab-user /tmp/1.json|| exit $?
+  ${USE_SUDO} chown runner:users /tmp/1.json|| exit $?
   ${USE_SUDO} jq --arg cert "$certificate_key" '.ssl_certificate_key = $cert' /tmp/1.json > /tmp/test_new.json || exit $?
 
   # Convert JSON back to YAML
