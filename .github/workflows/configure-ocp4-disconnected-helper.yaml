@@ -69,38 +69,13 @@ env:
 
 
 jobs:
-  configure-kcli-profiles:
-    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level # Ensure the previous job runs first
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Configure kcli profiles
-        run: | 
-          export TARGET_SERVER=${{ env.TARGET_SERVER }}
-          export VM_PROFILE=ocp4-disconnected-helper
-          if [ "ocp4-disconnected-helper" != "freeipa" ]; then
-            export CUSTOM_PROFILE=true
-          else 
-            export CUSTOM_PROFILE=false
-          fi
-          if [ -d "/opt/kcli-pipelines" ]; then
-            cd /opt/kcli-pipelines
-            sudo git config pull.rebase false
-            sudo git pull
-          else
-            cd /opt/
-            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
-          fi
-          sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
   ocp4-disconnected-helper:
     runs-on: 
       - ${{ inputs.runner_tag }}  # Use the runner name at the job level
-    timeout-minutes: 45
-    needs: configure-kcli-profiles # Ensure the previous job runs first
+    timeout-minutes: 45 # Ensure the previous job runs first
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Deploying ${{ inputs.vm_name }} on KVM
         run: | 

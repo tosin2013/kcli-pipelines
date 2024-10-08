@@ -38,14 +38,10 @@ on:
         description: 'GUID'
         required: true
         default: ''
-      runner:
+      runner_tag:
         description: 'Runner'
         required: true
-        default: 'self-hosted'
-      runner_name:
-        description: 'Self-hosted runner name'
-        required: true
-        default: 't9rq8-github-runner'
+        default: 'changeme-github-runner'
       community_version:
         description: 'Use community version of software (true/false)'
         required: true
@@ -58,7 +54,7 @@ env:
   TARGET_SERVER: ${{ inputs.target_server }}
   VM_NAME: ${{ inputs.vm_name }}
   ACTION: ${{ inputs.action }}
-  RUNNER: ${{ inputs.runner }}
+  RUNNER: ${{ inputs.runner_tag }}
   COMMUNITY_VERSION: ${{ inputs.community_version }}
   DEFAULT_RUNNER_USER: "runner"
   HARBOR_VERSION: ${{ inputs.harbor_version }}
@@ -68,9 +64,8 @@ env:
 
 jobs:
   configure-kcli-profiles:
-    runs-on: self-hosted # Use the runner name at the job level
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 30
-    if: ${{ inputs.runner == 'self-hosted' }}
     steps:
       - uses: actions/checkout@v3
 
@@ -95,10 +90,9 @@ jobs:
           sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
   deploy-dns:
-    runs-on: self-hosted # Use the runner name at the job level
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
     needs: configure-kcli-profiles # Ensure the previous job runs first
-    if: ${{ inputs.runner == 'self-hosted' && inputs.action == 'create' }}
     steps:
       - uses: actions/checkout@v3
 
@@ -119,10 +113,9 @@ jobs:
           sudo -E /opt/kcli-pipelines/deploy-vm.sh
 
   deploy-registry-vm:
-    runs-on: self-hosted # Use the runner name at the job level
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
     needs: deploy-dns # Ensure the previous job runs first
-    if: ${{ inputs.runner == 'self-hosted' && inputs.action == 'create' }}
     steps:
       - uses: actions/checkout@v3
 
@@ -151,7 +144,7 @@ jobs:
           sudo kcli ssh ${{ env.VM_NAME }} "sudo -E /root/init-harbor.sh" || exit $?
 
   delete-registry-vm:
-    runs-on: self-hosted # Use the runner name at the job level
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
     needs: configure-kcli-profiles # Ensure the previous job runs first
     if: ${{ inputs.runner == 'self-hosted' && inputs.action == 'delete' }}
