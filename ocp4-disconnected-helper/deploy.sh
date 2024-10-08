@@ -60,53 +60,15 @@ then
 
   cd  /opt/ocp4-disconnected-helper
 
-  # Create the CA key
-  ${USE_SUDO} openssl genrsa -out ca.key 4096
-
-  # Generate a self-signed CA certificate
-  ${USE_SUDO} openssl req -x509 -new -nodes -sha512 -days 3650 \
-  -subj "/C=US/ST=Atlanta/L=Atlanta/O=ContainersRUs/OU=InfoSec/CN=RootCA" \
-  -key ca.key \
-  -out ca.crt
-
-  # Add the Root CA to your system trust
-  ${USE_SUDO} cp ca.crt /etc/pki/ca-trust/source/anchors/harbor-ca.pem
-  ${USE_SUDO} update-ca-trust
-
-  # You'll also need to add that CA Cert to whatever system you're accessing Harbor with
-
-  # Generate a Server Certificate Key
-  ${USE_SUDO} openssl genrsa -out harbor.${DOMAIN}.key 4096
-
-  # Generate a Server Certificate Signing Request
-  ${USE_SUDO} openssl req -sha512 -new \
-      -subj "/C=US/ST=Gerogia/L=Atlanta/O=ContainersRUs/OU=DevOps/CN=harbor.${DOMAIN}" \
-      -key harbor.${DOMAIN}.key \
-      -out harbor.${DOMAIN}.csr
-
-# Create an x509 v3 Extension file using sudo tee
-${USE_SUDO} tee openssl-v3.ext >/dev/null <<EOF
-authorityKeyIdentifier=keyid,issuer
-basicConstraints=CA:FALSE
-keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
-extendedKeyUsage = serverAuth
-subjectAltName = @alt_names
-
-[alt_names]
-DNS.1=harbor.${DOMAIN}
-DNS.2=harbor
-EOF
-
-
-  # Sign the Server Certificate with the CA Certificate
-  ${USE_SUDO} openssl x509 -req -sha512 -days 730 \
-      -extfile openssl-v3.ext \
-      -CA ca.crt -CAkey ca.key -CAcreateserial \
-      -in harbor.${DOMAIN}.csr \
-      -out harbor.${DOMAIN}.crt
-
-  # Bundle the Server Certificate and the CA Certificate
-  ${USE_SUDO} cat harbor.${DOMAIN}.crt ca.crt > /tmp/harbor.${DOMAIN}.bundle.crt
+  if ${USE_SUDO}  kcli list vms | grep -oq 'harbor'; then
+     echo "Found 'harbor' in the output"
+     ${USE_SUDO}  kcli ssh harbor sudo  cat  /etc/letsencrypt/live/harbor.${DOMAIN}/fullchain.pem > /tmp/harbor.${DOMAIN}.bundle.crt
+     ${USE_SUDO}  kcli ssh harbor sudo  cat  /etc/letsencrypt/live/harbor.${DOMAIN}/privkey.pem > /tmp/harbor.${DOMAIN}.key
+  else
+      echo "'harbor' not found in the output"
+      exit 1
+  fi
+  
 
   # Convert YAML to JSON
   ${USE_SUDO} yq eval -o=json '.' extra_vars/setup-harbor-registry-vars.yml  > /tmp/output.json

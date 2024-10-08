@@ -65,7 +65,7 @@ then
         --agree-tos \
         --email "${EMAIL}" \
         --non-interactive
-    CERTDIR="/etc/letsencrypt/live/${COCKPIT_DOMAIN}"
+    CERTDIR="/etc/letsencrypt/live/harbor.${DOMAIN}"
     ls -lath $CERTDIR 
 fi
 
