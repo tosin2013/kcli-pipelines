@@ -31,4 +31,5 @@ if [ -f /opt/images/ ];
 then 
     cd /opt/images
     $USE_SUDO rm -rf *
+    $USE_SUDO  rm -rf  .oc-mirror.log
 fi
