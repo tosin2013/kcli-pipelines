@@ -28,7 +28,7 @@ fi
 
 export USE_SUDO="sudo"
 
-if [ -f /opt/images/ ];
+if [ -d /opt/images/ ];
 then 
     cd /opt/images
     $USE_SUDO rm -rf *
