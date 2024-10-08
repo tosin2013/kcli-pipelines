@@ -124,11 +124,14 @@ fi
 # if DOWNLOAD_TO_TAR is set to true, then run the playbook
 if [ "${DOWNLOAD_TO_TAR}" == "true" ];
 then 
-    if [ -d /var/lib/libvirt/images/openshift-containers/images ];
+    if [ ! -d /var/lib/libvirt/images/openshift-containers/images ];
     then 
         ${USE_SUDO} rm -rf /opt/images/ /var/lib/libvirt/images/openshift-containers/images || exit $?
         ${USE_SUDO} mkdir -p /var/lib/libvirt/images/openshift-containers/images 
         ${USE_SUDO} ln -s /var/lib/libvirt/images/openshift-containers/images /opt/images || exit $?
+    else 
+       cd  /opt/images
+       rm -rf * || exit $?
     fi
     DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
     curl --fail https://harbor.${GUID}.${DOMAIN}/ || exit $?
