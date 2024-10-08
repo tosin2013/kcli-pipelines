@@ -6,16 +6,6 @@ on:
         description: 'Target server'
         required: true
         default: rhel9-equinix
-      ocp4-disconnected-helper:
-        inputs:
-          ocp4_helper:
-            description: 'OCP4 Disconnected Helper'
-            required: false
-            default: 'false'
-            type: choice
-            options:
-              - true
-              - false
       action:
         description: 'Action'
         required: true
@@ -64,23 +54,6 @@ on:
         options:
           - true
           - false
-      DOWNLOAD_TO_TAR:
-        description: 'Download to TAR'
-        required: false
-        default: 'false'
-        type: choice
-        options:
-          - true
-          - false
-      PUSH_TAR_TO_REGISTRY:
-        description: 'Push TAR to Registry'
-        required: false
-        default: 'false'
-        type: choice
-        options:
-          - true
-          - false
-
 env:
   TARGET_SERVER: ${{ inputs.target_server }}
   VM_NAME: ${{ inputs.vm_name }}
@@ -92,10 +65,6 @@ env:
   QUAY_VERSION: ${{ inputs.quay_version }}
   GUID: ${{ inputs.guid }}
   EMAIL: ${{ inputs.email }}
-  OCP4_HELPER: ${{ inputs.ocp4_helper }}
-  DOWNLOAD_TO_TAR: ${{ inputs.DOWNLOAD_TO_TAR }}
-  PUSH_TAR_TO_REGISTRY: ${{ inputs.PUSH_TAR_TO_REGISTRY }}
-
 
 jobs:
   configure-kcli-profiles:
@@ -177,61 +146,6 @@ jobs:
           export GUID=${{ env.GUID }}
           if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
             export VM_NAME=${{ inputs.vm_name }}
-          fi
-          /opt/kcli-pipelines/deploy-vm.sh
-          sudo kcli ssh ${{ env.VM_NAME }} "sudo -E /root/init-harbor.sh" || exit $?
-
-  configure-ocp4-disconnected-helper:
-    runs-on: self-hosted # Use the runner name at the job level
-    needs: deploy-dns # Ensure the previous job runs first
-    timeout-minutes: 30
-    if: ${{ inputs.runner == 'self-hosted' && inputs.ocp4-disconnected-helper == 'true' }}
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Configure kcli profiles
-        run: | 
-          export TARGET_SERVER=${{ env.TARGET_SERVER }}
-          export VM_PROFILE=ocp4-disconnected-helper
-          if [ "ocp4-disconnected-helper" != "freeipa" ]; then
-            export CUSTOM_PROFILE=true
-          else 
-            export CUSTOM_PROFILE=false
-          fi
-          if [ -d "/opt/kcli-pipelines" ]; then
-            cd /opt/kcli-pipelines
-            sudo git config pull.rebase false
-            sudo git pull
-          else
-            cd /opt/
-            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
-          fi
-          sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
-
-
-  ocp4-disconnected-helper:
-    runs-on: self-hosted # Use the runner name at the job level
-    timeout-minutes: 45
-    needs: deploy-dns # Ensure the previous job runs first
-    if: ${{ inputs.runner == 'self-hosted' && inputs.ocp4-disconnected-helper == 'true' }}
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Deploying ${{ inputs.vm_name }} on KVM
-        run: | 
-          if [ -d "/opt/kcli-pipelines" ]; then
-            cd /opt/kcli-pipelines
-            sudo git config pull.rebase false
-            sudo git pull
-          else
-            cd /opt/
-            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
-          fi
-          export GUID=${{ env.GUID }}
-          export DOWNLOAD_TO_TAR=${{ env.DOWNLOAD_TO_TAR }}
-          export PUSH_TAR_TO_REGISTRY=${{ env.PUSH_TAR_TO_REGISTRY }}
-          if [ "${{ inputs.vm_name }}" != "harbor" ]; then
-            export SETUP_HARBER_REGISTRY=true
           fi
           /opt/kcli-pipelines/deploy-vm.sh
           sudo kcli ssh ${{ env.VM_NAME }} "sudo -E /root/init-harbor.sh" || exit $?
