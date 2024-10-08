@@ -61,7 +61,7 @@ fi
 # if SETUP_HARBER_REGISTRY is set to true, then run the playbook
 if [ "${SETUP_HARBER_REGISTRY}" == "true" ];
 then 
-  DOMAIN=$(yq eval '.domain' "${GUID}.${ANSIBLE_ALL_VARIABLES}")
+  DOMAIN=${GUID}.$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 
   cd  /opt/ocp4-disconnected-helper
 
