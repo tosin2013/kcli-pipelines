@@ -6,6 +6,16 @@ on:
         description: 'Target server'
         required: true
         default: rhel9-equinix
+      ocp4-disconnected-helper:
+        inputs:
+          ocp4_helper:
+            description: 'OCP4 Disconnected Helper'
+            required: false
+            default: 'false'
+            type: choice
+            options:
+              - true
+              - false
       action:
         description: 'Action'
         required: true
@@ -66,6 +76,7 @@ env:
   QUAY_VERSION: ${{ inputs.quay_version }}
   GUID: ${{ inputs.guid }}
   EMAIL: ${{ inputs.email }}
+  OCP4_HELPER: ${{ inputs.ocp4_helper }}
 
 
 jobs:
