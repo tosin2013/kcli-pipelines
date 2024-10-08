@@ -150,6 +150,7 @@ jobs:
             export VM_NAME=${{ inputs.vm_name }}
           fi
           /opt/kcli-pipelines/deploy-vm.sh
+          sudo kcli ssh ${{ env.VM_NAME }} "sudo -E /root/init-harbor.sh" || exit $?
   
   delete-registry-vm:
     runs-on: self-hosted # Use the runner name at the job level
