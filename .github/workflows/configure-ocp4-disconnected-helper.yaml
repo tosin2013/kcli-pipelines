@@ -74,27 +74,10 @@ jobs:
       - ${{ inputs.runner_tag }}  # Use the runner name at the job level
     timeout-minutes: 240 # Ensure the previous job runs first
     if: ${{ inputs.action == 'create' }}
+    steps:
       - uses: actions/checkout@v4
 
-      - name: Clean up OpenShift 4 Disconnected Helper
-        if: failure()
-        run: | 
-          if [ -d "/opt/kcli-pipelines" ]; then
-            cd /opt/kcli-pipelines
-            sudo git config pull.rebase false
-            sudo git pull
-          else
-            cd /opt/
-            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
-          fi
-          export GUID=${{ env.GUID }}
-          export DOWNLOAD_TO_TAR=${{ env.DOWNLOAD_TO_TAR }}
-          export PUSH_TAR_TO_REGISTRY=${{ env.PUSH_TAR_TO_REGISTRY }}
-          sudo -E /opt/kcli-pipelines/ocp4-disconnected-helper/destroy.sh || exit $?
-
       - name: Configuring OpenShift 4 Disconnected Helper
-        retry:
-          max-attempts: 3
         run: | 
           if [ -d "/opt/kcli-pipelines" ]; then
             cd /opt/kcli-pipelines
