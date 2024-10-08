@@ -93,6 +93,8 @@ env:
   GUID: ${{ inputs.guid }}
   EMAIL: ${{ inputs.email }}
   OCP4_HELPER: ${{ inputs.ocp4_helper }}
+  DOWNLOAD_TO_TAR: ${{ inputs.DOWNLOAD_TO_TAR }}
+  PUSH_TAR_TO_REGISTRY: ${{ inputs.PUSH_TAR_TO_REGISTRY }}
 
 
 jobs:
@@ -232,5 +234,7 @@ jobs:
           export EMAIL=${{ env.EMAIL }}
           if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
             export VM_NAME=${{ inputs.vm_name }}
+            export DOWNLOAD_TO_TAR=${{ env.DOWNLOAD_TO_TAR }}
+            export PUSH_TAR_TO_REGISTRY=${{ env.PUSH_TAR_TO_REGISTRY }}
           fi
           /opt/kcli-pipelines/deploy-vm.sh
