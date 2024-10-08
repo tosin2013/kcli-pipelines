@@ -48,7 +48,7 @@ fi
 
 hostnamectl set-hostname harbor.${DOMAIN}
 
-check_and_start_docker
+#check_and_start_docker
 
 if [ ! -f /root/${DOMAIN}.crt ];
 then
