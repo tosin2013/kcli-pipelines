@@ -85,7 +85,7 @@ ufw allow 8443/tcp
 ufw allow ssh
 
 # Enable UFW
-ufw enable -y
+ufw --force enable
 echo "Housekeeping done"
 
 echo "Starting Harbor install"
