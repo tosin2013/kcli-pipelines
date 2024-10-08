@@ -65,7 +65,6 @@ then
         --non-interactive
     CERTDIR="/etc/letsencrypt/live/${COCKPIT_DOMAIN}"
     ls -lath $CERTDIR 
-    exit 1
 fi
 
 IPorFQDN=$(hostname -f)
@@ -109,8 +108,8 @@ cd /root/harbor
 cp harbor.yml.tmpl harbor.yml
 sed -i "s/reg.mydomain.com/$IPorFQDN/g" harbor.yml
 sed -i "s|# external_url:.*|external_url: https://$IPorFQDN|g" harbor.yml
-sed -i "s|certificate: /your/certificate/path|certificate: /root/harbor.${DOMAIN}.crt|" harbor.yml
-sed -i "s|private_key: /your/private/key/path|private_key: /root/harbor.${DOMAIN}.key|"  harbor.yml
+sed -i "s|certificate: /your/certificate/path|certificate: /etc/letsencrypt/live/harbor.${DOMAIN}/fullchain.pem|" harbor.yml
+sed -i "s|private_key: /your/private/key/path|private_key: /etc/letsencrypt/live/harbor.${DOMAIN}/privkey.pem|"  harbor.yml
 cat harbor.yml
 ./install.sh
 echo -e "Harbor Installation Complete \n\nPlease log out and log in or run the command 'newgrp docker' to use Docker without sudo\n\nLogin to your harbor instance:\n docker login -u admin -p Harbor12345 $IPorFQDN"
