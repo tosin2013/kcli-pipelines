@@ -18,14 +18,10 @@ on:
         description: 'GUID'
         required: true
         default: ''
-      runner:
+      runner_tag:
         description: 'Runner'
         required: true
-        default: 'self-hosted'
-      runner_name:
-        description: 'Self-hosted runner name'
-        required: true
-        default: 't9rq8-github-runner'
+        default: 'changeme-github-runner'
       DOWNLOAD_TO_TAR:
         description: 'Download to TAR'
         required: false
@@ -63,7 +59,7 @@ env:
   TARGET_SERVER: ${{ inputs.target_server }}
   VM_NAME: ${{ inputs.vm_name }}
   ACTION: ${{ inputs.action }}
-  RUNNER: ${{ inputs.runner }}
+  RUNNER: ${{ inputs.runner_tag }}
   DEFAULT_RUNNER_USER: "runner"
   GUID: ${{ inputs.guid }}
   DOWNLOAD_TO_TAR: ${{ inputs.DOWNLOAD_TO_TAR }}
@@ -74,7 +70,7 @@ env:
 
 jobs:
   configure-kcli-profiles:
-    runs-on: labels:${{ inputs.runner }} # Use the runner name at the job level # Ensure the previous job runs first
+    runs-on: labels:${{ inputs.runner_tag }} # Use the runner name at the job level # Ensure the previous job runs first
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v3
@@ -99,7 +95,7 @@ jobs:
           sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
   ocp4-disconnected-helper:
-    runs-on: labels:${{ inputs.runner }}  # Use the runner name at the job level
+    runs-on: labels:${{ inputs.runner_tag }}  # Use the runner name at the job level
     timeout-minutes: 45
     needs: configure-kcli-profiles # Ensure the previous job runs first
     steps:
