@@ -99,4 +99,4 @@ jobs:
             export SETUP_QUAY_REGISTRY=false
             exit 1
           fi
-          /opt/kcli-pipelines/ocp4-disconnected-helper/deploy.sh || exit $?
+          sudo -E /opt/kcli-pipelines/ocp4-disconnected-helper/deploy.sh || exit $?
