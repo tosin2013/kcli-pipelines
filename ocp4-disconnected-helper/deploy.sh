@@ -97,6 +97,7 @@ then
   ${USE_SUDO} yq eval '.harbor_hostname = "harbor.'${GUID}.${DOMAIN}'"' -i output.yaml || exit $?
   IP_ADDRESS=$(${USE_SUDO} /usr/bin/kcli info vm harbor | grep ip: | awk '{print $2}')
 
+  SSH_PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
   ${USE_SUDO} sshpass -p "$SSH_PASSWORD" ${USE_SUDO} ssh-copy-id -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no cloud-user@${IP_ADDRESS} || exit $?
   ${USE_SUDO}  tee /tmp/inventory <<EOF
 ## Ansible Inventory template file used by Terraform to create an ./inventory file populated with the nodes it created
