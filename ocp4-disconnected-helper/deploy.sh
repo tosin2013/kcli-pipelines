@@ -81,7 +81,7 @@ then
 
   # Load the certificate contents into a shell variable
   certificate=$(${USE_SUDO} cat /tmp/harbor.${GUID}.${DOMAIN}.bundle.crt)
-  certificate_key=$(${USE_SUDO} cat harbor.${GUID}.${DOMAIN}.key)
+  certificate_key=$(${USE_SUDO} cat /tmp/harbor.${GUID}.${DOMAIN}.key)
 
   ${USE_SUDO} cat /tmp/harbor.${GUID}.${DOMAIN}.bundle.crt > /dev/null 2>&1 || exit $?
   ${USE_SUDO} cat harbor.${GUID}.${DOMAIN}.key > /dev/null 2>&1 || exit $?
