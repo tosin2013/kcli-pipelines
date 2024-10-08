@@ -1,0 +1,128 @@
+name: OpenShift 4 Disconnected Helper
+on:
+  workflow_dispatch:
+    inputs:
+      target_server:
+        description: 'Target server'
+        required: true
+        default: rhel9-equinix
+      action:
+        description: 'Action'
+        required: true
+        default: create
+        type: choice
+        options:
+          - create
+          - delete
+      runner:
+        description: 'Runner'
+        required: true
+        default: 'self-hosted'
+      runner_name:
+        description: 'Self-hosted runner name'
+        required: true
+        default: 't9rq8-github-runner'
+      DOWNLOAD_TO_TAR:
+        description: 'Download to TAR'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - true
+          - false
+      PUSH_TAR_TO_REGISTRY:
+        description: 'Push TAR to Registry'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - true
+          - false
+      SETUP_QUAY_REGISTRY:
+        description: 'Setup Quay Registry'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - true
+          - false
+      SETUP_HARBER_REGISTRY:
+        description: 'Setup Harbor Registry'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - true
+          - false
+
+env:
+  TARGET_SERVER: ${{ inputs.target_server }}
+  VM_NAME: ${{ inputs.vm_name }}
+  ACTION: ${{ inputs.action }}
+  RUNNER: ${{ inputs.runner }}
+  DEFAULT_RUNNER_USER: "runner"
+  GUID: ${{ inputs.guid }}
+  DOWNLOAD_TO_TAR: ${{ inputs.DOWNLOAD_TO_TAR }}
+  PUSH_TAR_TO_REGISTRY: ${{ inputs.PUSH_TAR_TO_REGISTRY }}
+  SETUP_QUAY_REGISTRY: ${{ inputs.SETUP_QUAY_REGISTRY }}
+  SETUP_HARBER_REGISTRY: ${{ inputs.SETUP_HARBER_REGISTRY }}
+
+
+jobs:
+  configure-kcli-profiles:
+    runs-on: self-hosted # Use the runner name at the job level # Ensure the previous job runs first
+    timeout-minutes: 30
+    if: ${{ inputs.runner == 'self-hosted' && inputs.ocp4-disconnected-helper == 'true' }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure kcli profiles
+        run: | 
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_PROFILE=ocp4-disconnected-helper
+          if [ "ocp4-disconnected-helper" != "freeipa" ]; then
+            export CUSTOM_PROFILE=true
+          else 
+            export CUSTOM_PROFILE=false
+          fi
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
+            sudo git config pull.rebase false
+            sudo git pull
+          else
+            cd /opt/
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
+
+  ocp4-disconnected-helper:
+    runs-on: self-hosted # Use the runner name at the job level
+    timeout-minutes: 45
+    needs: configure-kcli-profiles # Ensure the previous job runs first
+    if: ${{ inputs.runner == 'self-hosted' && inputs.ocp4-disconnected-helper == 'true' }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploying ${{ inputs.vm_name }} on KVM
+        run: | 
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
+            sudo git config pull.rebase false
+            sudo git pull
+          else
+            cd /opt/
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          export GUID=${{ env.GUID }}
+          export DOWNLOAD_TO_TAR=${{ env.DOWNLOAD_TO_TAR }}
+          export PUSH_TAR_TO_REGISTRY=${{ env.PUSH_TAR_TO_REGISTRY }}
+          if [ "${{ inputs.vm_name }}" != "harbor" ]; then
+            export SETUP_HARBER_REGISTRY=true
+          elif [ "${{ inputs.vm_name }}" != "quay" ]; then
+            export SETUP_QUAY_REGISTRY=true
+          else 
+            export SETUP_HARBER_REGISTRY=false
+            export SETUP_QUAY_REGISTRY=false
+            exit 1
+          fi
+          /opt/kcli-pipelines/ocp4-disconnected-helper/deploy.sh || exit $?
