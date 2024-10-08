@@ -18,12 +18,10 @@ on:
         description: 'GUID'
         required: true
         default: ''
-      runner_tag:                                                                                                                                                                
-        description: 'Runner'                                                                                                                                                    
-        required: true                                                                                                                                                           
-        default: ''                                                                                                                                                              
-        type: choice                                                                                                                                                             
-        options: ${{ github.actions.runnerLabels }}  
+      runner_tag:
+        description: 'Runner'
+        required: true
+        default: 'changeme-github-runner'
       DOWNLOAD_TO_TAR:
         description: 'Download to TAR'
         required: false
