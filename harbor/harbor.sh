@@ -54,7 +54,7 @@ if [ ! -f /root/${DOMAIN}.crt ];
 then
     echo "Using Docker"
     mkdir -p /etc/letsencrypt/
-    docker run --rm -it \
+    docker run --rm -T \
         --env AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
         --env AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
         -v "/etc/letsencrypt:/etc/letsencrypt" \
