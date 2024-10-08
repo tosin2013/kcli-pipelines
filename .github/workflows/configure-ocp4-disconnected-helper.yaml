@@ -24,16 +24,16 @@ on:
         default: 'changeme-github-runner'
       DOWNLOAD_TO_TAR:
         description: 'Download to TAR'
-        required: false
-        default: 'false'
+        required: true
+        default: 'true'
         type: choice
         options:
           - true
           - false
       PUSH_TAR_TO_REGISTRY:
         description: 'Push TAR to Registry'
-        required: false
-        default: 'false'
+        required: true
+        default: 'true'
         type: choice
         options:
           - true
@@ -49,7 +49,7 @@ on:
       SETUP_HARBER_REGISTRY:
         description: 'Setup Harbor Registry'
         required: false
-        default: 'true'
+        default: 'false'
         type: choice
         options:
           - true
