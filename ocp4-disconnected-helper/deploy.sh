@@ -111,6 +111,7 @@ ansible_ssh_user=ubuntu
 ansible_ssh_pass=${SSH_PASSWORD}
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 ansible_internal_private_ip=${IP_ADDRESS}
+rh_pull_secret=/home/ubuntu/rh-pull-secret
 EOF
 
   ${USE_SUDO} cat /tmp/inventory
