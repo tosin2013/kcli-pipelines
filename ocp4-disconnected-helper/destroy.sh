@@ -25,18 +25,10 @@ then
   export USE_SUDO="sudo"
 fi
 
-if [ ! -z "$CICD_PIPELINE" ]; then
-  export USE_SUDO="sudo"
-fi
+export USE_SUDO="sudo"
 
-
-DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
-export VM_PROFILE=harbor
-export VM_NAME="harbor"
-export  ACTION="delete" # create, delete
-
-/opt/kcli-pipelines/deploy-vm.sh
 if [ -f /opt/images/ ];
 then 
-    ${USE_SUDO} rm -rf /opt/images/
+    cd /opt/images
+    $USE_SUDO rm -rf *
 fi

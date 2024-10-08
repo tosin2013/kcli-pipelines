@@ -147,7 +147,7 @@ jobs:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
     needs: configure-kcli-profiles # Ensure the previous job runs first
-    if: ${{ inputs.runner == 'self-hosted' && inputs.action == 'delete' }}
+    if: ${{ inputs.action == 'delete' }}
     steps:
       - uses: actions/checkout@v3
 
