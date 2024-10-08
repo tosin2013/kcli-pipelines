@@ -62,6 +62,7 @@ fi
 if [ "${SETUP_HARBER_REGISTRY}" == "true" ];
 then 
   DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+  VM_NAME=harbor
 
   cd  /opt/ocp4-disconnected-helper
 
@@ -115,7 +116,7 @@ EOF
   ${USE_SUDO} cat /tmp/inventory
 
 
-  ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/setup-harbor-registry.yml  -e "@output.yaml" -vv || exit $?
+  ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/setup-harbor-registry.yml  -e "@output.yaml" -vv || exit $?
   exit 0
 fi
 
@@ -130,8 +131,8 @@ then
     curl --fail https://harbor.${GUID}.${DOMAIN}/ || exit $?
     echo "Downloading images to /opt/images"
     cd  /opt/ocp4-disconnected-helper
-    echo   ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv
-    ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv || exit $?
+    echo   ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv
+    ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv || exit $?
     exit 0
 fi
 
@@ -143,7 +144,7 @@ then
     echo "Pushing images to registry"
     cd  /opt/ocp4-disconnected-helper
     ${USE_SUDO} yq eval '.registries[0].server = "harbor.'${GUID}.${DOMAIN}'"' -i extra_vars/push-tar-to-registry-vars.yml || exit $?
-    echo ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv 
-    ${USE_SUDO} /usr/local/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv || exit $?
+    echo ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv 
+    ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv || exit $?
     exit 0
 fi
