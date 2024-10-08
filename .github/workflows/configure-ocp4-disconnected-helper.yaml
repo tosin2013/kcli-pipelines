@@ -90,13 +90,4 @@ jobs:
           export GUID=${{ env.GUID }}
           export DOWNLOAD_TO_TAR=${{ env.DOWNLOAD_TO_TAR }}
           export PUSH_TAR_TO_REGISTRY=${{ env.PUSH_TAR_TO_REGISTRY }}
-          if [ "${{ inputs.vm_name }}" != "harbor" ]; then
-            export SETUP_HARBER_REGISTRY=true
-          elif [ "${{ inputs.vm_name }}" != "quay" ]; then
-            export SETUP_QUAY_REGISTRY=true
-          else 
-            export SETUP_HARBER_REGISTRY=false
-            export SETUP_QUAY_REGISTRY=false
-            exit 1
-          fi
           sudo -E /opt/kcli-pipelines/ocp4-disconnected-helper/deploy.sh || exit $?
