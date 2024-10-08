@@ -68,7 +68,6 @@ then
       echo "'harbor' not found in the output"
       exit 1
   fi
-  
 
   # Convert YAML to JSON
   ${USE_SUDO} yq eval -o=json '.' extra_vars/setup-harbor-registry-vars.yml  > /tmp/output.json
@@ -91,11 +90,6 @@ then
   # Convert JSON back to YAML
   ${USE_SUDO} yq eval --output-format=yaml '.' /tmp/test_new.json > output.yaml || exit $?
   ${USE_SUDO} yq eval '.harbor_hostname = "harbor.'${DOMAIN}'"' -i output.yaml || exit $?
-  export VM_PROFILE=harbor
-  export VM_NAME="harbor"
-  export  ACTION="create" # create, delete
-
-  /opt/kcli-pipelines/deploy-vm.sh
   IP_ADDRESS=$(${USE_SUDO} /usr/bin/kcli info vm harbor | grep ip: | awk '{print $2}')
 
   ${USE_SUDO} sshpass -p "$SSH_PASSWORD" ${USE_SUDO} ssh-copy-id -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no cloud-user@${IP_ADDRESS} || exit $?
@@ -126,7 +120,7 @@ then
     then 
         ${USE_SUDO} rm -rf /opt/images/
     fi
-    DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+    DOMAIN=$(yq eval '.domain' "${GUID}.${ANSIBLE_ALL_VARIABLES}")
     curl --fail https://harbor.${DOMAIN}/ || exit $?
     echo "Downloading images to /opt/images"
     cd  /opt/ocp4-disconnected-helper
