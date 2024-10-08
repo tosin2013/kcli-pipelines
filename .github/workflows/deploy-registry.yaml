@@ -140,7 +140,7 @@ jobs:
             sudo git config pull.rebase false
             sudo git pull
           else
-            cd /home/${{ env.DEFAULT_RUNNER_USER }}
+            cd /opt/
             sudo git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
@@ -164,7 +164,7 @@ jobs:
             sudo git config pull.rebase false
             sudo git pull
           else
-            cd /home/${{ env.DEFAULT_RUNNER_USER }}
+            cd /opt/
             sudo git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
@@ -181,12 +181,39 @@ jobs:
           /opt/kcli-pipelines/deploy-vm.sh
           sudo kcli ssh ${{ env.VM_NAME }} "sudo -E /root/init-harbor.sh" || exit $?
 
+  configure-ocp4-disconnected-helper:
+    runs-on: self-hosted # Use the runner name at the job level
+    needs: deploy-dns # Ensure the previous job runs first
+    timeout-minutes: 30
+    if: ${{ inputs.runner == 'self-hosted' && inputs.ocp4-disconnected-helper == 'true' }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure kcli profiles
+        run: | 
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_PROFILE=ocp4-disconnected-helper
+          if [ "ocp4-disconnected-helper" != "freeipa" ]; then
+            export CUSTOM_PROFILE=true
+          else 
+            export CUSTOM_PROFILE=false
+          fi
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
+            sudo git config pull.rebase false
+            sudo git pull
+          else
+            cd /opt/
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
+
 
   ocp4-disconnected-helper:
     runs-on: self-hosted # Use the runner name at the job level
     timeout-minutes: 45
     needs: deploy-dns # Ensure the previous job runs first
-    if: ${{ inputs.runner == 'self-hosted' && inputs.action == 'create' }}
+    if: ${{ inputs.runner == 'self-hosted' && inputs.ocp4-disconnected-helper == 'true' }}
     steps:
       - uses: actions/checkout@v3
 
@@ -197,10 +224,12 @@ jobs:
             sudo git config pull.rebase false
             sudo git pull
           else
-            cd /home/${{ env.DEFAULT_RUNNER_USER }}
+            cd /opt/
             sudo git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export GUID=${{ env.GUID }}
+          export DOWNLOAD_TO_TAR=${{ env.DOWNLOAD_TO_TAR }}
+          export PUSH_TAR_TO_REGISTRY=${{ env.PUSH_TAR_TO_REGISTRY }}
           if [ "${{ inputs.vm_name }}" != "harbor" ]; then
             export SETUP_HARBER_REGISTRY=true
           fi
@@ -222,7 +251,7 @@ jobs:
             sudo git config pull.rebase false
             sudo git pull
           else
-            cd /home/${{ env.DEFAULT_RUNNER_USER }}
+            cd /opt/
             sudo git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
@@ -234,7 +263,5 @@ jobs:
           export EMAIL=${{ env.EMAIL }}
           if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
             export VM_NAME=${{ inputs.vm_name }}
-            export DOWNLOAD_TO_TAR=${{ env.DOWNLOAD_TO_TAR }}
-            export PUSH_TAR_TO_REGISTRY=${{ env.PUSH_TAR_TO_REGISTRY }}
           fi
-          /opt/kcli-pipelines/deploy-vm.sh
+          /opt/ocp4-disconnected-helper/deploy.sh
