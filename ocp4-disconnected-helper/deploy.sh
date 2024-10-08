@@ -84,7 +84,7 @@ then
   certificate_key=$(${USE_SUDO} cat /tmp/harbor.${GUID}.${DOMAIN}.key)
 
   ${USE_SUDO} cat /tmp/harbor.${GUID}.${DOMAIN}.bundle.crt > /dev/null 2>&1 || exit $?
-  ${USE_SUDO} cat harbor.${GUID}.${DOMAIN}.key > /dev/null 2>&1 || exit $?
+  ${USE_SUDO} cat /tmp/harbor.${GUID}.${DOMAIN}.key > /dev/null 2>&1 || exit $?
 
   # Use jq to update the ssl_certificate field with the certificate
   ${USE_SUDO} jq --arg cert "$certificate" '.ssl_certificate = $cert' /tmp/output.json > /tmp/1.json || exit $?
