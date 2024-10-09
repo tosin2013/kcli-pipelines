@@ -45,6 +45,7 @@ if [ "$1" == "create" ]; then
     export COMMUNITY_VERSION="${COMMUNITY_VERSION}"
     /opt/freeipa-workshop-deployer/1_kcli/create.sh
     /opt/freeipa-workshop-deployer/2_ansible_config/configure.sh
+    /opt/kcli-pipelines/configure-dns.sh
 elif [ "$1" == "destroy" ]; then
     echo "Destroying..."
    /opt/freeipa-workshop-deployer/1_kcli/destroy.sh
