@@ -70,6 +70,7 @@ env:
   PUSH_TAR_TO_REGISTRY: ${{ inputs.PUSH_TAR_TO_REGISTRY }}
   SETUP_QUAY_REGISTRY: ${{ inputs.SETUP_QUAY_REGISTRY }}
   SETUP_HARBER_REGISTRY: ${{ inputs.SETUP_HARBER_REGISTRY }}
+  HARBOR_PASSWORD: ${{ inputs.HARBOR_PASSWORD }}
 
 
 jobs:
@@ -95,6 +96,7 @@ jobs:
           export GUID=${{ env.GUID }}
           export DOWNLOAD_TO_TAR=${{ env.DOWNLOAD_TO_TAR }}
           export PUSH_TAR_TO_REGISTRY=${{ env.PUSH_TAR_TO_REGISTRY }}
+          export HARBOR_PASSWORD=${{ env.HARBOR_PASSWORD }}
           sudo -E /opt/kcli-pipelines/ocp4-disconnected-helper/deploy.sh || exit $?
 
   delete-ocp4-disconnected-helper:

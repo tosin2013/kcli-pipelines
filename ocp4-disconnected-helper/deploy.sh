@@ -58,6 +58,12 @@ then
     exit 1
 fi
 
+if [ -z $HARBOR_PASSWORD ];
+then 
+    echo "HARBOR_PASSWORD does not exist"
+    exit 1
+fi
+
 # if SETUP_HARBER_REGISTRY is set to true, then run the playbook
 if [ "${SETUP_HARBER_REGISTRY}" == "true" ];
 then 
@@ -134,9 +140,12 @@ then
        rm -rf * || exit $?
     fi
     DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+    PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
+    echo $PULL_SECRET | ${USE_SUDO} tee ~/rh-pull-secret > /dev/null || exit $?
     curl --fail https://harbor.${GUID}.${DOMAIN}/ || exit $?
     echo "Downloading images to /opt/images"
     cd  /opt/ocp4-disconnected-helper
+    
     echo   ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv
     ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv || exit $?
     exit 0
@@ -150,6 +159,7 @@ then
     echo "Pushing images to registry"
     cd  /opt/ocp4-disconnected-helper
     ${USE_SUDO} yq eval '.registries[0].server = "harbor.'${GUID}.${DOMAIN}'"' -i extra_vars/push-tar-to-registry-vars.yml || exit $?
+    ${USE_SUDO} yq eval '.registries[0].password = "'${HARBOR_PASSWORD}'"'  -i extra_vars/push-tar-to-registry-vars.yml || exit $?
     echo ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv 
     ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv || exit $?
     exit 0
