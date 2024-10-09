@@ -54,6 +54,11 @@ on:
         options:
           - true
           - false
+      HARBOR_PASSWORD:
+        description: 'Harbor Registry Password'
+        required: true
+        default: 'Harbor12345'
+        type: password
 
 env:
   TARGET_SERVER: ${{ inputs.target_server }}
