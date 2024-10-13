@@ -185,7 +185,6 @@ function main() {
     # Check if the file or directory exists
     if [ -e "$IMAGE_PATH" ]; then
         echo "Success: '$IMAGE_PATH' exists."
-        exit 0  # Exit with zero status to indicate success
     else
         echo "Error: '$IMAGE_PATH' does not exist."
         echo ""
