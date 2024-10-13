@@ -92,6 +92,7 @@ jobs:
   deploy-dns:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
     needs: configure-kcli-profiles # Ensure the previous job runs first
     steps:
       - uses: actions/checkout@v3
@@ -115,6 +116,7 @@ jobs:
   deploy-registry-vm:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
     needs: deploy-dns # Ensure the previous job runs first
     steps:
       - uses: actions/checkout@v3
@@ -171,4 +173,4 @@ jobs:
           if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
             export VM_NAME=${{ inputs.vm_name }}
           fi
-          /opt/ocp4-disconnected-helper/deploy.sh
+          /opt/kcli-pipelines/deploy-vm.sh
