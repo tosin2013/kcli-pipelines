@@ -180,6 +180,23 @@ function delete_vm() {
 
 # Main function
 function main() {
+    IMAGE_PATH="/var/lib/libvirt/images/rhel8"
+
+    # Check if the file or directory exists
+    if [ -e "$IMAGE_PATH" ]; then
+        echo "Success: '$IMAGE_PATH' exists."
+        exit 0  # Exit with zero status to indicate success
+    else
+        echo "Error: '$IMAGE_PATH' does not exist."
+        echo ""
+        echo "Please SSH into the appropriate server and run the following commands to download the required RHEL images:"
+        echo ""
+        echo "  sudo kcli download image rhel8"
+        echo "  sudo kcli download image rhel9"
+        echo ""
+        exit 1  # Exit with a non-zero status to indicate failure
+    fi
+
     if [ -z "$VM_NAME" ]; then
         echo "Error: Please provide the name of the VM to deploy by setting the VM_NAME environment variable."
         echo "Example: export VM_NAME=my-vm"
