@@ -83,6 +83,7 @@ function create_vm() {
           sudo -E /opt/kcli-pipelines/freeipa/deploy-freeipa.sh create
         else
           echo "VM $vm_name already exists."
+          sudo -E  /opt/kcli-pipelines/configure-dns.sh
           exit 0
         fi
     elif [[ $vm_name == "kcli-openshift4-baremetal" ]]; then
