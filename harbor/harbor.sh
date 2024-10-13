@@ -18,7 +18,7 @@ fi
 if [ -f /opt/kcli-pipelines/helper_scripts/default.env ];
 then 
   source /opt/kcli-pipelines/helper_scripts/default.env
-  source helper_scripts/helper_functions.sh
+  source /opt/kcli-pipelines/helper_scripts/helper_functions.sh
 else
   echo "default.env file does not exist"
   exit 1
