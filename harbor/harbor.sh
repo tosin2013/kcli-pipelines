@@ -55,6 +55,12 @@ if [ $# -ne 5 ]; then
     exit 1
 fi
 
+if [ -z "$GUID" ];
+then 
+    echo "GUID does not exist"
+    exit 1
+fi
+
 DOMAIN=${1}
 HARBORVERSION=${2}
 AWS_ACCESS_KEY_ID=${3}
@@ -66,7 +72,7 @@ if [ -z $HARBORVERSION ]; then
 fi
 
 
-hostnamectl set-hostname harbor.${DOMAIN}
+hostnamectl set-hostname harbor.$GUID.${DOMAIN}
 
 check_and_start_docker
 
@@ -81,11 +87,11 @@ then
         certbot/dns-route53 \
         certonly \
         --dns-route53 \
-        -d "harbor.${DOMAIN}"  \
+        -d "harbor.$GUID.${DOMAIN}"  \
         --agree-tos \
         --email "${EMAIL}" \
         --non-interactive
-    CERTDIR="/etc/letsencrypt/live/harbor.${DOMAIN}"
+    CERTDIR="/etc/letsencrypt/live/harbor.$GUID.${DOMAIN}"
     ls -lath $CERTDIR 
 fi
 
@@ -130,8 +136,8 @@ cd /root/harbor
 cp harbor.yml.tmpl harbor.yml
 sed -i "s/reg.mydomain.com/$IPorFQDN/g" harbor.yml
 sed -i "s|# external_url:.*|external_url: https://$IPorFQDN|g" harbor.yml
-sed -i "s|certificate: /your/certificate/path|certificate: /etc/letsencrypt/live/harbor.${DOMAIN}/fullchain.pem|" harbor.yml
-sed -i "s|private_key: /your/private/key/path|private_key: /etc/letsencrypt/live/harbor.${DOMAIN}/privkey.pem|"  harbor.yml
+sed -i "s|certificate: /your/certificate/path|certificate: /etc/letsencrypt/live/harbor.$GUID.${DOMAIN}/fullchain.pem|" harbor.yml
+sed -i "s|private_key: /your/private/key/path|private_key: /etc/letsencrypt/live/harbor.$GUID.${DOMAIN}/privkey.pem|"  harbor.yml
 cat harbor.yml
 ./install.sh
 echo -e "Harbor Installation Complete \n\nPlease log out and log in or run the command 'newgrp docker' to use Docker without sudo\n\nLogin to your harbor instance:\n docker login -u admin -p Harbor12345 $IPorFQDN"
@@ -141,7 +147,7 @@ $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \
     --vault-password-file "$HOME"/.vault_password \
     --extra-vars "@${ANSIBLE_VAULT_FILE}" \
     --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
-    --extra-vars "key=harbor.${DOMAIN}" \
+    --extra-vars "key=harbor.$GUID.${DOMAIN}" \
     --extra-vars "freeipa_server_fqdn=idm.${DOMAIN}" \
     --extra-vars "value=${IPorFQDN}" \
-    --extra-vars "freeipa_server_domain=${DOMAIN}" --extra-vars "action=present" -vvv || exit $?
+    --extra-vars "freeipa_server_domain=$GUID.${DOMAIN}" --extra-vars "action=present" -vvv || exit $?
