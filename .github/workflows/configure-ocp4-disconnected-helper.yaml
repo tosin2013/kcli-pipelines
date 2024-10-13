@@ -86,11 +86,11 @@ jobs:
       - name: Configuring OpenShift 4 Disconnected Helper
         run: | 
           if [ -d "/opt/kcli-pipelines" ]; then
-            cd /opt/kcli-pipelines
+            sudo -E cd /opt/kcli-pipelines
             sudo git config pull.rebase false
             sudo git pull
           else
-            cd /opt/
+            sudo -E cd /opt/
             sudo git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export GUID=${{ env.GUID }}

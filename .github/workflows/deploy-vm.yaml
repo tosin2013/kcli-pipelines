@@ -74,12 +74,12 @@ jobs:
             export CUSTOM_PROFILE=false
           fi
           if [ -d "/opt/kcli-pipelines" ]; then
-            cd /opt/kcli-pipelines
-            git config pull.rebase false
-            git pull
+            sudo -E cd /opt/kcli-pipelines
+            sudo -E git config pull.rebase false
+            sudo -E git pull
           else
             cd /opt/
-            git clone https://github.com/tosin2013/kcli-pipelines.git
+            sudo -E git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
