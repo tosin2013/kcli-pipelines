@@ -170,7 +170,7 @@ jobs:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
     if: ${{ inputs.action == 'create' }}
-    needs: configure-kcli-profiles # Ensure the previous job runs first
+    needs: ansible-role-update-ip-route53-requirements-config # Ensure the previous job runs first
     steps:
       - uses: actions/checkout@v3
 
