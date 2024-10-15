@@ -71,6 +71,7 @@ jobs:
 
       - name: Configure kcli profiles
         run: | 
+          echo "Running on ${{ inputs.runner_tag }}..."
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_PROFILE=${{ env.VM_NAME }}
           export EMAIL=${{ env.EMAIL }}
