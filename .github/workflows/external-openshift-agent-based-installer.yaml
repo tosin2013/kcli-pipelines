@@ -201,7 +201,7 @@ jobs:
           CLUSTER_FILE_PATH="/opt/openshift-agent-install/examples/${{ env.FOLDER_NAME }}/cluster.yml"
 
           if [ -n "${{ env.ZONE_NAME }}" ]; then
-            DOMAIN="${{ env.GUID }}.${{ env.ZONE_NAME }}"
+            export DOMAIN="${{ env.GUID }}.${{ env.ZONE_NAME }}"
             yq e -i ".domain = \"$DOMAIN\"" /opt/qubinode_navigator/inventories/"${{ inputs.target_server }}"/group_vars/all.yml
             yq e -i ".base_domain = \"$DOMAIN\"" "${CLUSTER_FILE_PATH}"
             yq e -i ".dns_search_domains[0] = \"$DOMAIN\"" "${CLUSTER_FILE_PATH}"
