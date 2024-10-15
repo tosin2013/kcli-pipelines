@@ -2,6 +2,10 @@ name: External - OpenShift Agent-Based Installer Helper
 on:
   workflow_dispatch:
     inputs:
+      runner_tag:
+        description: 'Runner'
+        required: true
+        default: 'changeme-github-runner'
       folder_name:
         description: 'Supported Deployment Configurations'
         required: true
@@ -65,11 +69,7 @@ on:
         type: choice
         options:
           - true
-          - false
-      runner:
-        description: 'Runner'
-        required: true
-        default: 'self-hosted'
+
 env:
     TARGET_SERVER: ${{ inputs.target_server }}
     VM_NAME: "openshift-agent-install"
@@ -80,7 +80,7 @@ env:
     DISCONNECTED_INSTALL: ${{ inputs.disconnected_install }}
     FOLDER_NAME: ${{ inputs.folder_name }}
     COMMUNITY_VERSION: ${{ inputs.community_version }}
-    DEFAULT_RUNNER_USER: "github_runner"
+    RUNNER: ${{ inputs.runner_tag }}
     GUID: ${{ inputs.guid }}
     ZONE_NAME: ${{ inputs.zone_name }}
 
