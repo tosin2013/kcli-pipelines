@@ -108,11 +108,31 @@ jobs:
           ansible-galaxy install -r /tmp/requirements.yml --force -vv
           pip3 install boto3 botocore
 
+  download-openshift-agent-install:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: ansible-role-update-ip-route53-requirements-config# Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploying OpenShift Agent-Based Installer
+        run: | 
+          if [ -d "/opt/openshift-agent-install" ]; then
+            cd /opt/openshift-agent-install
+            sudo git config pull.rebase false
+            sudo git pull
+          else
+            cd /opt/
+            sudo git clone https://github.com/Red-Hat-SE-RTO/openshift-agent-install.git
+          fi
+
+
   configure-ansible-role-update-ip-route53:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
     if: ${{ inputs.action == 'create' }}
-    needs: ansible-role-update-ip-route53-requirements-config # Ensure the previous job runs first
+    needs: download-openshift-agent-install # Ensure the previous job runs first
     steps:
       - uses: actions/checkout@v3
 
@@ -160,21 +180,3 @@ jobs:
           fi
 
 
-  download-openshift-agent-install:
-    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
-    timeout-minutes: 45
-    if: ${{ inputs.action == 'create' }}
-    needs: ansible-role-update-ip-route53-requirements-config # Ensure the previous job runs first
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Deploying OpenShift Agent-Based Installer
-        run: | 
-          if [ -d "/opt/openshift-agent-install" ]; then
-            cd /opt/openshift-agent-install
-            sudo git config pull.rebase false
-            sudo git pull
-          else
-            cd /opt/
-            sudo git clone https://github.com/Red-Hat-SE-RTO/openshift-agent-install.git
-          fi
