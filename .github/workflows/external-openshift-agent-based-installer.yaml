@@ -178,8 +178,356 @@ jobs:
               - ansible_role_update_ip_route53
           EOF
 
-          if [ "@param:ACTION@" != "delete" ]; then
+          if [ "${{ env.ACTION }}" != "delete" ]; then
             sudo -E ansible-playbook /tmp/playbook.yml -v || exit $?
           fi
 
 
+  deploy-dns-server:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: configure-ansible-role-update-ip-route53 # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploying OpenShift Agent-Based Installer
+        run: | 
+          export VM_NAME=freeipa
+          export VM_PROFILE=freeipa
+          export ACTION=${{ env.ACTION }}
+          export COMMUNITY_VERSION=${{ env.COMMUNITY_VERSION }}
+
+          CLUSTER_FILE_PATH="/opt/openshift-agent-install/examples/${{ env.FOLDER_NAME }}/cluster.yml"
+
+          if [ -n "${{ env.ZONE_NAME }}" ]; then
+            DOMAIN="${{ env.GUID }}${{ env.ZONE_NAME }}
+            yq e -i ".domain = \"$DOMAIN\"" /opt/qubinode_navigator/inventories/"${{ inputs.target_server }}"/group_vars/all.yml
+            yq e -i ".base_domain = \"$DOMAIN\"" "${CLUSTER_FILE_PATH}"
+            yq e -i ".dns_search_domains[0] = \"$DOMAIN\"" "${CLUSTER_FILE_PATH}"
+            yq e -i "del(.dns_search_domains[1])" "${CLUSTER_FILE_PATH}"
+          else
+            DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+          fi
+
+          if [ "${ACTION}" == "create" ]; then
+            cd /opt/kcli-pipelines/
+            ./deploy-vm.sh
+          fi
+
+  deploy-vyos-router:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: deploy-dns-server # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy Vyos Router
+        run: |
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_NAME=vyos-router
+          export VM_PROFILE=vyos-router
+          export ACTION=${{ env.ACTION }}
+          export COMMUNITY_VERSION=${{ env.COMMUNITY_VERSION }}
+          if ! sudo kcli list vms | grep -q ${VM_NAME}; then
+              if [ "${{ env.ACTION }}" == "create" ]; then
+                  cd /opt/kcli-pipelines/
+                  ./deploy-vm.sh
+              else
+                  echo "Skipping deployment as vyos-router VM does not exist and ACTION is not create"
+              fi
+          else
+              echo "vyos-router VM exists, skipping deployment"
+          fi
+
+  wait-for-vyos-router:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: deploy-vyos-router # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy Vyos Router
+        run: |
+          #!/bin/bash
+          # Function to check if the IP is accessible
+          check_ip() {
+              ping -c 1 "$1" > /dev/null 2>&1
+              return $?
+          }
+
+          if [ "${{ env.ACTION }}" == "create" ]; then
+              # Set the IP address to check
+              IP_ADDRESS="192.168.122.2"
+              MAX_WAIT_TIME=1800  # 30 minutes in seconds
+              WAIT_INTERVAL=300    # 5 minutes in seconds
+
+              # Start the timer
+              start_time=$(date +%s)
+              end_time=$((start_time + MAX_WAIT_TIME))
+
+              echo "Waiting for $IP_ADDRESS to be accessible..."
+
+              while true; do
+                  # Check if the IP is accessible
+                  check_ip "$IP_ADDRESS"
+
+                  if [ $? -eq 0 ]; then
+                      echo "Router is accessible now. Continuing..."
+                      break
+                  else
+                      current_time=$(date +%s)
+                      remaining_time=$((end_time - current_time))
+
+                      if [ $remaining_time -gt 0 ]; then
+                          echo "Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md"
+                          echo "Remaining time: $((remaining_time / 60)) minutes"
+                          sleep "$WAIT_INTERVAL"
+                      else
+                          echo "Timeout reached. Router is still not accessible."
+                          exit 1
+                      fi
+                  fi
+              done
+          fi
+
+  configure-vyos-router:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: wait-for-vyos-router # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure Vyos Routes
+        run: |
+          #!/bin/bash
+
+          # Define the list of networks
+          networks=(
+              "192.168.49.0/24"
+              "192.168.50.0/24"
+              "192.168.51.0/24"
+              "192.168.52.0/24"
+              "192.168.53.0/24"
+              "192.168.54.0/24"
+              "192.168.55.0/24"
+              "192.168.56.0/24"
+              "192.168.57.0/24"
+              "192.168.58.0/24"
+          )
+
+          gateway="192.168.122.2"
+
+          for net in "${networks[@]}"; do
+              if ! ip route show | grep -q "$net"; then
+                  sudo ip route add "$net" via "$gateway"
+                  echo "Route for $net added."
+              else
+                  echo "Route for $net already exists."
+              fi
+          done
+
+  wait-vyos-for-route:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: configure-vyos-router # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure Vyos Routes
+        run: |
+          #!/bin/bash
+
+          # Function to check if the IP is accessible
+          check_ip() {
+              ping -c 1 "$1" > /dev/null 2>&1
+              return $?
+          }
+
+          if [ "${{ env.ACTION }}" == "create" ]; then
+              # Set the IP address to check
+              IP_ADDRESS="192.168.50.1"
+              MAX_WAIT_TIME=1800  # 30 minutes in seconds
+              WAIT_INTERVAL=300    # 5 minutes in seconds
+
+              # Start the timer
+              start_time=$(date +%s)
+              end_time=$((start_time + MAX_WAIT_TIME))
+
+              echo "Waiting for $IP_ADDRESS to be accessible..."
+
+              while true; do
+                  # Check if the IP is accessible
+                  check_ip "$IP_ADDRESS"
+
+                  if [ $? -eq 0 ]; then
+                      echo "192.168.50.1 is accessible now. Continuing..."
+                      break
+                  else
+                      current_time=$(date +%s)
+                      remaining_time=$((end_time - current_time))
+
+                      if [ $remaining_time -gt 0 ]; then
+                          echo "Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md"
+                          echo "Remaining time: $((remaining_time / 60)) minutes"
+                          sleep "$WAIT_INTERVAL"
+                      else
+                          echo "Timeout reached. Router is still not accessible."
+                          exit 1
+                      fi
+                  fi
+              done
+          fi
+
+  configre-oc-binary:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: wait-vyos-for-route # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure oc binary
+        run: |
+          #!/bin/bash
+
+          # Check if oc is installed
+          if ! command -v oc &>/dev/null; then
+              echo "oc is not installed, downloading and running OpenShift package configuration script..."
+
+              # Download the configuration script
+              curl -OL https://raw.githubusercontent.com/tosin2013/openshift-4-deployment-notes/master/pre-steps/configure-openshift-packages.sh
+
+              # Make the script executable
+              chmod +x configure-openshift-packages.sh
+
+              # Run the script with the -i flag
+              ./configure-openshift-packages.sh -i
+          else
+              echo "oc is already installed, skipping OpenShift package configuration."
+          fi
+
+  deploy-openshift:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: configre-oc-binary # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy OpenShift
+        run: |
+          #!/bin/bash
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_NAME=${{ env.VM_PROFILE }}
+          export VM_PROFILE=${{ env.VM_PROFILE }}
+          export ACTION=${{ env.ACTION }}
+          export DEPLOY_OPENSHIFT=${{ env.DEPLOY_OPENSHIFT }}
+          export COMMUNITY_VERSION=${{ env.COMMUNITY_VERSION }}
+          export FOLDER_NAME=${{ env.FOLDER_NAME }}
+          export ZONE_NAME=${{ env.ZONE_NAME }}
+          cd /opt/kcli-pipelines/
+          ./deploy-vm.sh
+
+  download-openshift-forwarder:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: deploy-openshift # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download openshift-forwarder
+        run: |
+          cat >/tmp/requirements.yml<<EOF
+          ---
+          roles:
+            - name: openshift-forwarder
+              src: https://github.com/tosin2013/openshift-forwarder.git
+              version: main
+          EOF
+
+          ansible-galaxy install -r /tmp/requirements.yml --force -vv
+
+  configure-openshift-forwarder:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: download-openshift-forwarder # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure openshift-forwarder
+        run: |
+          #!/bin/bash
+
+          cd /opt/openshift-agent-install
+
+          # Path to the original YAML file
+          input_file="examples/@param:FOLDER_NAME@/nodes.yml"
+
+          # Output directory
+          output_dir="$HOME/vars"
+          mkdir -p "$output_dir"
+
+          # Extract control plane and app node IPs using yq
+          control_plane_ips=($(yq e '.nodes[] | select(.role == "master") | .networkConfig.interfaces[] | select(.name == "bond0.1924").ipv4.address[].ip' "$input_file"))
+          app_node_ips=($(yq e '.nodes[] | select(.role == "worker") | .networkConfig.interfaces[] | select(.name == "bond0.1924").ipv4.address[].ip' "$input_file"))
+
+          # Create the Ansible playbook
+          cat > /tmp/openshift-forwarder.yml <<EOF
+          - hosts: localhost
+            become: true
+            roles:
+              - openshift-forwarder
+          EOF
+
+          # Start writing the output vars file
+          cat > "$output_dir/vars.yml" <<EOF
+          ---
+          # defaults file for openshift-forwarder
+          haproxy_log_address: "127.0.0.1"
+          haproxy_chroot_directory: ""
+          haproxy_pidfile: "/var/run/haproxy.pid"
+          haproxy_max_connections: 4000
+          haproxy_stats_socket: "/var/lib/haproxy/stats"
+          defaults:
+            retries: 3
+            timeout:
+              http_request: "10s"
+              queue: "1m"
+              connect: "10s"
+              client: "1m"
+              server: "1m"
+              http_keep_alive: "10s"
+              check: "10s"
+            max_connections: 3000
+          masters:
+          EOF
+
+          # Add control plane IPs to the vars file
+          for ip in "${control_plane_ips[@]}"; do
+              echo "  - ip: \"$ip\"" >> "$output_dir/vars.yml"
+          done
+
+          # Add worker IPs to the vars file
+          if [ ${#app_node_ips[@]} -gt 0 ]; then
+              echo "workers:" >> "$output_dir/vars.yml"
+              for ip in "${app_node_ips[@]}"; do
+                  echo "  - ip: \"$ip\"" >> "$output_dir/vars.yml"
+              done
+          elif [ ${#app_node_ips[@]} -eq 0 ]; then
+              echo "workers:" >> "$output_dir/vars.yml"
+              for ip in "${control_plane_ips[@]}"; do
+                  echo "  - ip: \"$ip\"" >> "$output_dir/vars.yml"
+              done
+          fi
+
+          # Run the Ansible playbook if the action is not "delete"
+          if [ "@param:ACTION@" != "delete" ]; then
+              ansible-playbook /tmp/openshift-forwarder.yml --extra-vars "@$output_dir/vars.yml" -e "ansible_python_interpreter=/usr/libexec/platform-python" -v
+          fi
