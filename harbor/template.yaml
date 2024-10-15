@@ -12,5 +12,5 @@ cmds:
   - sudo apt update && sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
   - cd /root/ && curl -OL https://raw.githubusercontent.com/tosin2013/kcli-pipelines/main/harbor/harbor.sh
   - chmod +x /root/harbor.sh
-  - echo "bash -xe /root/harbor.sh {{ domain }} {{ harbor_version }} {{ aws_access_key_id }}  {{ aws_secret_access_key }} {{ email }}" > /root/init-harbor.sh
+  - echo "bash -xe /root/harbor.sh {{ domain }} {{ harbor_version }} {{ aws_access_key_id }}  {{ aws_secret_access_key }} {{ email }} {{ guid }}" > /root/init-harbor.sh
   - chmod +x /root/init-harbor.sh #&&  bash -xe /root/init-harbor.sh | tee /var/log/harbor_install.log   
