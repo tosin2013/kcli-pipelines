@@ -91,31 +91,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Configure kcli profiles
-        run: | 
-          export TARGET_SERVER=${{ env.TARGET_SERVER }}
-          export VM_PROFILE=${{ env.VM_NAME }}
-          export EMAIL=${{ env.EMAIL }}
-          if [ "${{ env.VM_NAME }}" != "freeipa" ]; then
-            export CUSTOM_PROFILE=true
-          else 
-            export CUSTOM_PROFILE=false
-          fi
-          if [ -d "/opt/kcli-pipelines" ]; then
-            cd /opt/kcli-pipelines
-            sudo git config pull.rebase false
-            sudo git pull
-          else
-            cd /opt/
-            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
-          fi
-          sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
   
   ansible-role-update-ip-route53-requirements-config:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
     if: ${{ inputs.action == 'create' }}
-    needs: configure-kcli-profiles # Ensure the previous job runs first
     steps:
       - uses: actions/checkout@v3
 
