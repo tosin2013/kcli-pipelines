@@ -1,18 +1,15 @@
 #!/bin/bash
 #export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 #set -xe
-if [ -f ../helper_scripts/default.env ];
+if [ -f /opt/kcli-pipelines/helper_scripts/default.env ];
 then 
-  source ../helper_scripts/default.env
-elif [ -f helper_scripts/default.env  ];
-then 
-  source helper_scripts/default.env 
+  source /opt/kcli-pipelines/helper_scripts/default.env
 else
   echo "default.env file does not exist"
   exit 1
 fi
 
-source helper_scripts/helper_functions.sh
+source /opt/kcli-pipelines/helper_scripts/helper_functions.sh
 
 # HARBOR_VERSION CA_URL FINGERPRINT env not found exit 
 if [ -z "${HARBOR_VERSION}" ] || [ -z "${EMAIL}" ]; then
@@ -20,7 +17,7 @@ if [ -z "${HARBOR_VERSION}" ] || [ -z "${EMAIL}" ]; then
     exit 1
 fi
 
-source helper_scripts/helper_functions.sh
+source /opt/kcli-pipelines/helper_scripts/helper_functions.sh
 
 cd $KCLI_SAMPLES_DIR
 IMAGE_NAME=ubuntu2204
