@@ -138,8 +138,6 @@ jobs:
 
       - name: updating route 53 record
         run: |
-          export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-          set -x
           CLUSTER_FILE_PATH="/opt/openshift-agent-install/examples/${{ env.FOLDER_NAME }}/cluster.yml"
           CLUSTER_NAME=$(yq e '.cluster_name' ${CLUSTER_FILE_PATH})
           IP_ADDRESS=$(hostname -I | awk '{print $1}')
@@ -192,7 +190,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Deploying OpenShift Agent-Based Installer
-        run: | 
+        run: |
+          export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+          set -x
           export VM_NAME=freeipa
           export VM_PROFILE=freeipa
           export ACTION=${{ env.ACTION }}
