@@ -5,7 +5,7 @@ on:
       runner_tag:
         description: 'Runner'
         required: true
-        default: 'changeme-github-runner'
+        default:  '4slkc-github-runner' #'changeme-github-runner'
       folder_name:
         description: 'Supported Deployment Configurations'
         required: true
@@ -20,11 +20,11 @@ on:
       guid:
         description: 'GUID'
         required: true
-        default: '12345'
+        default: '4slkc' #'12345'
       zone_name:
         description: 'ZONE_NAME'
         required: true
-        default: 'sandbox000.opentlc.com'
+        default: 'sandbox2168.opentlc.com' #'sandbox000.opentlc.com'
       target_server:
         description: 'target_server'
         required: true
