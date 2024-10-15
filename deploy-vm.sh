@@ -96,8 +96,6 @@ function create_vm() {
       sudo -E ceph-cluster/deploy.sh create
     elif [[ $vm_name == "kubernetes" ]]; then
       sudo -E kubernetes/deploy.sh create
-    elif [[ $vm_name == "harbor" ]]; then
-      sudo -E harbor/harbor.sh create
     elif [[ $vm_name == "vyos-router" ]]; then
       sudo -E vyos-router/deploy.sh create
     else
@@ -155,8 +153,6 @@ function delete_vm() {
       /opt/kcli-pipelines/ocp4-disconnected-helper/destroy.sh
     elif [[ $vm_name == "vyos-router" ]]; then
        vyos-router/deploy.sh delete
-    elif [[ $vm_name == "harbor" ]]; then
-      sudo -E harbor/harbor.sh create
     elif [[ $vm_name == "openshift-agent-install" ]]; then
       openshift-agent-install/deploy.sh destroy
     else

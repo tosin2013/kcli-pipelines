@@ -1,0 +1,208 @@
+name: External - OpenShift Agent-Based Installer Helper
+on:
+  workflow_dispatch:
+    inputs:
+      folder_name:
+        description: 'Supported Deployment Configurations'
+        required: true
+        default: 'cnv-single-bond0-vlan'
+        type: choice
+        options:
+          - bond0-single-bond0-vlan
+          - cnv-bond0-tagged
+          - cnv-single-bond0-vlan
+          - converged-bond0-signal-vlan
+          - sno-bond0-signal-vlan
+      guid:
+        description: 'GUID'
+        required: true
+        default: ''
+      zone_name:
+        description: 'ZONE_NAME'
+        required: true
+        default: ''
+      target_server:
+        description: 'target_server'
+        required: true
+        default: rhel9-equinix
+      vm_name:
+        description:  'VM Deployment'
+        required: true
+        default: kcli-openshift4-baremetal
+      action:
+        description: 'action'
+        required: true
+        default: create
+        type: choice
+        options:
+          - create
+          - delete
+      deploy_openshift:
+        description: 'Deploy The OpenShit Cluster on Launch'
+        required: true
+        default: true
+        type: choice
+        options:
+          - true
+          - false
+      auto_launch_steps:
+        description: 'Auto deploy Steps'
+        required: true
+        default: true
+        type: choice
+        options:
+          - true
+          - false
+      deployment_tag:
+        description: 'OpenShift Version'
+        required: true
+        default: '4.17'
+        type: choice
+        options:
+          - '4.15'
+          - '4.16'
+          - '4.17'
+      disconnected_install:
+        description: 'Enable Disconnected Install'
+        required: true
+        default: false
+        type: choice
+        options:
+          - true
+          - false
+      community_version:
+        description: 'Use community version of software (true/false)'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - true
+          - false
+      runner:
+        description: 'Runner'
+        required: true
+        default: 'self-hosted'
+env:
+    TARGET_SERVER: ${{ inputs.target_server }}
+    VM_NAME: ${{ inputs.vm_name }}
+    ACTION: ${{ inputs.action }}
+    DEPLOY_OPENSHIFT: ${{ inputs.deploy_openshift }}
+    LAUNCH_STEPS: ${{ inputs.auto_launch_steps }}
+    TAG: ${{ inputs.deployment_tag }}
+    DISCONNECTED_INSTALL: ${{ inputs.disconnected_install }}
+    FOLDER_NAME: ${{ inputs.folder_name }}
+    COMMUNITY_VERSION: ${{ inputs.community_version }}
+    DEFAULT_RUNNER_USER: "github_runner"
+    GUID: ${{ inputs.guid }}
+    ZONE_NAME: ${{ inputs.zone_name }}
+
+jobs:
+  configure-kcli-profiles:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure kcli profiles
+        run: | 
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_PROFILE=${{ env.VM_NAME }}
+          export EMAIL=${{ env.EMAIL }}
+          if [ "${{ env.VM_NAME }}" != "freeipa" ]; then
+            export CUSTOM_PROFILE=true
+          else 
+            export CUSTOM_PROFILE=false
+          fi
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
+            sudo git config pull.rebase false
+            sudo git pull
+          else
+            cd /opt/
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
+  
+  ansible-role-update-ip-route53-requirements-config:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: configure-kcli-profiles # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: updating route 53 record
+        run: |
+          cat >/tmp/requirements.yml<<EOF
+          ---
+          collections:
+            - amazon.aws
+          roles:
+            - name: ansible_role_update_ip_route53
+              src: https://github.com/tosin2013/ansible-role-update-ip-route53.git
+              version: master
+          EOF
+
+          ansible-galaxy install -r /tmp/requirements.yml --force -vv
+          pip3 install boto3 botocore
+
+  configure-ansible-role-update-ip-route53:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: ansible-role-update-ip-route53-requirements-config # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: updating route 53 record
+        run: |
+          CLUSTER_FILE_PATH="/opt/openshift-agent-install/examples/${{ env.FOLDER_NAME }}/cluster.yml"
+          CLUSTER_NAME=$(yq e '.cluster_name' ${CLUSTER_FILE_PATH})
+          echo "Setting DNS Records below"
+          echo "api.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
+          echo "*.apps.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
+
+          cat >/tmp/playbook.yml<<EOF
+          - name: Populate OpenShift DNS Entries
+            hosts: localhost
+            connection: local
+            become: yes
+
+            vars:
+              update_ip_r53_aws_access_key: "@param:AWS_ACCESS_KEY@"
+              update_ip_r53_aws_secret_key: "@param:AWS_SECRET_KEY@"
+              use_public_ip: true
+              private_ip: "@param:IP_ADDRESS@"
+              update_ip_r53_records:
+                - zone: "${{ env.ZONE_NAME }}"
+                  record: "api.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
+                - zone: "${{ env.ZONE_NAME }}"
+                  record: "*.apps.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
+
+            roles:
+              - ansible_role_update_ip_route53
+          EOF
+
+          if [ "@param:ACTION@" != "delete" ]; then
+            ansible-playbook /tmp/playbook.yml @param:VERBOSE_LEVEL@ || exit $?
+          fi
+
+
+  download-openshift-agent-install:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: configure-kcli-profiles # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploying OpenShift Agent-Based Installer
+        run: | 
+          if [ -d "/opt/openshift-agent-install" ]; then
+            cd /opt/openshift-agent-install
+            sudo git config pull.rebase false
+            sudo git pull
+          else
+            cd /opt/
+            sudo git clone https://github.com/Red-Hat-SE-RTO/openshift-agent-install.git
+          fi
