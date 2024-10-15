@@ -202,12 +202,12 @@ jobs:
 
           if [ -n "${{ env.ZONE_NAME }}" ]; then
             export DOMAIN="${{ env.GUID }}.${{ env.ZONE_NAME }}"
-            yq e -i ".domain = \"$DOMAIN\"" /opt/qubinode_navigator/inventories/"${{ inputs.target_server }}"/group_vars/all.yml
-            yq e -i ".base_domain = \"$DOMAIN\"" "${CLUSTER_FILE_PATH}"
-            yq e -i ".dns_search_domains[0] = \"$DOMAIN\"" "${CLUSTER_FILE_PATH}"
-            yq e -i "del(.dns_search_domains[1])" "${CLUSTER_FILE_PATH}"
+            sudo -E yq e -i ".domain = \"$DOMAIN\"" /opt/qubinode_navigator/inventories/"${{ inputs.target_server }}"/group_vars/all.yml
+            sudo -E yq e -i ".base_domain = \"$DOMAIN\"" "${CLUSTER_FILE_PATH}"
+            sudo -E yq e -i ".dns_search_domains[0] = \"$DOMAIN\"" "${CLUSTER_FILE_PATH}"
+            sudo -E yq e -i "del(.dns_search_domains[1])" "${CLUSTER_FILE_PATH}"
           else
-            DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+            DOMAIN=$(sudo -E yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
           fi
 
           if [ "${ACTION}" == "create" ]; then
@@ -233,7 +233,7 @@ jobs:
           if ! sudo kcli list vms | grep -q ${VM_NAME}; then
               if [ "${{ env.ACTION }}" == "create" ]; then
                   cd /opt/kcli-pipelines/
-                  ./deploy-vm.sh
+                  sudo -E ./deploy-vm.sh
               else
                   echo "Skipping deployment as vyos-router VM does not exist and ACTION is not create"
               fi
@@ -406,7 +406,7 @@ jobs:
               chmod +x configure-openshift-packages.sh
 
               # Run the script with the -i flag
-              ./configure-openshift-packages.sh -i
+              sudo -E ./configure-openshift-packages.sh -i
           else
               echo "oc is already installed, skipping OpenShift package configuration."
           fi
@@ -431,7 +431,7 @@ jobs:
           export FOLDER_NAME=${{ env.FOLDER_NAME }}
           export ZONE_NAME=${{ env.ZONE_NAME }}
           cd /opt/kcli-pipelines/
-          ./deploy-vm.sh
+          sudo -E ./deploy-vm.sh
 
   download-openshift-forwarder:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
