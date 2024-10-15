@@ -96,6 +96,8 @@ function create_vm() {
       sudo -E ceph-cluster/deploy.sh create
     elif [[ $vm_name == "kubernetes" ]]; then
       sudo -E kubernetes/deploy.sh create
+    elif [[ $vm_name == "harbor" ]]; then
+      sudo -E harbor/harbor.sh create
     elif [[ $vm_name == "vyos-router" ]]; then
       sudo -E vyos-router/deploy.sh create
     else
@@ -110,7 +112,7 @@ function create_vm() {
         fi
         local ip_address=$(sudo kcli info vm $vm_name $vm_name | grep ip: | awk '{print $2}' | head -1)
         echo "VM $vm_name created with IP address $ip_address"
-        sudo -E $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \
+        $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \
             --vault-password-file /root/.vault_password \
             --extra-vars "@${ANSIBLE_VAULT_FILE}" \
             --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
@@ -153,6 +155,8 @@ function delete_vm() {
       /opt/kcli-pipelines/ocp4-disconnected-helper/destroy.sh
     elif [[ $vm_name == "vyos-router" ]]; then
        vyos-router/deploy.sh delete
+    elif [[ $vm_name == "harbor" ]]; then
+      sudo -E harbor/harbor.sh create
     elif [[ $vm_name == "openshift-agent-install" ]]; then
       openshift-agent-install/deploy.sh destroy
     else
@@ -165,7 +169,7 @@ function delete_vm() {
         echo "VM $vm_name does not exist."
       fi
 
-      sudo -E $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \
+     $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \
           --vault-password-file /root/.vault_password \
           --extra-vars "@${ANSIBLE_VAULT_FILE}" \
           --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
