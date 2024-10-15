@@ -45,14 +45,6 @@ on:
         options:
           - true
           - false
-      auto_launch_steps:
-        description: 'Auto deploy Steps'
-        required: true
-        default: true
-        type: choice
-        options:
-          - true
-          - false
       deployment_tag:
         description: 'OpenShift Version'
         required: true
@@ -161,6 +153,15 @@ jobs:
           echo "Setting DNS Records below"
           echo "api.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
           echo "*.apps.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
+          # Decrypt the vault file to access AWS credentials
+          /usr/local/bin/ansiblesafe -f "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml" -o 2
+
+          # Extract required AWS credentials using yq
+          AWS_ACCESS_KEY_ID=$(yq eval '.aws_access_key' "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml")
+          AWS_SECRET_ACCESS_KEY=$(yq eval '.aws_secret_key' "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml")
+
+          # Re-encrypt the vault file
+          /usr/local/bin/ansiblesafe -f "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml" -o 1
 
           cat >/tmp/playbook.yml<<EOF
           - name: Populate OpenShift DNS Entries
@@ -169,8 +170,8 @@ jobs:
             become: yes
 
             vars:
-              update_ip_r53_aws_access_key: "@param:AWS_ACCESS_KEY@"
-              update_ip_r53_aws_secret_key: "@param:AWS_SECRET_KEY@"
+              update_ip_r53_aws_access_key: "${AWS_ACCESS_KEY_ID}"
+              update_ip_r53_aws_secret_key: "${AWS_SECRET_ACCESS_KEY}"
               use_public_ip: true
               private_ip: "@param:IP_ADDRESS@"
               update_ip_r53_records:
@@ -184,7 +185,7 @@ jobs:
           EOF
 
           if [ "@param:ACTION@" != "delete" ]; then
-            ansible-playbook /tmp/playbook.yml @param:VERBOSE_LEVEL@ || exit $?
+            ansible-playbook /tmp/playbook.yml -v || exit $?
           fi
 
 
