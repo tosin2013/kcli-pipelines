@@ -147,14 +147,14 @@ jobs:
           echo "api.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
           echo "*.apps.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
           # Decrypt the vault file to access AWS credentials
-          sudo -E /usr/local/bin/ansiblesafe -f "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml" -o 2
+          sudo -E /usr/local/bin/ansiblesafe -f "/opt/qubinode_navigator/inventories/${{ inputs.target_server }}/group_vars/control/vault.yml" -o 2
 
           # Extract required AWS credentials using yq
-          AWS_ACCESS_KEY_ID=$(yq eval '.aws_access_key' "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml")
-          AWS_SECRET_ACCESS_KEY=$(yq eval '.aws_secret_key' "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml")
+          AWS_ACCESS_KEY_ID=$(yq eval '.aws_access_key' "/opt/qubinode_navigator/inventories/${{ inputs.target_server }}/group_vars/control/vault.yml")
+          AWS_SECRET_ACCESS_KEY=$(yq eval '.aws_secret_key' "/opt/qubinode_navigator/inventories/${{ inputs.target_server }}/group_vars/control/vault.yml")
 
           # Re-encrypt the vault file
-          sudo -E /usr/local/bin/ansiblesafe -f "/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/control/vault.yml" -o 1
+          sudo -E /usr/local/bin/ansiblesafe -f "/opt/qubinode_navigator/inventories/${{ inputs.target_server }}/group_vars/control/vault.yml" -o 1
 
           cat >/tmp/playbook.yml<<EOF
           - name: Populate OpenShift DNS Entries
