@@ -25,10 +25,6 @@ on:
         description: 'target_server'
         required: true
         default: rhel9-equinix
-      vm_name:
-        description:  'VM Deployment'
-        required: true
-        default: kcli-openshift4-baremetal
       action:
         description: 'action'
         required: true
@@ -76,7 +72,7 @@ on:
         default: 'self-hosted'
 env:
     TARGET_SERVER: ${{ inputs.target_server }}
-    VM_NAME: ${{ inputs.vm_name }}
+    VM_NAME: "openshift-agent-install"
     ACTION: ${{ inputs.action }}
     DEPLOY_OPENSHIFT: ${{ inputs.deploy_openshift }}
     LAUNCH_STEPS: ${{ inputs.auto_launch_steps }}
