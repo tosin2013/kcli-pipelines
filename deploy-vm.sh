@@ -110,7 +110,7 @@ function create_vm() {
         fi
         local ip_address=$(sudo kcli info vm $vm_name $vm_name | grep ip: | awk '{print $2}' | head -1)
         echo "VM $vm_name created with IP address $ip_address"
-        sudo -E $ANSIBLE_PLAYBOOK helper_scripts/add_ipa_entry.yaml \
+        sudo -E $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \
             --vault-password-file /root/.vault_password \
             --extra-vars "@${ANSIBLE_VAULT_FILE}" \
             --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
@@ -119,7 +119,7 @@ function create_vm() {
             --extra-vars "value=${ip_address}" \
             --extra-vars "freeipa_server_domain=${domain_name}" \
             --extra-vars "action=present" -vvv
-        local file_path="helper_scripts/hosts"
+        local file_path="/opt/kcli-pipelines/helper_scripts/hosts"
         if [ -f "$file_path" ]; then
             if grep -q "^\[$vm_name\]$" "$file_path"; then
                 sudo sed -i "s/^\[$vm_name\]\n.*$/"'[$vm_name]\n'"$ip_address"/ "$file_path"
@@ -133,7 +133,7 @@ function create_vm() {
             local target_user=$(return_cloud_user $vm_name)
             echo "$vm_name ansible_host=${ip_address} ansible_user=$target_user ansible_ssh_private_key_file=/root/.ssh/id_rsa" | sudo tee -a  "$file_path"
         fi
-        $ANSIBLE_PLAYBOOK helper_scripts/update_dns.yaml -i helper_scripts/hosts \
+        $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/update_dns.yaml -i /opt/kcli-pipelines/helper_scripts/hosts \
             --extra-vars "target_hosts=${vm_name}" \
             --extra-vars "dns_server=${dns_address}" \
             --extra-vars "dns_server_two=${dns_forwarder}"
@@ -165,7 +165,7 @@ function delete_vm() {
         echo "VM $vm_name does not exist."
       fi
 
-      sudo -E $ANSIBLE_PLAYBOOK helper_scripts/add_ipa_entry.yaml \
+      sudo -E $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \
           --vault-password-file /root/.vault_password \
           --extra-vars "@${ANSIBLE_VAULT_FILE}" \
           --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
@@ -174,7 +174,7 @@ function delete_vm() {
           --extra-vars "value=${ip_address}" \
           --extra-vars "freeipa_server_domain=${domain_name}" \
           --extra-vars "action=absent" -vvv
-      sudo sed -i  '/\['$vm_name'\]/,+2d' helper_scripts/hosts
+      sudo sed -i  '/\['$vm_name'\]/,+2d' /opt/kcli-pipelines/helper_scripts/hosts
     fi
 }
 

@@ -21,7 +21,7 @@ then
   source /opt/kcli-pipelines/helper_scripts/helper_functions.sh
 else
   echo "default.env file does not exist"
-  exit 1
+  #exit 1
 fi
 
 check_and_start_docker() {
