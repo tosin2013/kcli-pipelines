@@ -33,15 +33,15 @@ on:
       email:
         description: 'Email'
         required: true
-        default: ''
+        default: 'vasaga9759@craftapk.com' #''
       guid:
         description: 'GUID'
         required: true
-        default: ''
+        default: '245b8' # ''
       runner_tag:
         description: 'Runner'
         required: true
-        default: 'changeme-github-runner'
+        default: '245b8-github-runner' #'changeme-github-runner'
       community_version:
         description: 'Use community version of software (true/false)'
         required: true
