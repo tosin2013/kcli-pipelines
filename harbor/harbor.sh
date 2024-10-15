@@ -41,7 +41,7 @@ check_and_start_docker() {
     fi
 }
 
-if [ $# -ne 5 ]; then
+if [ $# -ne 6 ]; then
     echo "Usage: $0 <domain> <harbor-version> <aws_access_key_id> <aws_secret_access_key> <email> <guid>"
     exit 1
 fi
