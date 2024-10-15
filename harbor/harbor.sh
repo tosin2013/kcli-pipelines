@@ -53,6 +53,11 @@ AWS_SECRET_ACCESS_KEY=${4}
 EMAIL=${5}
 GUID=${6}
 
+if [ -z $GUID ]; then
+    echo "GUID is required"
+    exit 1
+fi
+
 if [ -z $HARBORVERSION ]; then
     HARBORVERSION=$(curl -s https://api.github.com/repos/goharbor/harbor/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
 fi
