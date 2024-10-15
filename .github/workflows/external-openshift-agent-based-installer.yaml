@@ -147,6 +147,7 @@ jobs:
           echo "api.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
           echo "*.apps.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
           # Decrypt the vault file to access AWS credentials
+          whoami
           sudo -E /usr/local/bin/ansiblesafe -f "/opt/qubinode_navigator/inventories/${{ inputs.target_server }}/group_vars/control/vault.yml" -o 2
 
           # Extract required AWS credentials using yq
