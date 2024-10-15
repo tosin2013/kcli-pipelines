@@ -146,6 +146,7 @@ jobs:
         run: |
           CLUSTER_FILE_PATH="/opt/openshift-agent-install/examples/${{ env.FOLDER_NAME }}/cluster.yml"
           CLUSTER_NAME=$(yq e '.cluster_name' ${CLUSTER_FILE_PATH})
+          IP_ADDRESS=$(hostname -I | awk '{print $1}')
           echo "Setting DNS Records below"
           echo "api.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
           echo "*.apps.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
@@ -169,7 +170,7 @@ jobs:
               update_ip_r53_aws_access_key: "${AWS_ACCESS_KEY_ID}"
               update_ip_r53_aws_secret_key: "${AWS_SECRET_ACCESS_KEY}"
               use_public_ip: true
-              private_ip: "@param:IP_ADDRESS@"
+              private_ip: "${IP_ADDRESS}"
               update_ip_r53_records:
                 - zone: "${{ env.ZONE_NAME }}"
                   record: "api.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
