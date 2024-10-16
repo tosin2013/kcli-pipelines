@@ -60,29 +60,29 @@ function create(){
     #yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}" > openshift_pull.json
     ${USE_SUDO} yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}" | sudo tee ~/ocp-install-pull-secret.json >/dev/null
 
-    cat  ~/ocp-install-pull-secret.json
-    dnf install nmstate -y
-    ansible-galaxy install -r playbooks/collections/requirements.yml
-    ./hack/create-iso.sh $FOLDER_NAME
-    ./hack/deploy-on-kvm.sh examples/$FOLDER_NAME/nodes.yml
+    ${USE_SUDO} cat  ~/ocp-install-pull-secret.json
+    ${USE_SUDO} dnf install nmstate -y
+    ${USE_SUDO} ansible-galaxy install -r playbooks/collections/requirements.yml
+    ${USE_SUDO} ./hack/create-iso.sh $FOLDER_NAME
+    ${USE_SUDO} ./hack/deploy-on-kvm.sh examples/$FOLDER_NAME/nodes.yml
     echo "To troubleshoot installation run the commands below in a separate terminal"
     echo "cd /opt/openshift-agent-install"
     echo "./bin/openshift-install agent wait-for bootstrap-complete --dir ${GENERATED_ASSET_PATH}/${CLUSTER_NAME}/ --log-level debug"
     echo "*********"
     sleep 15
-    ./hack/watch-and-reboot-kvm-vms.sh examples/$FOLDER_NAME/nodes.yml
-    ./bin/openshift-install agent wait-for install-complete --dir ${GENERATED_ASSET_PATH}/${CLUSTER_NAME}/ --log-level debug
+    ${USE_SUDO} ./hack/watch-and-reboot-kvm-vms.sh examples/$FOLDER_NAME/nodes.yml
+    ${USE_SUDO} ./bin/openshift-install agent wait-for install-complete --dir ${GENERATED_ASSET_PATH}/${CLUSTER_NAME}/ --log-level debug
 }
 
 
 function destroy(){
-    ./hack/destroy-on-kvm.sh examples/$FOLDER_NAME/nodes.yml
+    ${USE_SUDO} ./hack/destroy-on-kvm.sh examples/$FOLDER_NAME/nodes.yml
     rm -rf /opt/openshift-agent-install/playbooks/generated_manifests/
     export VM_PROFILE=freeipa
     export VM_NAME="freeipa"
     export  ACTION="delete" # create, delete
 
-    /opt/kcli-pipelines/deploy-vm.sh
+    ${USE_SUDO} /opt/kcli-pipelines/deploy-vm.sh
 }
 
 if [ $ACTION == "create" ];
