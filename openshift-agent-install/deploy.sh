@@ -27,9 +27,9 @@ then
   export USE_SUDO="sudo"
 fi
 
-if [ ! -z "$CICD_PIPELINE" ]; then
-  export USE_SUDO="sudo"
-fi
+#if [ ! -z "$CICD_PIPELINE" ]; then
+# export USE_SUDO="sudo"
+#fi
 
 if [ ! -z ${FOLDER_NAME} ];
 then
