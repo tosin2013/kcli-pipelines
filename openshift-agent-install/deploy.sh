@@ -25,6 +25,8 @@ fi
 if [ "$EUID" -ne 0 ]
 then 
   export USE_SUDO="sudo"
+else
+  export USE_SUDO=""
 fi
 
 #if [ ! -z "$CICD_PIPELINE" ]; then
