@@ -119,6 +119,8 @@ function create_vm() {
             --extra-vars "value=${ip_address}" \
             --extra-vars "freeipa_server_domain=${domain_name}" \
             --extra-vars "action=present" -vvv
+        sleep 25
+        dig ${vm_name}
         local file_path="/opt/kcli-pipelines/helper_scripts/hosts"
         if [ -f "$file_path" ]; then
             if grep -q "^\[$vm_name\]$" "$file_path"; then
