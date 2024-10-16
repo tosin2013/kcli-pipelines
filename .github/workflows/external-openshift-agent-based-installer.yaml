@@ -327,66 +327,53 @@ jobs:
               fi
           done
 
-  wait-vyos-for-route:
+  wait-for-vyos-route:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
     if: ${{ inputs.action == 'create' }}
-    needs: configure-vyos-router # Ensure the previous job runs first
+    needs: deploy-vyos-router # Ensure the previous job runs first
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure Vyos Routes
+      - name: Initialize Variables
+        run: |
+          echo "IP_ADDRESS=192.168.50.1" >> $GITHUB_ENV
+          echo "MAX_WAIT_TIME=1800" >> $GITHUB_ENV  # 30 minutes in seconds
+          echo "WAIT_INTERVAL=300" >> $GITHUB_ENV   # 5 minutes in seconds
+
+      - name: Wait for 192.168.50.1 to be Accessible
         continue-on-error: true # Allow the step to continue even if the script fails
         run: |
-          #!/bin/bash
+          start_time=$(date +%s)
+          end_time=$((start_time + $MAX_WAIT_TIME))
 
-          # Function to check if the IP is accessible
-          check_ip() {
-              ping -c 1 "$1" > /dev/null 2>&1
-              return $?
-          }
+          echo "Waiting for $IP_ADDRESS to be accessible..."
 
-          if [ "${{ env.ACTION }}" == "create" ]; then
-              # Set the IP address to check
-              IP_ADDRESS="192.168.50.1"
-              MAX_WAIT_TIME=1800  # 30 minutes in seconds
-              WAIT_INTERVAL=300    # 5 minutes in seconds
+          while true; do
+            if ping -c 1 "$IP_ADDRESS" > /dev/null 2>&1; then
+              echo "Router is accessible now. Continuing..."
+              exit 0
+            else
+              current_time=$(date +%s)
+              remaining_time=$((end_time - current_time))
 
-              # Start the timer
-              start_time=$(date +%s)
-              end_time=$((start_time + MAX_WAIT_TIME))
+              if [ $remaining_time -gt 0 ]; then
+                echo "Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md"
+                echo "Remaining time: $((remaining_time / 60)) minutes"
+                sleep "$WAIT_INTERVAL"
+              else
+                echo "Timeout reached. Router is still not accessible."
+                exit 0  # Exit with non-error code to avoid immediate failure of the job
+              fi
+            fi
+          done
 
-              echo "Waiting for $IP_ADDRESS to be accessible..."
-
-              while true; do
-                  # Check if the IP is accessible
-                  check_ip "$IP_ADDRESS"
-
-                  if [ $? -eq 0 ]; then
-                      echo "192.168.50.1 is accessible now. Continuing..."
-                      break
-                  else
-                      current_time=$(date +%s)
-                      remaining_time=$((end_time - current_time))
-
-                      if [ $remaining_time -gt 0 ]; then
-                          echo "Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md"
-                          echo "Remaining time: $((remaining_time / 60)) minutes"
-                          sleep "$WAIT_INTERVAL"
-                      else
-                          echo "Timeout reached. Router is still not accessible."
-                          exit 0  # Exit with non-error code to avoid immediate failure
-                      fi
-                  fi
-              done
-          fi
-
-      - name: Check if route configuration succeeded
+      - name: Validate Router Deployment
+        if: ${{ success() }}
         run: |
-          # Final check to fail the job if the IP is still not accessible
-          if ! ping -c 1 192.168.50.1 > /dev/null 2>&1; then
-            echo "Router configuration failed. Manual intervention required."
-            exit 1 # Fail the job here if router is not accessible after all checks
+          if ! ping -c 1 $IP_ADDRESS > /dev/null 2>&1; then
+            echo "Router deployment failed. Manual intervention required."
+            exit 1 # Fail only if the router is not accessible at this point
           else
             echo "Router is accessible."
           fi
