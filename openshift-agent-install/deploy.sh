@@ -59,8 +59,21 @@ else
 fi
 
 function create(){
-    ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
-    ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
+    #${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
+
+    # Check if the file contains the string $ANSIBLE_VAULT;1.1;AES256
+    if grep -q '$ANSIBLE_VAULT;1.1;AES256' "$ANSIBLE_VAULT_FILE"; then
+        echo "The file is encrypted with Ansible Vault. Decrypting the file..."
+        ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
+        if [ $? -eq 0 ]; then
+            echo "File decrypted successfully."
+        else
+            echo "Failed to decrypt the file."
+        fi
+    else
+        echo "The file is not encrypted with Ansible Vault."
+    fi
+
     #yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}" > openshift_pull.json
     ${USE_SUDO} yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}" | sudo tee ~/ocp-install-pull-secret.json >/dev/null
 
