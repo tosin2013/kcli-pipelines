@@ -1,6 +1,7 @@
 #!/bin/bash 
 set -x
 export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -euo pipefail
 if [ -f /opt/kcli-pipelines/helper_scripts/default.env ];
 then 
   source /opt/kcli-pipelines/helper_scripts/default.env
@@ -63,8 +64,8 @@ function create(){
     ${USE_SUDO} cat  ~/ocp-install-pull-secret.json
     ${USE_SUDO} dnf install nmstate -y
     ${USE_SUDO} ansible-galaxy install -r playbooks/collections/requirements.yml
-    ${USE_SUDO} ./hack/create-iso.sh $FOLDER_NAME
-    ${USE_SUDO} ./hack/deploy-on-kvm.sh examples/$FOLDER_NAME/nodes.yml
+    ${USE_SUDO} ./hack/create-iso.sh $FOLDER_NAME || exit $?
+    ${USE_SUDO} ./hack/deploy-on-kvm.sh examples/$FOLDER_NAME/nodes.yml || exit $?
     echo "To troubleshoot installation run the commands below in a separate terminal"
     echo "cd /opt/openshift-agent-install"
     echo "./bin/openshift-install agent wait-for bootstrap-complete --dir ${GENERATED_ASSET_PATH}/${CLUSTER_NAME}/ --log-level debug"
