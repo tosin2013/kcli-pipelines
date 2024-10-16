@@ -239,7 +239,6 @@ jobs:
               echo "vyos-router VM exists, skipping deployment"
           fi
 
-
   wait-for-vyos-router:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
@@ -248,64 +247,48 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check if router is accessible
+      - name: Initialize Variables
+        run: |
+          echo "IP_ADDRESS=192.168.122.2" >> $GITHUB_ENV
+          echo "MAX_WAIT_TIME=1800" >> $GITHUB_ENV  # 30 minutes in seconds
+          echo "WAIT_INTERVAL=300" >> $GITHUB_ENV   # 5 minutes in seconds
+
+      - name: Wait for Router to be Accessible
         continue-on-error: true # Allow the step to continue even if the script fails
         run: |
-          #!/bin/bash
-          export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-          set -x
-          # Function to check if the IP is accessible
-          check_ip() {
-              ping -c 1 "$1" > /dev/null 2>&1
-              return $?
-          }
+          start_time=$(date +%s)
+          end_time=$((start_time + $MAX_WAIT_TIME))
 
-          if [ "${{ env.ACTION }}" == "create" ]; then
-              # Set the IP address to check
-              IP_ADDRESS="192.168.122.2"
-              MAX_WAIT_TIME=1800  # 30 minutes in seconds
-              WAIT_INTERVAL=300    # 5 minutes in seconds
+          echo "Waiting for $IP_ADDRESS to be accessible..."
 
-              # Start the timer
-              start_time=$(date +%s)
-              end_time=$((start_time + MAX_WAIT_TIME))
+          while true; do
+            if ping -c 1 "$IP_ADDRESS" > /dev/null 2>&1; then
+              echo "Router is accessible now. Continuing..."
+              exit 0
+            else
+              current_time=$(date +%s)
+              remaining_time=$((end_time - current_time))
 
-              echo "Waiting for $IP_ADDRESS to be accessible..."
+              if [ $remaining_time -gt 0 ]; then
+                echo "Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md"
+                echo "Remaining time: $((remaining_time / 60)) minutes"
+                sleep "$WAIT_INTERVAL"
+              else
+                echo "Timeout reached. Router is still not accessible."
+                exit 0  # Exit with non-error code to avoid immediate failure of the job
+              fi
+            fi
+          done
 
-              while true; do
-                  # Check if the IP is accessible
-                  check_ip "$IP_ADDRESS"
-
-                  if [ $? -eq 0 ]; then
-                      echo "Router is accessible now. Continuing..."
-                      break
-                  else
-                      current_time=$(date +%s)
-                      remaining_time=$((end_time - current_time))
-
-                      if [ $remaining_time -gt 0 ]; then
-                          echo "Router is not accessible yet. Please access this page to manually configure the router: https://github.com/tosin2013/demo-virt/blob/rhpds/demo.redhat.com/docs/step1.md"
-                          echo "Remaining time: $((remaining_time / 60)) minutes"
-                          sleep "$WAIT_INTERVAL"
-                      else
-                          echo "Timeout reached. Router is still not accessible."
-                          # Exit with a custom code or set a flag instead of failing the entire action
-                          exit 0  # Change to non-error code to avoid immediate failure
-                      fi
-                  fi
-              done
-          fi
-
-      # A separate step to handle failure if the router is still not accessible after the wait time
-      - name: Check if router deployment succeeded
+      - name: Validate Router Deployment
+        if: ${{ success() }}
         run: |
-          if ! ping -c 1 192.168.122.2 > /dev/null 2>&1; then
+          if ! ping -c 1 $IP_ADDRESS > /dev/null 2>&1; then
             echo "Router deployment failed. Manual intervention required."
             exit 1 # Fail only if the router is not accessible at this point
           else
             echo "Router is accessible."
           fi
-
 
   configure-vyos-router:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
