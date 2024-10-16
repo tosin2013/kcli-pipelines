@@ -426,7 +426,7 @@ jobs:
           export FOLDER_NAME=${{ env.FOLDER_NAME }}
           export ZONE_NAME=${{ env.ZONE_NAME }}
           cd /opt/kcli-pipelines/
-          sudo -E ./deploy-vm.sh
+          sudo -E ./deploy-vm.sh || exit $?
 
   download-openshift-forwarder:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
