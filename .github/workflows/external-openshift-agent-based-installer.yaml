@@ -91,7 +91,7 @@ jobs:
     timeout-minutes: 45
     if: ${{ inputs.action == 'create' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: updating route 53 record
         run: |
@@ -114,7 +114,7 @@ jobs:
     if: ${{ inputs.action == 'create' }}
     needs: ansible-role-update-ip-route53-requirements-config # Ensure the previous job runs first
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Deploying OpenShift Agent-Based Installer
         run: | 
@@ -134,7 +134,7 @@ jobs:
     if: ${{ inputs.action == 'create' }}
     needs: download-openshift-agent-install # Ensure the previous job runs first
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: updating route 53 record
         run: |
@@ -187,7 +187,7 @@ jobs:
     if: ${{ inputs.action == 'create' }}
     needs: configure-ansible-role-update-ip-route53 # Ensure the previous job runs first
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Deploying OpenShift Agent-Based Installer
         run: |
@@ -221,7 +221,7 @@ jobs:
     if: ${{ inputs.action == 'create' }}
     needs: deploy-dns-server # Ensure the previous job runs first
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Deploy Vyos Router
         run: |
@@ -247,7 +247,7 @@ jobs:
     if: ${{ inputs.action == 'create' }}
     needs: deploy-vyos-router # Ensure the previous job runs first
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Deploy Vyos Router
         run: |
@@ -299,7 +299,7 @@ jobs:
     if: ${{ inputs.action == 'create' }}
     needs: wait-for-vyos-router # Ensure the previous job runs first
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Configure Vyos Routes
         run: |
@@ -336,7 +336,7 @@ jobs:
     if: ${{ inputs.action == 'create' }}
     needs: configure-vyos-router # Ensure the previous job runs first
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Configure Vyos Routes
         run: |
@@ -389,7 +389,7 @@ jobs:
     if: ${{ inputs.action == 'create' }}
     needs: wait-vyos-for-route # Ensure the previous job runs first
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Configure oc binary
         run: |
@@ -417,7 +417,7 @@ jobs:
     if: ${{ inputs.action == 'create' }}
     needs: configre-oc-binary # Ensure the previous job runs first
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Deploy OpenShift
         run: |
@@ -439,7 +439,7 @@ jobs:
     if: ${{ inputs.action == 'create' }}
     needs: deploy-openshift # Ensure the previous job runs first
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Download openshift-forwarder
         run: |
@@ -459,7 +459,7 @@ jobs:
     if: ${{ inputs.action == 'create' }}
     needs: download-openshift-forwarder # Ensure the previous job runs first
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Configure openshift-forwarder
         run: |
