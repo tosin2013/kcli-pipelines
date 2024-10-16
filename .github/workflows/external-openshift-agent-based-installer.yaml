@@ -241,6 +241,7 @@ jobs:
               echo "vyos-router VM exists, skipping deployment"
           fi
 
+
   wait-for-vyos-router:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
@@ -250,6 +251,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Deploy Vyos Router
+        continue-on-error: true # Allow the step to continue even if the script fails
         run: |
           #!/bin/bash
           # Function to check if the IP is accessible
@@ -287,11 +289,23 @@ jobs:
                           sleep "$WAIT_INTERVAL"
                       else
                           echo "Timeout reached. Router is still not accessible."
-                          exit 1
+                          # Exit with a custom code or set a flag instead of failing the entire action
+                          exit 0  # Change to non-error code to avoid immediate failure
                       fi
                   fi
               done
           fi
+
+      # A separate step to handle failure if the router is still not accessible after the wait time
+      - name: Check if router deployment succeeded
+        run: |
+          if ! ping -c 1 192.168.122.2 > /dev/null 2>&1; then
+            echo "Router deployment failed. Manual intervention required."
+            exit 1 # Fail only if the router is not accessible at this point
+          else
+            echo "Router is accessible."
+          fi
+
 
   configure-vyos-router:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
@@ -339,6 +353,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Configure Vyos Routes
+        continue-on-error: true # Allow the step to continue even if the script fails
         run: |
           #!/bin/bash
 
@@ -377,10 +392,20 @@ jobs:
                           sleep "$WAIT_INTERVAL"
                       else
                           echo "Timeout reached. Router is still not accessible."
-                          exit 1
+                          exit 0  # Exit with non-error code to avoid immediate failure
                       fi
                   fi
               done
+          fi
+
+      - name: Check if route configuration succeeded
+        run: |
+          # Final check to fail the job if the IP is still not accessible
+          if ! ping -c 1 192.168.50.1 > /dev/null 2>&1; then
+            echo "Router configuration failed. Manual intervention required."
+            exit 1 # Fail the job here if router is not accessible after all checks
+          else
+            echo "Router is accessible."
           fi
 
   configre-oc-binary:
