@@ -418,8 +418,8 @@ jobs:
         run: |
           #!/bin/bash
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
-          export VM_NAME=${{ env.VM_PROFILE }}
-          export VM_PROFILE=${{ env.VM_PROFILE }}
+          export VM_NAME=${{ env.VM_NAME }}
+          export VM_PROFILE=${{ env.VM_NAME }}
           export ACTION=${{ env.ACTION }}
           export DEPLOY_OPENSHIFT=${{ env.DEPLOY_OPENSHIFT }}
           export COMMUNITY_VERSION=${{ env.COMMUNITY_VERSION }}
