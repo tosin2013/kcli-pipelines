@@ -248,7 +248,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy Vyos Router
+      - name: Check if router is accessible
         continue-on-error: true # Allow the step to continue even if the script fails
         run: |
           #!/bin/bash
