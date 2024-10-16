@@ -331,7 +331,7 @@ jobs:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
     if: ${{ inputs.action == 'create' }}
-    needs: deploy-vyos-router # Ensure the previous job runs first
+    needs: configure-vyos-router # Ensure the previous job runs first
     steps:
       - uses: actions/checkout@v4
 
@@ -382,7 +382,7 @@ jobs:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
     if: ${{ inputs.action == 'create' }}
-    needs: wait-vyos-for-route # Ensure the previous job runs first
+    needs: wait-for-vyos-route # Ensure the previous job runs first
     steps:
       - uses: actions/checkout@v4
 
