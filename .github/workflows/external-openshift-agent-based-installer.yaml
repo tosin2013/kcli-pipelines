@@ -191,8 +191,6 @@ jobs:
 
       - name: Deploying OpenShift Agent-Based Installer
         run: |
-          export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-          set -x
           export VM_NAME=freeipa
           export VM_PROFILE=freeipa
           export ACTION=${{ env.ACTION }}
@@ -254,6 +252,8 @@ jobs:
         continue-on-error: true # Allow the step to continue even if the script fails
         run: |
           #!/bin/bash
+          export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+          set -x
           # Function to check if the IP is accessible
           check_ip() {
               ping -c 1 "$1" > /dev/null 2>&1
