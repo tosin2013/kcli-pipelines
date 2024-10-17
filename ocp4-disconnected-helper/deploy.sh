@@ -139,9 +139,29 @@ then
        cd  /opt/images
        rm -rf * || exit $?
     fi
+
+    # Check if the file contains the string $ANSIBLE_VAULT;1.1;AES256
+    if grep -q '$ANSIBLE_VAULT;1.1;AES256' "$ANSIBLE_VAULT_FILE"; then
+        echo "The file is encrypted with Ansible Vault. Decrypting the file..."
+        ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
+        if [ $? -eq 0 ]; then
+            echo "File decrypted successfully."
+        else
+            echo "Failed to decrypt the file."
+        fi
+    else
+        echo "The file is not encrypted with Ansible Vault."
+    fi
+
     DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
     PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
+    if [ -z $PULL_SECRET ];
+    then 
+        echo "openshift_pull_secret does not exist"
+        exit 1
+    fi
     echo $PULL_SECRET | ${USE_SUDO} tee ~/rh-pull-secret > /dev/null || exit $?
+     ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
     curl --fail https://harbor.${DOMAIN}/ || exit $?
     echo "Downloading images to /opt/images"
     cd  /opt/ocp4-disconnected-helper
