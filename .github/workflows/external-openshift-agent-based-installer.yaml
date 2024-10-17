@@ -535,3 +535,58 @@ jobs:
           if [ "@param:ACTION@" != "delete" ]; then
               ansible-playbook /tmp/openshift-forwarder.yml --extra-vars "@$output_dir/vars.yml" -e "ansible_python_interpreter=/usr/libexec/platform-python" -v
           fi
+
+
+  delete-openshift:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'delete' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy OpenShift
+        run: |
+          #!/bin/bash
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_NAME=${{ env.VM_NAME }}
+          export VM_PROFILE=${{ env.VM_NAME }}
+          export ACTION=${{ env.ACTION }}
+          export DEPLOY_OPENSHIFT=${{ env.DEPLOY_OPENSHIFT }}
+          export COMMUNITY_VERSION=${{ env.COMMUNITY_VERSION }}
+          export FOLDER_NAME=${{ env.FOLDER_NAME }}
+          export ZONE_NAME=${{ env.ZONE_NAME }}
+          cd /opt/kcli-pipelines/
+          sudo -E ./deploy-vm.sh || exit $?
+
+
+  delete-dns-server:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    needs: delete-openshift
+    if: ${{ inputs.action == 'delete' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploying OpenShift Agent-Based Installer
+        run: |
+          export VM_NAME=freeipa
+          export VM_PROFILE=freeipa
+          export ACTION=${{ env.ACTION }}
+          export COMMUNITY_VERSION=${{ env.COMMUNITY_VERSION }}
+
+          CLUSTER_FILE_PATH="/opt/openshift-agent-install/examples/${{ env.FOLDER_NAME }}/cluster.yml"
+
+          if [ -n "${{ env.ZONE_NAME }}" ]; then
+            export DOMAIN="${{ env.GUID }}.${{ env.ZONE_NAME }}"
+            sudo -E yq e -i ".domain = \"$DOMAIN\"" /opt/qubinode_navigator/inventories/"${{ inputs.target_server }}"/group_vars/all.yml
+            sudo -E yq e -i ".base_domain = \"$DOMAIN\"" "${CLUSTER_FILE_PATH}"
+            sudo -E yq e -i ".dns_search_domains[0] = \"$DOMAIN\"" "${CLUSTER_FILE_PATH}"
+            sudo -E yq e -i "del(.dns_search_domains[1])" "${CLUSTER_FILE_PATH}"
+          else
+            DOMAIN=$(sudo -E yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+          fi
+
+          if [ "${ACTION}" == "create" ]; then
+            cd /opt/kcli-pipelines/
+            ./deploy-vm.sh
+          fi
