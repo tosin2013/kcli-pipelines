@@ -145,7 +145,7 @@ jobs:
           echo "api.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
           echo "*.apps.${CLUSTER_NAME}.${{ env.GUID }}.${{ env.ZONE_NAME }}"
           # Decrypt the vault file to access AWS credentials
-          if grep -q '$ANSIBLE_VAULT;1.1;AES256' "/opt/qubinode_navigator/inventories/${{ inputs.target_server }}/group_vars/control/vault.yml"; then
+          if sudo grep -q '$ANSIBLE_VAULT;1.1;AES256' "/opt/qubinode_navigator/inventories/${{ inputs.target_server }}/group_vars/control/vault.yml"; then
             echo "The file is encrypted with Ansible Vault. Decrypting the file..."
             sudo -E /usr/local/bin/ansiblesafe -f "/opt/qubinode_navigator/inventories/${{ inputs.target_server }}/group_vars/control/vault.yml" -o 2
             if [ $? -eq 0 ]; then
