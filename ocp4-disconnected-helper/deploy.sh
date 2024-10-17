@@ -74,8 +74,8 @@ then
 
   if ${USE_SUDO}  kcli list vms | grep -oq 'harbor'; then
      echo "Found 'harbor' in the output"
-     ${USE_SUDO}  kcli ssh harbor sudo  cat  /etc/letsencrypt/live/harbor.${GUID}.${DOMAIN}/fullchain.pem > /tmp/harbor.${GUID}.${DOMAIN}.bundle.crt
-     ${USE_SUDO}  kcli ssh harbor sudo  cat  /etc/letsencrypt/live/harbor.${GUID}.${DOMAIN}/privkey.pem > /tmp/harbor.${GUID}.${DOMAIN}.key
+     ${USE_SUDO}  kcli ssh harbor sudo  cat  /etc/letsencrypt/live/harbor.${DOMAIN}/fullchain.pem > /tmp/harbor.${DOMAIN}.bundle.crt
+     ${USE_SUDO}  kcli ssh harbor sudo  cat  /etc/letsencrypt/live/harbor.${DOMAIN}/privkey.pem > /tmp/harbor.${DOMAIN}.key
   else
       echo "'harbor' not found in the output"
       exit 1
@@ -87,11 +87,11 @@ then
   ${USE_SUDO} chown runner:users /tmp/output.json || exit $?
 
   # Load the certificate contents into a shell variable
-  certificate=$(${USE_SUDO} cat /tmp/harbor.${GUID}.${DOMAIN}.bundle.crt)
-  certificate_key=$(${USE_SUDO} cat /tmp/harbor.${GUID}.${DOMAIN}.key)
+  certificate=$(${USE_SUDO} cat /tmp/harbor.${DOMAIN}.bundle.crt)
+  certificate_key=$(${USE_SUDO} cat /tmp/harbor.${DOMAIN}.key)
 
-  ${USE_SUDO} cat /tmp/harbor.${GUID}.${DOMAIN}.bundle.crt > /dev/null 2>&1 || exit $?
-  ${USE_SUDO} cat /tmp/harbor.${GUID}.${DOMAIN}.key > /dev/null 2>&1 || exit $?
+  ${USE_SUDO} cat /tmp/harbor.${DOMAIN}.bundle.crt > /dev/null 2>&1 || exit $?
+  ${USE_SUDO} cat /tmp/harbor.${DOMAIN}.key > /dev/null 2>&1 || exit $?
 
   # Use jq to update the ssl_certificate field with the certificate
   ${USE_SUDO} jq --arg cert "$certificate" '.ssl_certificate = $cert' /tmp/output.json > /tmp/1.json || exit $?
@@ -101,7 +101,7 @@ then
 
   # Convert JSON back to YAML
   ${USE_SUDO} yq eval --output-format=yaml '.' /tmp/test_new.json > output.yaml || exit $?
-  ${USE_SUDO} yq eval '.harbor_hostname = "harbor.'${GUID}.${DOMAIN}'"' -i output.yaml || exit $?
+  ${USE_SUDO} yq eval '.harbor_hostname = "harbor.'${DOMAIN}'"' -i output.yaml || exit $?
   IP_ADDRESS=$(${USE_SUDO} /usr/bin/kcli info vm harbor | grep ip: | awk '{print $2}')
 
   SSH_PASSWORD=$(yq eval '.admin_user_password' "${ANSIBLE_VAULT_FILE}")
@@ -110,7 +110,7 @@ then
 ## Ansible Inventory template file used by Terraform to create an ./inventory file populated with the nodes it created
 
 [harbor]
-${VM_NAME}.${GUID}.${DOMAIN}
+${VM_NAME}.${DOMAIN}
 
 [all:vars]
 ansible_ssh_user=ubuntu
@@ -142,7 +142,7 @@ then
     DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
     PULL_SECRET=$(yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
     echo $PULL_SECRET | ${USE_SUDO} tee ~/rh-pull-secret > /dev/null || exit $?
-    curl --fail https://harbor.${GUID}.${DOMAIN}/ || exit $?
+    curl --fail https://harbor.${DOMAIN}/ || exit $?
     echo "Downloading images to /opt/images"
     cd  /opt/ocp4-disconnected-helper
     
@@ -155,10 +155,10 @@ fi
 if [ "${PUSH_TAR_TO_REGISTRY}" == "true" ];
 then 
     DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
-    curl --fail https://harbor.${GUID}.${DOMAIN}/ || exit $?
+    curl --fail https://harbor.${DOMAIN}/ || exit $?
     echo "Pushing images to registry"
     cd  /opt/ocp4-disconnected-helper
-    ${USE_SUDO} yq eval '.registries[0].server = "harbor.'${GUID}.${DOMAIN}'"' -i extra_vars/push-tar-to-registry-vars.yml || exit $?
+    ${USE_SUDO} yq eval '.registries[0].server = "harbor.'${DOMAIN}'"' -i extra_vars/push-tar-to-registry-vars.yml || exit $?
     ${USE_SUDO} yq eval '.registries[0].password = "'${HARBOR_PASSWORD}'"'  -i extra_vars/push-tar-to-registry-vars.yml || exit $?
     echo ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv 
     ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv || exit $?
