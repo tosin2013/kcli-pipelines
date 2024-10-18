@@ -5,7 +5,7 @@ on:
       runner_tag:
         description: 'Runner'
         required: true
-        default:  '4slkc-github-runner' #'changeme-github-runner'
+        default:  'w2tdd-github-runner' #'changeme-github-runner'
       folder_name:
         description: 'Supported Deployment Configurations'
         required: true
@@ -21,7 +21,7 @@ on:
       guid:
         description: 'GUID'
         required: true
-        default: '4slkc' #'12345'
+        default: 'w2tdd' #'12345'
       zone_name:
         description: 'ZONE_NAME'
         required: true
