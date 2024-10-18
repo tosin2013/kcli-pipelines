@@ -160,8 +160,9 @@ then
         echo "openshift_pull_secret does not exist"
         exit 1
     fi
-    echo $PULL_SECRET | ${USE_SUDO} tee ~/rh-pull-secret > /dev/null || exit $?
-     ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
+    ${USE_SUDO} yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}" | sudo tee ~/rh-pull-secret >/dev/null
+
+    ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
     curl --fail https://harbor.${DOMAIN}/ || exit $?
     echo "Downloading images to /opt/images"
     cd  /opt/ocp4-disconnected-helper
