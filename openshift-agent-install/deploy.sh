@@ -53,13 +53,12 @@ then
   NEW_DNS_SERVER_1=$(grep -m 1 '^nameserver' /etc/resolv.conf | awk '{print $2}')
   NEW_DNS_SERVER_2=$(grep -m 2 '^nameserver' /etc/resolv.conf | tail -n 1 | awk '{print $2}')
   ${USE_SUDO} yq e -i '.dns_servers[0] = "'${NEW_DNS_SERVER_1}'" | .dns_servers[1] = "'${NEW_DNS_SERVER_2}'"' "/opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml"
-  cat  /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml
-  exit 1
   ${USE_SUDO} yq e -i '.base_domain = "'${DOMAIN}'"' ${CLUSTER_FILE_PATH}
-  DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
-  ${USE_SUDO} yq e -i '.dns_servers[0] = "'${DNS_FORWARDER}'"' ${CLUSTER_FILE_PATH}
+  ${USE_SUDO} yq e -i '.dns_servers[0] = "'${NEW_DNS_SERVER_1}'" | .dns_servers[1] = "'${NEW_DNS_SERVER_2}'"' ${CLUSTER_FILE_PATH}
   ${USE_SUDO} yq e -i '.dns_search_domains[0] = "'${DOMAIN}'"' ${CLUSTER_FILE_PATH}
   ${USE_SUDO} yq e -i 'del(.dns_search_domains[1])' ${CLUSTER_FILE_PATH}
+  cat ${CLUSTER_FILE_PATH}
+  sleep 5s
 else
   DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 fi
