@@ -9,10 +9,11 @@ on:
       folder_name:
         description: 'Supported Deployment Configurations'
         required: true
-        default: 'cnv-single-bond0-vlan'
+        default: 'stretched-metro-cluster'
         type: choice
         options:
           - bond0-single-bond0-vlan
+          - stretched-metro-cluster
           - cnv-bond0-tagged
           - cnv-single-bond0-vlan
           - converged-bond0-signal-vlan
