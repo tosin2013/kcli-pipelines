@@ -201,6 +201,7 @@ jobs:
           echo "Running on ${{ inputs.runner_tag }}..."
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_PROFILE=freeipa
+          export COMMUNITY_VERSION=${{ env.COMMUNITY_VERSION }}
           export EMAIL=${{ env.EMAIL }}
           if [ "${{ env.VM_NAME }}" != "freeipa" ]; then
             export CUSTOM_PROFILE=true

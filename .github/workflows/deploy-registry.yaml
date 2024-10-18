@@ -110,6 +110,7 @@ jobs:
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_PROFILE=freeipa
+          export COMMUNITY_VERSION=${{ env.COMMUNITY_VERSION }}
           export ACTION=${{ env.ACTION }}
           export VM_NAME=freeipa
           FQ_DOMAIN=$(sudo -E yq eval '.domain' "/opt/qubinode_navigator/inventories/${{ inputs.target_server }}/group_vars/all.yml")
