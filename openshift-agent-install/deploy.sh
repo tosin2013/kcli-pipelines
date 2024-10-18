@@ -49,6 +49,9 @@ if [ ! -z ${ZONE_NAME} ];
 then
   DOMAIN=${GUID}.${ZONE_NAME}
   ${USE_SUDO} yq e -i '.domain = "'${DOMAIN}'"' /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml
+  ${USE_SUDO} yq e -i '.dns_servers[0] = "'${NEW_DNS_SERVER_1}'" | .dns_servers[1] = "'${NEW_DNS_SERVER_2}'"' "/opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml"
+  cat  /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml
+  exit 1
   ${USE_SUDO} yq e -i '.base_domain = "'${DOMAIN}'"' ${CLUSTER_FILE_PATH}
   DNS_FORWARDER=$(yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
   ${USE_SUDO} yq e -i '.dns_servers[0] = "'${DNS_FORWARDER}'"' ${CLUSTER_FILE_PATH}
