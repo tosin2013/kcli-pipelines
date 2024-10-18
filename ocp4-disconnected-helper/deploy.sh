@@ -162,7 +162,6 @@ then
     fi
     ${USE_SUDO} yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}" | sudo tee ~/rh-pull-secret >/dev/null
     cat ~/rh-pull-secret
-    exit 0
 
     ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 1
     curl --fail https://harbor.${DOMAIN}/ || exit $?
