@@ -86,7 +86,6 @@ env:
     ZONE_NAME: ${{ inputs.zone_name }}
 
 jobs:
-  
   ansible-role-update-ip-route53-requirements-config:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
@@ -190,12 +189,39 @@ jobs:
             sudo -E ansible-playbook /tmp/playbook.yml -v || exit $?
           fi
 
+  configure-kcli-profiles:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 30
+    needs: configure-ansible-role-update-ip-route53 # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure kcli profiles
+        run: | 
+          echo "Running on ${{ inputs.runner_tag }}..."
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_PROFILE=freeipa
+          export EMAIL=${{ env.EMAIL }}
+          if [ "${{ env.VM_NAME }}" != "freeipa" ]; then
+            export CUSTOM_PROFILE=true
+          else 
+            export CUSTOM_PROFILE=false
+          fi
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
+            sudo git config pull.rebase false
+            sudo git pull
+          else
+            cd /opt/
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
   deploy-dns-server:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
     if: ${{ inputs.action == 'create' }}
-    needs: configure-ansible-role-update-ip-route53 # Ensure the previous job runs first
+    needs: configure-kcli-profiles # Ensure the previous job runs first
     steps:
       - uses: actions/checkout@v4
 
