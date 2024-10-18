@@ -37,11 +37,11 @@ on:
       guid:
         description: 'GUID'
         required: true
-        default: 'm77wl' # ''
+        default: 'mjffm' # ''
       runner_tag:
         description: 'Runner'
         required: true
-        default: 'm77wl-github-runner' #'changeme-github-runner'
+        default: 'mjffm-github-runner' #'changeme-github-runner'
       community_version:
         description: 'Use community version of software (true/false)'
         required: true
