@@ -49,6 +49,9 @@ if [ ! -z ${ZONE_NAME} ];
 then
   DOMAIN=${GUID}.${ZONE_NAME}
   ${USE_SUDO} yq e -i '.domain = "'${DOMAIN}'"' /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml
+  # Extract DNS servers from /etc/resolv.conf
+  NEW_DNS_SERVER_1=$(grep -m 1 '^nameserver' /etc/resolv.conf | awk '{print $2}')
+  NEW_DNS_SERVER_2=$(grep -m 2 '^nameserver' /etc/resolv.conf | tail -n 1 | awk '{print $2}')
   ${USE_SUDO} yq e -i '.dns_servers[0] = "'${NEW_DNS_SERVER_1}'" | .dns_servers[1] = "'${NEW_DNS_SERVER_2}'"' "/opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml"
   cat  /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml
   exit 1
