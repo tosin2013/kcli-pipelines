@@ -515,7 +515,7 @@ jobs:
               version: main
           EOF
 
-          ansible-galaxy install -r /tmp/requirements.yml --force -vv
+          sudo -E ansible-galaxy install -r /tmp/requirements.yml --force -vv
 
   configure-openshift-forwarder:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
@@ -528,19 +528,19 @@ jobs:
       - name: Configure openshift-forwarder
         run: |
           #!/bin/bash
-          if [ -d "/opt/openshift-forwarder" ]; then
-              cd /opt/openshift-forwarder
-              sudo git config pull.rebase false
-              sudo git pull
-          else
-              cd /opt/
-              sudo git clone https://github.com/tosin2013/openshift-forwarder.git 
-          fi
+          #if [ -d "/opt/openshift-forwarder" ]; then
+          #    cd /opt/openshift-forwarder
+          #    sudo git config pull.rebase false
+          #    sudo git pull
+          #else
+          #    cd /opt/
+          #    sudo git clone https://github.com/tosin2013/openshift-forwarder.git 
+          #fi
 
-          if [ ! -d "/root/.ansible/roles/openshift-forwarder" ]; then
-              sudo -E mkdir -p /root/.ansible/roles/
-              sudo -E ln -s /opt/openshift-forwarder /root/.ansible/roles/
-          fi
+          #if [ ! -d "/root/.ansible/roles/openshift-forwarder" ]; then
+          #    sudo -E mkdir -p /root/.ansible/roles/
+          #    sudo -E ln -s /opt/openshift-forwarder /root/.ansible/roles/
+          #fi
 
           # Path to the original YAML file
           input_file="/opt/openshift-agent-install/examples/${{ env.FOLDER_NAME }}/nodes.yml"
