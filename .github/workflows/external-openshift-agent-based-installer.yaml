@@ -537,9 +537,9 @@ jobs:
               sudo git clone https://github.com/tosin2013/openshift-forwarder.git 
           fi
 
-          if [ ! -d "~/.ansible/roles/openshift-forwarder" ]; then
-              mkdir -p ~/.ansible/roles/
-              sudo ln -s /opt/openshift-forwarder ~/.ansible/roles/
+          if [ ! -d "/root/.ansible/roles/openshift-forwarder" ]; then
+              mkdir -p /root/.ansible/roles/
+              sudo -E ln -s /opt/openshift-forwarder /root/.ansible/roles/
           fi
 
           # Path to the original YAML file
