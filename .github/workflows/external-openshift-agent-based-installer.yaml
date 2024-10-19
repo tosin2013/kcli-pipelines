@@ -485,8 +485,17 @@ jobs:
           export COMMUNITY_VERSION=${{ env.COMMUNITY_VERSION }}
           export FOLDER_NAME=${{ env.FOLDER_NAME }}
           export ZONE_NAME=${{ env.ZONE_NAME }}
-          cd /opt/kcli-pipelines/
-          sudo -E ./deploy-vm.sh || exit $?
+          OPENSHIFT_URL="https://console-openshift-console.apps.ocp4.${{ GUID }}.${{ env.ZONE_NAME }}"
+          # Deploy OpenShift using the curl command
+          response=$(curl -kI "$OPENSHIFT_URL")
+
+          # Check if the response code is 200 OK
+          if [[ "$response" =~ 200 ]]; then
+            echo "OpenShift successfully deployed."
+          else
+              cd /opt/kcli-pipelines/
+              sudo -E ./deploy-vm.sh || exit $?
+          fi
 
   download-openshift-forwarder:
     runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
@@ -523,7 +532,7 @@ jobs:
           cd /opt/openshift-agent-install
 
           # Path to the original YAML file
-          input_file="examples/@param:FOLDER_NAME@/nodes.yml"
+          input_file="examples/${{ env.FOLDER_NAME }}nodes.yml"
 
           # Output directory
           output_dir="$HOME/vars"
@@ -583,7 +592,7 @@ jobs:
           fi
 
           # Run the Ansible playbook if the action is not "delete"
-          if [ "@param:ACTION@" != "delete" ]; then
+          if [ "${{ env.ACTION }}" != "delete" ]; then
               ansible-playbook /tmp/openshift-forwarder.yml --extra-vars "@$output_dir/vars.yml" -e "ansible_python_interpreter=/usr/libexec/platform-python" -v
           fi
 
