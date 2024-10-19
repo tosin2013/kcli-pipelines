@@ -538,7 +538,7 @@ jobs:
           fi
 
           if [ ! -d "/root/.ansible/roles/openshift-forwarder" ]; then
-              sudo - E mkdir -p /root/.ansible/roles/
+              sudo -E mkdir -p /root/.ansible/roles/
               sudo -E ln -s /opt/openshift-forwarder /root/.ansible/roles/
           fi
 
