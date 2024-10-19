@@ -590,10 +590,11 @@ jobs:
                   echo "  - ip: \"$ip\"" >> "$output_dir/vars.yml"
               done
           fi
+          sudo -E  ansible-galaxy collection install ansible.posix
 
           # Run the Ansible playbook if the action is not "delete"
           if [ "${{ env.ACTION }}" != "delete" ]; then
-              ansible-playbook /tmp/openshift-forwarder.yml --extra-vars "@$output_dir/vars.yml" -e "ansible_python_interpreter=/usr/libexec/platform-python" -v
+              sudo -E ansible-playbook /tmp/openshift-forwarder.yml --extra-vars "@$output_dir/vars.yml" -e "ansible_python_interpreter=/usr/libexec/platform-python" -v
           fi
 
 
