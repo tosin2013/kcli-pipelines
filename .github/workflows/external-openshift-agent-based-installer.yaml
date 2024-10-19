@@ -543,7 +543,7 @@ jobs:
           fi
 
           # Path to the original YAML file
-          input_file="examples/${{ env.FOLDER_NAME }}/nodes.yml"
+          input_file="/opt/openshift-agent-install/examples/${{ env.FOLDER_NAME }}/nodes.yml"
 
           # Output directory
           output_dir="$HOME/vars"
