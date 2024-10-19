@@ -85,7 +85,7 @@ function create(){
     ${USE_SUDO} cat  ~/ocp-install-pull-secret.json
     ${USE_SUDO} dnf install nmstate -y
     ${USE_SUDO} ansible-galaxy install -r playbooks/collections/requirements.yml
-    export  GENERATED_ASSET_PATH="/root/${CLUSTER_NAME}"
+    export  GENERATED_ASSET_PATH="/root/"
     ${USE_SUDO} ./hack/create-iso.sh $FOLDER_NAME || exit $?
     ${USE_SUDO} ./hack/deploy-on-kvm.sh examples/$FOLDER_NAME/nodes.yml || exit $?
     echo "To troubleshoot installation run the commands below in a separate terminal"
@@ -101,6 +101,7 @@ function create(){
 function destroy(){
     ${USE_SUDO} ./hack/destroy-on-kvm.sh examples/$FOLDER_NAME/nodes.yml
     rm -rf /opt/openshift-agent-install/playbooks/generated_manifests/
+    rm -rf /root/${FOLDER_NAME}
     export VM_PROFILE=freeipa
     export VM_NAME="freeipa"
     export  ACTION="delete" # create, delete
