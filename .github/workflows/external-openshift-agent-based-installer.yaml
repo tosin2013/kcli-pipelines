@@ -485,7 +485,7 @@ jobs:
           export COMMUNITY_VERSION=${{ env.COMMUNITY_VERSION }}
           export FOLDER_NAME=${{ env.FOLDER_NAME }}
           export ZONE_NAME=${{ env.ZONE_NAME }}
-          OPENSHIFT_URL="https://console-openshift-console.apps.ocp4.${{ GUID }}.${{ env.ZONE_NAME }}"
+          OPENSHIFT_URL="https://console-openshift-console.apps.ocp4.${{ env.GUID }}.${{ env.ZONE_NAME }}"
           # Deploy OpenShift using the curl command
           response=$(curl -kI "$OPENSHIFT_URL")
 
