@@ -528,8 +528,19 @@ jobs:
       - name: Configure openshift-forwarder
         run: |
           #!/bin/bash
+          if [ -d "/opt/openshift-forwarder" ]; then
+              cd /opt/openshift-forwarder
+              sudo git config pull.rebase false
+              sudo git pull
+          else
+              cd /opt/
+              sudo git clone https://github.com/tosin2013/openshift-forwarder.git 
+          fi
 
-          cd /opt/openshift-agent-install
+          if [ ! -d "~/.ansible/roles/openshift-forwarder" ]; then
+              mkdir -p ~/.ansible/roles/
+              sudo ln -s /opt/openshift-forwarder ~/.ansible/roles/
+          fi
 
           # Path to the original YAML file
           input_file="examples/${{ env.FOLDER_NAME }}/nodes.yml"
