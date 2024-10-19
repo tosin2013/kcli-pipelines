@@ -42,16 +42,16 @@ if [ ! -z ${ZONE_NAME} ];
 then
   DOMAIN=${GUID}.${ZONE_NAME}
   ${USE_SUDO} yq e -i '.domain = "'${DOMAIN}'"' /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml
+  # Extract DNS servers from /etc/resolv.conf
+  NEW_DNS_SERVER_1=$(grep -m 1 '^nameserver' /etc/resolv.conf | awk '{print $2}')
+  NEW_DNS_SERVER_2=$(grep -m 2 '^nameserver' /etc/resolv.conf | tail -n 1 | awk '{print $2}')
+  ${USE_SUDO} yq e -i '.dns_servers[0] = "'${NEW_DNS_SERVER_1}'" | .dns_servers[1] = "'${NEW_DNS_SERVER_2}'"' "/opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml"
   ${USE_SUDO} yq e -i '.base_domain = "'${DOMAIN}'"' ${CLUSTER_FILE_PATH}
   ${USE_SUDO} yq e -i '.dns_search_domains[0] = "'${DOMAIN}'"' ${CLUSTER_FILE_PATH}
   ${USE_SUDO} yq e -i 'del(.dns_search_domains[1])' ${CLUSTER_FILE_PATH}
 else
   DOMAIN=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 fi
-
-export vm_name="freeipa"
-export ip_address=$(sudo kcli info vm "$vm_name" "$vm_name" | grep ip: | awk '{print $2}' | head -1)
-${USE_SUDO} sudo yq e '(.dns_servers[0]) = "'${ip_address}'"' -i ${CLUSTER_FILE_PATH}
 
 function create_dns_entries(){
     ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
