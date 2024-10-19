@@ -85,7 +85,7 @@ function create(){
     ${USE_SUDO} cat  ~/ocp-install-pull-secret.json
     ${USE_SUDO} dnf install nmstate -y
     ${USE_SUDO} ansible-galaxy install -r playbooks/collections/requirements.yml
-    export  GENERATED_ASSET_PATH="/root/"
+    export  GENERATED_ASSET_PATH="/root"
     ${USE_SUDO} ./hack/create-iso.sh $FOLDER_NAME || exit $?
     ${USE_SUDO} ./hack/deploy-on-kvm.sh examples/$FOLDER_NAME/nodes.yml || exit $?
     echo "To troubleshoot installation run the commands below in a separate terminal"
