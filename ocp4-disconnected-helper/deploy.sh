@@ -170,7 +170,6 @@ then
 
     echo   ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv
     ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv || exit $?
-    exit 0
 fi
 
 #if PUSH_TAR_TO_REGISTRY is set to true, then run the playbook
@@ -184,5 +183,4 @@ then
     ${USE_SUDO} yq eval '.registries[0].password = "'${HARBOR_PASSWORD}'"'  -i extra_vars/push-tar-to-registry-vars.yml || exit $?
     echo ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv 
     ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/push-tar-to-registry.yml  -e "@extra_vars/push-tar-to-registry-vars.yml" -vv || exit $?
-    exit 0
 fi
