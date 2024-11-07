@@ -21,7 +21,7 @@ on:
 
 jobs:
   deploy-registry:
-    uses: ./.github/workflows/deploy-registry.yaml
+    uses: ./.github/workflows/deploy-registry-workflow-call.yaml
     with:
       target_server: 'rhel9-equinix'
       vm_name: 'freeipa'
