@@ -23,6 +23,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
       - name: Destroy OpenShift 4 Baremetal on KVM
         run: |
           oc delete deployment openshift-baremetal-kvm || true
