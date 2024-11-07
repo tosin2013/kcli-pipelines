@@ -1,0 +1,181 @@
+name: Deploy Registry - Workflow Call
+on:
+  workflow_call:
+    inputs:
+      target_server:
+        description: 'Target server'
+        required: true
+        default: rhel9-equinix
+      action:
+        description: 'Action'
+        required: true
+        default: create
+        type: choice
+        options:
+          - create
+          - delete
+      vm_name:
+        description: 'VM Deployment'
+        required: true
+        default: 'freeipa'
+        type: choice
+        options:
+          - harbor
+          - mirror-registry
+      harbor_version:
+        description: 'Harbor version'
+        required: true
+        default: 'v2.11.1'
+      quay_version:
+        description: 'Quay version'
+        required: true
+        default: 'v3.12.3'
+      email:
+        description: 'Email'
+        required: true
+        default: 'vasaga9759@craftapk.com' #''
+      guid:
+        description: 'GUID'
+        required: true
+        default: 'mjffm' # ''
+      runner_tag:
+        description: 'Runner'
+        required: true
+        default: 'mjffm-github-runner' #'changeme-github-runner'
+      community_version:
+        description: 'Use community version of software (true/false)'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - true
+          - false
+env:
+  TARGET_SERVER: ${{ inputs.target_server }}
+  VM_NAME: ${{ inputs.vm_name }}
+  ACTION: ${{ inputs.action }}
+  RUNNER: ${{ inputs.runner_tag }}
+  COMMUNITY_VERSION: ${{ inputs.community_version }}
+  DEFAULT_RUNNER_USER: "runner"
+  HARBOR_VERSION: ${{ inputs.harbor_version }}
+  QUAY_VERSION: ${{ inputs.quay_version }}
+  GUID: ${{ inputs.guid }}
+  EMAIL: ${{ inputs.email }}
+
+jobs:
+  configure-kcli-profiles:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure kcli profiles
+        run: | 
+          echo "Running on ${{ inputs.runner_tag }}..."
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_PROFILE=${{ env.VM_NAME }}
+          export EMAIL=${{ env.EMAIL }}
+          if [ "${{ env.VM_NAME }}" != "freeipa" ]; then
+            export CUSTOM_PROFILE=true
+          else 
+            export CUSTOM_PROFILE=false
+          fi
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
+            sudo git config pull.rebase false
+            sudo git pull
+          else
+            cd /opt/
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
+
+  deploy-dns:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: configure-kcli-profiles # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploying freeipa on KVM
+        run: | 
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
+            sudo git config pull.rebase false
+            sudo git pull
+          else
+            cd /opt/
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_PROFILE=freeipa
+          export COMMUNITY_VERSION=${{ env.COMMUNITY_VERSION }}
+          export ACTION=${{ env.ACTION }}
+          export VM_NAME=freeipa
+          FQ_DOMAIN=$(sudo -E yq eval '.domain' "/opt/qubinode_navigator/inventories/${{ inputs.target_server }}/group_vars/all.yml")
+          export DOMAIN=${{ env.GUID }}.${FQ_DOMAIN}
+          sudo yq e -i '.domain = "'${DOMAIN}'"' /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml
+          sudo -E /opt/kcli-pipelines/deploy-vm.sh || exit $?
+
+  deploy-registry-vm:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'create' }}
+    needs: deploy-dns # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploying ${{ inputs.vm_name }} on KVM
+        run: | 
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
+            sudo git config pull.rebase false
+            sudo git pull
+          else
+            cd /opt/
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_NAME=${{ env.VM_NAME }}
+          export VM_PROFILE=${{ env.VM_NAME }}
+          export ACTION=${{ env.ACTION }}
+          export HARBOR_VERSION=${{ env.HARBOR_VERSION }}
+          export QUAY_VERSION=${{ env.QUAY_VERSION }}
+          export EMAIL=${{ env.EMAIL }}
+          export GUID=${{ env.GUID }}
+          if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
+            export VM_NAME=${{ inputs.vm_name }}
+          fi
+          /opt/kcli-pipelines/deploy-vm.sh
+          sudo kcli ssh ${{ env.VM_NAME }} "sudo -E /root/init-harbor.sh" || exit $?
+
+  delete-registry-vm:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    needs: configure-kcli-profiles # Ensure the previous job runs first
+    if: ${{ inputs.action == 'delete' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploying ${{ inputs.vm_name }} on KVM
+        run: | 
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
+            sudo git config pull.rebase false
+            sudo git pull
+          else
+            cd /opt/
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_NAME=${{ env.VM_NAME }}
+          export VM_PROFILE=${{ env.VM_NAME }}
+          export ACTION=${{ env.ACTION }}
+          export HARBOR_VERSION=${{ env.HARBOR_VERSION }}
+          export QUAY_VERSION=${{ env.QUAY_VERSION }}
+          export EMAIL=${{ env.EMAIL }}
+          if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
+            export VM_NAME=${{ inputs.vm_name }}
+          fi
+          /opt/kcli-pipelines/deploy-vm.sh
