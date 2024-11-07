@@ -31,7 +31,7 @@ jobs:
           oc delete deployment registry || true
 
       - name: Call Deploy Registry Workflow
-        uses: ./.github/workflows/deploy-registry.yaml
+        uses: .github/workflows/deploy-registry.yaml
         with:
           target_server: 'rhel9-equinix'
           vm_name: 'freeipa'
@@ -44,7 +44,7 @@ jobs:
           community_version: 'false'
 
       - name: Call OpenShift 4 Disconnected Helper Workflow
-        uses: ./.github/workflows/configure-ocp4-disconnected-helper.yaml
+        uses: .github/workflows/configure-ocp4-disconnected-helper.yaml
         with:
           target_server: 'rhel9-equinix'
           action: ${{ inputs.action }}
