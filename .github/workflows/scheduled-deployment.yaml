@@ -40,7 +40,7 @@ on:
       runner_tag:
         description: 'Runner'
         required: true
-        default: mjffm-github-runner
+        default: kxb2h-github-runner
       community_version:
         description: 'Use community version of software (true/false)'
         required: true
@@ -68,7 +68,7 @@ on:
       deployment_tag:
         description: 'OpenShift Version'
         required: true
-        default: '4.17'
+        default: '4.16'
         type: choice
         options:
           - '4.15'
@@ -77,7 +77,7 @@ on:
       disconnected_install:
         description: 'Enable Disconnected Install'
         required: true
-        default: false
+        default: true
         type: choice
         options:
           - true
@@ -99,12 +99,12 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Configure kcli profiles
-        run: | 
+        run: |
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_PROFILE=${{ env.VM_NAME }}
           if [ "${{ env.VM_NAME }}" != "freeipa" ]; then
             export CUSTOM_PROFILE=true
-          else 
+          else
             export CUSTOM_PROFILE=false
           fi
           if [ -d "/opt/kcli-pipelines" ]; then
@@ -118,7 +118,7 @@ jobs:
           sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
       - name: Deploy Registry
-        run: | 
+        run: |
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_NAME=${{ env.VM_NAME }}
           export ACTION=${{ env.ACTION }}
@@ -130,7 +130,7 @@ jobs:
           sudo kcli ssh ${{ env.VM_NAME }} "sudo -E /root/init-harbor.sh" || exit $?
 
       - name: Deploy OpenShift 4 Baremetal on KVM
-        run: | 
+        run: |
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_NAME=${{ env.VM_NAME }}
           export VM_PROFILE=${{ env.VM_NAME }}
