@@ -167,6 +167,7 @@ then
     curl --fail https://harbor.${DOMAIN}/ || exit $?
     echo "Downloading images to /opt/images"
     cd  /opt/ocp4-disconnected-helper
+    ./versions_check.sh --auto-update
 
     echo   ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv
     ${USE_SUDO} /usr/bin/ansible-playbook -i /tmp/inventory /opt/ocp4-disconnected-helper/playbooks/download-to-tar.yml  -e "@extra_vars/download-to-tar-vars.yml" -vv || exit $?
