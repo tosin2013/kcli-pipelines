@@ -4,14 +4,28 @@ set -euo pipefail
 #set -x
 export ANSIBLE_HOST_KEY_CHECKING=False
 
-# Function to check if VM exists
+
+# Checks if a virtual machine with the given name exists.
+# Arguments:
+#   vm_name: The name of the virtual machine to check.
+# Returns:
+#   0 if the virtual machine exists, 1 otherwise.
 function vm_exists() {
     local vm_name=$1
     local exists=$(sudo kcli list vm | grep -c $vm_name)
     return $exists
 }
 
-# Function to check IDM
+
+# This function checks if an IDM (Identity Management) service is reachable over HTTPS.
+# Arguments:
+#   $1 - The hostname or IP address of the IDM service.
+# Usage:
+#   check_idm <idm_hostname_or_ip>
+# Example:
+#   check_idm idm.example.com
+# If the IDM service is reachable, it prints a success message.
+# If the IDM service is not reachable, it prints an error message and exits with status 1.
 function check_idm() {
   local idm="$1"
   if curl --head --insecure --silent "https://$idm" > /dev/null; then
@@ -22,7 +36,16 @@ function check_idm() {
   fi
 }
 
-# Function to return cloud user
+
+# This function returns the default cloud user for a given VM name.
+# Usage: return_cloud_user <vm_name>
+# Arguments:
+#   vm_name: The name of the virtual machine.
+# Returns:
+#   The default cloud user for the specified VM name.
+#   - "fedora" for VMs named "mirror-registry" or "openshift-jumpbox".
+#   - "cloud-user" for VMs named "microshift-demos", "device-edge-workshops", "ansible-aap", "rhel9-pxe", "rhel9-step-ca", "rhel9", or "rhel8".
+#   - "Unknown VM name" for any other VM names.
 function return_cloud_user() {
     local vm_name=$1
     case $vm_name in
@@ -38,7 +61,18 @@ function return_cloud_user() {
     esac
 }
 
-# Function to configure IDM container
+
+# This function configures the IDM container for a given VM.
+# It takes two arguments:
+#   1. vm_name: The name of the virtual machine.
+#   2. dns_forwarder: The DNS forwarder to be used.
+# The function performs the following steps:
+#   - Retrieves the domain name from the ANSIBLE_ALL_VARIABLES file using yq.
+#   - If the vm_name is "freeipa", it retrieves the IP address of the VM.
+#   - Checks if the IP address is already present in the /etc/hosts file.
+#     - If not, it adds the IP address with the IDM domain to the /etc/hosts file.
+#   - Checks if the IP address is already present in the /etc/resolv.conf file.
+#     - If not, it updates the /etc/resolv.conf file with the IDM domain, DNS forwarder, and other options.
 function configure_idm_container() {
   local vm_name="$1"
   local dns_forwarder="$2"
@@ -72,7 +106,44 @@ EOF
   fi
 }
 
-# Function to handle VM creation
+
+# This script defines a function `create_vm` that creates and configures a virtual machine (VM) based on the provided VM name.
+# 
+# Usage:
+#   create_vm <vm_name> <action>
+# 
+# Parameters:
+#   vm_name: The name of the VM to be created.
+#   action: The action to be performed (currently not used in the function).
+# 
+# The function performs the following steps:
+# 1. Retrieves the domain name from the ANSIBLE_ALL_VARIABLES file using `yq`.
+# 2. Checks the VM name and performs specific actions based on the VM name:
+#    - For "freeipa": If the VM exists, it runs the deploy-freeipa.sh script; otherwise, it configures DNS and exits.
+#    - For "kcli-openshift4-baremetal": Runs the deploy.sh script for OpenShift 4 bare metal.
+#    - For "ocp4-disconnected-helper": Runs the deploy.sh script for OpenShift 4 disconnected helper.
+#    - For "openshift-agent-install": Runs the deploy.sh script for OpenShift agent install.
+#    - For "ceph-cluster": Runs the deploy.sh script for Ceph cluster.
+#    - For "kubernetes": Runs the deploy.sh script for Kubernetes.
+#    - For "vyos-router": Runs the deploy.sh script for VyOS router.
+#    - For other VM names: 
+#      - Checks if the IDM server is available.
+#      - Retrieves the DNS address and DNS forwarder from the ANSIBLE_ALL_VARIABLES file.
+#      - If the VM exists, it creates the VM using `kcli` with the specified profile and DNS settings.
+#      - Retrieves the IP address of the created VM.
+#      - Adds an IPA entry for the VM using an Ansible playbook.
+#      - Updates the hosts file with the VM details.
+#      - Runs an Ansible playbook to update DNS settings.
+# 
+# Dependencies:
+# - yq: A command-line YAML processor.
+# - kcli: A command-line tool for managing VMs.
+# - Ansible: An IT automation tool.
+# - sudo: Allows a permitted user to execute a command as the superuser or another user.
+# 
+# Note:
+# - The function assumes that certain environment variables (e.g., ANSIBLE_ALL_VARIABLES, ANSIBLE_VAULT_FILE, ANSIBLE_PLAYBOOK) are set.
+# - The function uses `sudo` to execute commands with elevated privileges.
 function create_vm() {
     local vm_name="$1"
     local action="$2"
@@ -142,7 +213,21 @@ function create_vm() {
     fi
 }
 
-# Function to handle VM deletion
+
+# This function deletes a virtual machine (VM) based on the provided VM name.
+# It handles specific VM names with custom deletion scripts and uses kcli for others.
+# 
+# Arguments:
+#   $1 - The name of the VM to delete.
+#
+# The function performs the following steps:
+# 1. Retrieves the domain name from the ANSIBLE_ALL_VARIABLES file using yq.
+# 2. Checks if the VM name matches specific cases and calls the corresponding deletion script.
+# 3. If the VM name does not match any specific cases, it:
+#    a. Retrieves the target VM name and IP address using kcli.
+#    b. Deletes the VM using kcli if it exists.
+#    c. Removes the VM entry from FreeIPA using an Ansible playbook.
+#    d. Removes the VM entry from the hosts file.
 function delete_vm() {
     local vm_name="$1"
     local domain_name=$(yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
@@ -181,6 +266,33 @@ function delete_vm() {
 }
 
 # Main function
+# This script is used to manage the deployment of virtual machines (VMs) using KCLI.
+# It performs actions such as creating, deleting, or deploying applications on VMs.
+#
+# Usage:
+#   - Ensure the required RHEL images are downloaded on the server.
+#   - Set the VM_NAME environment variable to specify the name of the VM.
+#   - Set the ACTION environment variable to specify the action to perform (create, delete, deploy_app).
+#
+# Environment Variables:
+#   VM_NAME: Name of the VM to deploy.
+#   ACTION: Action to perform (create, delete, deploy_app).
+#   TARGET_SERVER: Target server for deployment (e.g., equinix).
+#
+# Actions:
+#   - create: Creates a new VM with the specified name.
+#   - delete: Deletes the VM with the specified name.
+#   - deploy_app: Deploys an application on the specified VM.
+#
+# The script performs the following steps:
+#   1. Checks if the required RHEL image path exists.
+#   2. Verifies that the VM_NAME and ACTION environment variables are set.
+#   3. Installs Ansible if the target server is "equinix" and Ansible is not already installed.
+#   4. Changes the working directory to /opt/kcli-pipelines.
+#   5. Checks if the default.env file exists and creates a default version if it does not.
+#   6. Sources the default.env file to load environment variables.
+#   7. Retrieves the domain name from the Ansible variables file.
+#   8. Executes the specified action (create, delete, deploy_app) based on the ACTION variable.
 function main() {
     IMAGE_PATH="/var/lib/libvirt/images/rhel8"
 

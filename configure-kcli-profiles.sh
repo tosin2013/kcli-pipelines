@@ -4,11 +4,25 @@ export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 set -x
 
 # Function to log messages
+# This script defines a logging function `log` that prints messages with a timestamp.
+# The timestamp is formatted as ISO 8601 (e.g., 2023-10-05T14:48:00+0000).
+# Usage: log "Your message here"
 log() {
     echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*"
 }
 
-# Function to get OS and version
+# This function retrieves the operating system version from the /etc/os-release file.
+# If the file exists, it sources the file to extract the OS and VERSION_ID variables.
+# If the file does not exist, it logs an error message and exits with status code 1.
+# Globals:
+#   OS - The ID of the operating system (e.g., ubuntu, centos).
+#   VERSION_ID - The version ID of the operating system (e.g., 20.04, 7).
+# Arguments:
+#   None
+# Outputs:
+#   Writes an error message to the log if /etc/os-release is not found.
+# Returns:
+#   None
 get_os_version() {
     if [ -f /etc/os-release ]; then
         . /etc/os-release
@@ -20,7 +34,15 @@ get_os_version() {
     fi
 }
 
-# Function to determine the command based on the OS and version
+
+# This function determines the appropriate command to update YAML files based on the operating system and its version.
+# It first retrieves the OS version by calling the get_os_version function.
+# Then, it checks if the OS is either CentOS, RHEL, or Rocky Linux.
+# If the OS is one of these, it further checks the version:
+# - For version 8.x, it sets the COMMAND variable to "update-yaml".
+# - For version 9.x, it sets the COMMAND variable to "update_yaml".
+# If the version is unsupported, it logs an error message and exits with status 1.
+# If the OS is unsupported, it logs an error message and exits with status 1.
 determine_command_yaml() {
     get_os_version
 
@@ -39,7 +61,16 @@ determine_command_yaml() {
     fi
 }
 
-# Function to clone or pull the git repo
+
+# This script defines a function `clone_or_pull_repo` that clones or pulls a Git repository.
+#
+# The function performs the following steps:
+# 1. Sets the Git repository URL to `https://github.com/tosin2013/kcli-pipelines.git`.
+# 2. Checks if the `TARGET_SERVER` environment variable is set. If not, logs an error message and exits with status 1.
+# 3. Checks if the directory `/opt/kcli-pipelines` exists:
+#    - If the directory does not exist, it clones the repository into `/opt/kcli-pipelines` using `sudo`.
+#    - If the directory exists, it changes the current directory to `/opt/kcli-pipelines` and pulls the latest changes from the repository using `sudo`.
+# 4. Logs an error message and exits with status 1 if either the clone or pull operation fails.
 clone_or_pull_repo() {
     GIT_REPO=https://github.com/tosin2013/kcli-pipelines.git
 
@@ -56,7 +87,15 @@ clone_or_pull_repo() {
     fi
 }
 
-# Function to configure the environment
+
+# This script configures the environment for kcli-pipelines.
+# It performs the following tasks:
+# 1. If the TARGET_SERVER is "rhel8-equinix" or "rhel9-equinix", it updates the NET_NAME in the default.env file to "default".
+# 2. If the VM_PROFILE is "kcli-openshift4-baremetal", it updates the NET_NAME in the default.env file to "lab-baremetal".
+# 3. Checks if an SSH key exists at ~/.ssh/id_rsa. If not, it generates a new RSA SSH key with 4096 bits.
+#    If the SSH key exists, it starts the ssh-agent and adds the SSH key to the agent.
+# 4. Checks if the ansible.cfg file exists at /opt/kcli-pipelines. If not, it creates a new ansible.cfg file with a specified remote_tmp directory.
+# 5. Sources the helper_functions.sh script from the helper_scripts directory.
 configure_environment() {
     if [ "$TARGET_SERVER" == "rhel8-equinix" ] || [ "$TARGET_SERVER" == "rhel9-equinix" ]; then
         sudo sed -i 's/NET_NAME=qubinet/NET_NAME=default/g' "/opt/kcli-pipelines/helper_scripts/default.env"
@@ -85,9 +124,18 @@ EOF
 }
 
 # Function to generate profiles
+# This script generates KCLI profiles for different operating systems.
+# It performs the following steps:
+# 1. Changes the current directory to /opt/kcli-pipelines.
+# 2. Updates the INVENTORY variable in the helper_scripts/default.env file to the value of TARGET_SERVER.
+# 3. Sources the updated environment variables from helper_scripts/default.env.
+# 4. Retrieves the KCLI user from the ANSIBLE_ALL_VARIABLES file using yq and logs the user.
+# 5. Removes any existing KCLI profiles configuration files from the user's home directory and root's home directory.
+# 6. Calls the determine_command_yaml function to set the COMMAND variable.
+# 7. Generates KCLI profiles for rhel8, rhel9, fedora39, and centos9stream using the profile_generator.py script with the appropriate template and variables files.
 generate_profiles() {
     cd "/opt/kcli-pipelines"
-    
+
     sudo sed -i "s|export INVENTORY=localhost|export INVENTORY='${TARGET_SERVER}'|g" helper_scripts/default.env
     source helper_scripts/default.env
     KCLI_USER=$(yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
@@ -101,7 +149,19 @@ generate_profiles() {
     sudo python3 profile_generator/profile_generator.py "$COMMAND" centos9stream centos9stream/template.yaml --vars-file centos9stream/vm_vars.yaml
 }
 
-# Function to configure kcli profiles
+# This script configures kcli profiles for different users and environments.
+# It performs the following steps:
+# 1. Checks if the .kcli directory exists for the specified users ($KCLI_USER, $USER, and root).
+#    If not, it creates the directory.
+# 2. Checks if the kcli-profiles.yml file exists in the /opt/kcli-pipelines directory.
+#    If not, it logs an error and exits.
+# 3. Copies the kcli-profiles.yml file to the .kcli directory for each user.
+# 4. Executes the configure-kcli-profile.sh script for various environments (openshift-jumpbox, ansible-aap,
+#    device-edge-workshops, microshift-demos, kubernetes, jupyterlab, ceph-cluster, rhel9-pxe, step-ca-server, ubuntu).
+#    If any script fails, it logs an error and exits.
+# 5. If the CUSTOM_PROFILE variable is set to "true" and the VM_PROFILE is not "freeipa", it configures the specified
+#    VM_PROFILE type by executing the corresponding configure-kcli-profile.sh script.
+# 6. Copies the resulting profiles.yml file to the .kcli directory for each user.
 configure_kcli_profiles() {
     if [ ! -d "/home/$KCLI_USER/.kcli" ]; then
         log "/home/$KCLI_USER/.kcli directory does not exist"
@@ -153,19 +213,15 @@ configure_kcli_profiles() {
     sudo cp kcli-profiles.yml /root/.kcli/profiles.yml
 }
 
-# Main function to orchestrate the script
-# Ensure VM_PROFILE is set
-if [ -z "$VM_PROFILE" ]; then
-    log "VM_PROFILE variable is not set"
-    exit 1
-fi
 
-# Ensure VM_PROFILE is set
-if [ -z "$VM_PROFILE" ]; then
-    log "VM_PROFILE variable is not set"
-    exit 1
-fi
-
+# This script checks if the VM_PROFILE environment variable is set.
+# If VM_PROFILE is not set, it logs an error message and exits with status code 1.
+# This script configures KCLI profiles by performing the following steps:
+# 1. Clones or pulls the latest version of the repository.
+# 2. Configures the environment settings required for KCLI.
+# 3. Generates the necessary profiles for KCLI.
+# 4. Configures the KCLI profiles based on the generated profiles.
+# 5. Logs a message indicating that the script has completed successfully.
 main() {
     clone_or_pull_repo
     configure_environment
