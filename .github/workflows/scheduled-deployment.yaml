@@ -3,7 +3,6 @@ name: Scheduled Deployment
 on:
   schedule:
     - cron: '0 */4 * * *'  # run every four hours at 00 minutes
-    #- cron: '0 0 * * 0,3,5' # Sunday, Wednesday, Friday at 12:00 AM UTC
   workflow_dispatch:
     inputs:
       runner_tag:
@@ -20,55 +19,44 @@ on:
           - delete
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out the repository
-        uses: actions/checkout@v4
+  deploy-registry:
+    uses: ./.github/workflows/deploy-registry.yaml
+    with:
+      target_server: 'rhel9-equinix'
+      vm_name: 'freeipa'
+      action: ${{ inputs.action }}
+      harbor_version: 'v2.11.1'
+      quay_version: 'v3.12.3'
+      email: 'vasaga9759@craftapk.com'
+      guid: 'mjffm'
+      runner_tag: ${{ inputs.runner_tag }}
+      community_version: 'false'
 
-      - name: Destroy OpenShift 4 Baremetal on KVM
-        run: |
-          oc delete deployment openshift-baremetal-kvm || true
-      - name: Destroy Registry
-        run: |
-          oc delete deployment registry || true
+  configure-helper:
+    needs: deploy-registry
+    uses: ./.github/workflows/configure-ocp4-disconnected-helper.yaml
+    with:
+      target_server: 'rhel9-equinix'
+      action: ${{ inputs.action }}
+      guid: 'mjffm'
+      runner_tag: ${{ inputs.runner_tag }}
+      DOWNLOAD_TO_TAR: 'true'
+      PUSH_TAR_TO_REGISTRY: 'true'
+      SETUP_QUAY_REGISTRY: 'false'
+      SETUP_HARBER_REGISTRY: 'false'
+      HARBOR_PASSWORD: 'Harbor12345'
 
-      - name: Call Deploy Registry Workflow
-        uses: ./.github/workflows/deploy-registry.yaml@main
-        with:
-          target_server: 'rhel9-equinix'
-          vm_name: 'freeipa'
-          action: ${{ inputs.action }}
-          harbor_version: 'v2.11.1'
-          quay_version: 'v3.12.3'
-          email: 'vasaga9759@craftapk.com'
-          guid: 'mjffm'
-          runner_tag: ${{ inputs.runner_tag }}
-          community_version: 'false'
-
-      - name: Call OpenShift 4 Disconnected Helper Workflow
-        uses: ./.github/workflows/configure-ocp4-disconnected-helper.yaml@main
-        with:
-          target_server: 'rhel9-equinix'
-          action: ${{ inputs.action }}
-          guid: 'mjffm'
-          runner_tag: ${{ inputs.runner_tag }}
-          DOWNLOAD_TO_TAR: 'true'
-          PUSH_TAR_TO_REGISTRY: 'true'
-          SETUP_QUAY_REGISTRY: 'false'
-          SETUP_HARBER_REGISTRY: 'false'
-          HARBOR_PASSWORD: 'Harbor12345'
-
-      - name: Call kcli-openshift4-baremetal-external Workflow
-        uses: ./.github/workflows/kcli-openshift4-baremetal-external.yaml@main
-        with:
-          deployment_config: 'cnv-kcli-openshift4-baremetal.yml'
-          target_server: 'rhel9-equinix'
-          vm_name: 'kcli-openshift4-baremetal'
-          action: ${{ inputs.action }}
-          deploy_openshift: true
-          auto_launch_steps: true
-          deployment_tag: '4.17'
-          disconnected_install: false
-          community_version: 'false'
-          runner_tag: ${{ inputs.runner_tag }}
+  deploy-openshift:
+    needs: configure-helper
+    uses: ./.github/workflows/kcli-openshift4-baremetal-external.yaml
+    with:
+      deployment_config: 'cnv-kcli-openshift4-baremetal.yml'
+      target_server: 'rhel9-equinix'
+      vm_name: 'kcli-openshift4-baremetal'
+      action: ${{ inputs.action }}
+      deploy_openshift: true
+      auto_launch_steps: true
+      deployment_tag: '4.17'
+      disconnected_install: false
+      community_version: 'false'
+      runner_tag: ${{ inputs.runner_tag }}
