@@ -2,18 +2,19 @@ name: Scheduled Deployment
 
 on:
   schedule:
-    - cron: '0 */4 * * *'  # run every four hours at 00 minutes
+    - cron: '0 */4 * * *'  # Run every four hours at minute 0
   workflow_dispatch:
     inputs:
       runner_tag:
         description: 'Runner'
         required: true
         default: z2r22-github-runner
+        type: string
       action:
         description: 'Action'
         required: true
         default: create
-        type: choice
+        type: string
         options:
           - create
           - delete
@@ -43,8 +44,8 @@ jobs:
       DOWNLOAD_TO_TAR: 'true'
       PUSH_TAR_TO_REGISTRY: 'true'
       SETUP_QUAY_REGISTRY: 'false'
-      SETUP_HARBER_REGISTRY: 'false'
-      HARBOR_PASSWORD: 'Harbor12345'
+      SETUP_HARBOR_REGISTRY: 'false'  # Corrected typo
+      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}  # Secured password
 
   deploy-openshift:
     needs: configure-helper
@@ -54,9 +55,9 @@ jobs:
       target_server: 'rhel9-equinix'
       vm_name: 'kcli-openshift4-baremetal'
       action: ${{ inputs.action }}
-      deploy_openshift: true
-      auto_launch_steps: true
+      deploy_openshift: 'true'
+      auto_launch_steps: 'true'
       deployment_tag: '4.17'
-      disconnected_install: false
+      disconnected_install: 'false'
       community_version: 'false'
       runner_tag: ${{ inputs.runner_tag }}
