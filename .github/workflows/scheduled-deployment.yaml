@@ -92,6 +92,10 @@ on:
           - converged-kcli-openshift4-baremetal.yml
           - kcli-openshift4-baremetal.yml
 
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v4
 
       - name: Destroy OpenShift 4 Baremetal on KVM
