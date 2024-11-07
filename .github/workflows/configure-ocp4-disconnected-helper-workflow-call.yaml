@@ -1,0 +1,123 @@
+name: OpenShift 4 Disconnected Helper
+on:
+  workflow_call:
+    inputs:
+      target_server:
+        description: 'Target server'
+        required: true
+        default: rhel9-equinix
+      action:
+        description: 'Action'
+        required: true
+        default: create
+        type: choice
+        options:
+          - create
+          - delete
+      guid:
+        description: 'GUID'
+        required: true
+        default: ''
+      runner_tag:
+        description: 'Runner'
+        required: true
+        default: 'changeme-github-runner'
+      DOWNLOAD_TO_TAR:
+        description: 'Download to TAR'
+        required: true
+        default: 'true'
+        type: choice
+        options:
+          - true
+          - false
+      PUSH_TAR_TO_REGISTRY:
+        description: 'Push TAR to Registry'
+        required: true
+        default: 'true'
+        type: choice
+        options:
+          - true
+          - false
+      SETUP_QUAY_REGISTRY:
+        description: 'Setup Quay Registry'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - true
+          - false
+      SETUP_HARBER_REGISTRY:
+        description: 'Setup Harbor Registry'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - true
+          - false
+      HARBOR_PASSWORD:
+        description: 'Harbor Registry Password'
+        required: true
+        default: 'Harbor12345'
+        type: password
+
+env:
+  TARGET_SERVER: ${{ inputs.target_server }}
+  ACTION: ${{ inputs.action }}
+  RUNNER: ${{ inputs.runner_tag }}
+  DEFAULT_RUNNER_USER: "runner"
+  GUID: ${{ inputs.guid }}
+  DOWNLOAD_TO_TAR: ${{ inputs.DOWNLOAD_TO_TAR }}
+  PUSH_TAR_TO_REGISTRY: ${{ inputs.PUSH_TAR_TO_REGISTRY }}
+  SETUP_QUAY_REGISTRY: ${{ inputs.SETUP_QUAY_REGISTRY }}
+  SETUP_HARBER_REGISTRY: ${{ inputs.SETUP_HARBER_REGISTRY }}
+  HARBOR_PASSWORD: ${{ inputs.HARBOR_PASSWORD }}
+
+
+jobs:
+
+  ocp4-disconnected-helper:
+    runs-on: 
+      - ${{ inputs.runner_tag }}  # Use the runner name at the job level
+    timeout-minutes: 240 # Ensure the previous job runs first
+    if: ${{ inputs.action == 'create' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configuring OpenShift 4 Disconnected Helper
+        run: | 
+          if [ -d "/opt/kcli-pipelines" ]; then
+            sudo -E cd /opt/kcli-pipelines
+            sudo git config pull.rebase false
+            sudo git pull
+          else
+            sudo -E cd /opt/
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          export GUID=${{ env.GUID }}
+          export DOWNLOAD_TO_TAR=${{ env.DOWNLOAD_TO_TAR }}
+          export PUSH_TAR_TO_REGISTRY=${{ env.PUSH_TAR_TO_REGISTRY }}
+          export HARBOR_PASSWORD=${{ env.HARBOR_PASSWORD }}
+          sudo -E /opt/kcli-pipelines/ocp4-disconnected-helper/deploy.sh || exit $?
+
+  delete-ocp4-disconnected-helper:
+    runs-on: 
+      - ${{ inputs.runner_tag }}  # Use the runner name at the job level
+    timeout-minutes: 10 # Ensure the previous job runs first
+    if: ${{ inputs.action == 'delete' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clean up OpenShift 4 Disconnected Helper
+        run: | 
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
+            sudo git config pull.rebase false
+            sudo git pull
+          else
+            cd /opt/
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          export GUID=${{ env.GUID }}
+          export DOWNLOAD_TO_TAR=${{ env.DOWNLOAD_TO_TAR }}
+          export PUSH_TAR_TO_REGISTRY=${{ env.PUSH_TAR_TO_REGISTRY }}
+          sudo -E /opt/kcli-pipelines/ocp4-disconnected-helper/destroy.sh || exit $?

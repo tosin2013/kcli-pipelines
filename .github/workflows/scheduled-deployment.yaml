@@ -33,9 +33,9 @@ jobs:
       runner_tag: ${{ inputs.runner_tag }}
       community_version: 'false'
 
-  configure-helper:
+  configure-ocp4-disconnected-helper:
     needs: deploy-registry
-    uses: ./.github/workflows/configure-ocp4-disconnected-helper.yaml
+    uses: ./.github/workflows/configure-ocp4-disconnected-helper-workflow-call.yaml
     with:
       target_server: 'rhel9-equinix'
       action: ${{ inputs.action }}
@@ -47,17 +47,17 @@ jobs:
       SETUP_HARBOR_REGISTRY: 'false'  # Corrected typo
       HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}  # Secured password
 
-  deploy-openshift:
-    needs: configure-helper
-    uses: ./.github/workflows/kcli-openshift4-baremetal-external.yaml
-    with:
-      deployment_config: 'cnv-kcli-openshift4-baremetal.yml'
-      target_server: 'rhel9-equinix'
-      vm_name: 'kcli-openshift4-baremetal'
-      action: ${{ inputs.action }}
-      deploy_openshift: 'true'
-      auto_launch_steps: 'true'
-      deployment_tag: '4.17'
-      disconnected_install: 'false'
-      community_version: 'false'
-      runner_tag: ${{ inputs.runner_tag }}
+  # deploy-openshift:
+  #   needs: configure-ocp4-disconnected-helper
+  #   uses: ./.github/workflows/kcli-openshift4-baremetal-external.yaml
+  #   with:
+  #     deployment_config: 'cnv-kcli-openshift4-baremetal.yml'
+  #     target_server: 'rhel9-equinix'
+  #     vm_name: 'kcli-openshift4-baremetal'
+  #     action: ${{ inputs.action }}
+  #     deploy_openshift: 'true'
+  #     auto_launch_steps: 'true'
+  #     deployment_tag: '4.17'
+  #     disconnected_install: 'false'
+  #     community_version: 'false'
+  #     runner_tag: ${{ inputs.runner_tag }}
