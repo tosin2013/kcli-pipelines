@@ -1,0 +1,144 @@
+name: Scheduled Deployment
+
+on:
+  schedule:
+    - cron: '0 0 * * 0,3,5' # Sunday, Wednesday, Friday at 12:00 AM UTC
+  workflow_dispatch:
+    inputs:
+      target_server:
+        description: 'Target server'
+        required: true
+        default: rhel9-equinix
+      vm_name:
+        description: 'VM Deployment'
+        required: true
+        default: freeipa
+      action:
+        description: 'Action'
+        required: true
+        default: create
+        type: choice
+        options:
+          - create
+          - delete
+      harbor_version:
+        description: 'Harbor version'
+        required: true
+        default: v2.11.1
+      quay_version:
+        description: 'Quay version'
+        required: true
+        default: v3.12.3
+      email:
+        description: 'Email'
+        required: true
+        default: vasaga9759@craftapk.com
+      guid:
+        description: 'GUID'
+        required: true
+        default: mjffm
+      runner_tag:
+        description: 'Runner'
+        required: true
+        default: mjffm-github-runner
+      community_version:
+        description: 'Use community version of software (true/false)'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - true
+          - false
+      deploy_openshift:
+        description: 'Deploy The OpenShift Cluster on Launch'
+        required: true
+        default: true
+        type: choice
+        options:
+          - true
+          - false
+      auto_launch_steps:
+        description: 'Auto deploy Steps'
+        required: true
+        default: true
+        type: choice
+        options:
+          - true
+          - false
+      deployment_tag:
+        description: 'OpenShift Version'
+        required: true
+        default: '4.17'
+        type: choice
+        options:
+          - '4.15'
+          - '4.16'
+          - '4.17'
+      disconnected_install:
+        description: 'Enable Disconnected Install'
+        required: true
+        default: false
+        type: choice
+        options:
+          - true
+          - false
+      deployment_config:
+        description: 'Deployment Configuration'
+        required: true
+        default: cnv-kcli-openshift4-baremetal.yml
+        type: choice
+        options:
+          - cnv-kcli-openshift4-baremetal.yml
+          - converged-kcli-openshift4-baremetal.yml
+          - kcli-openshift4-baremetal.yml
+
+jobs:
+  deploy:
+    runs-on: ${{ inputs.runner_tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure kcli profiles
+        run: | 
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_PROFILE=${{ env.VM_NAME }}
+          if [ "${{ env.VM_NAME }}" != "freeipa" ]; then
+            export CUSTOM_PROFILE=true
+          else 
+            export CUSTOM_PROFILE=false
+          fi
+          if [ -d "/opt/kcli-pipelines" ]; then
+            cd /opt/kcli-pipelines
+            sudo git config pull.rebase false
+            sudo git pull
+          else
+            cd /opt/
+            sudo git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
+
+      - name: Deploy Registry
+        run: | 
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_NAME=${{ env.VM_NAME }}
+          export ACTION=${{ env.ACTION }}
+          export HARBOR_VERSION=${{ env.HARBOR_VERSION }}
+          export QUAY_VERSION=${{ env.QUAY_VERSION }}
+          export EMAIL=${{ env.EMAIL }}
+          export GUID=${{ env.GUID }}
+          /opt/kcli-pipelines/deploy-vm.sh
+          sudo kcli ssh ${{ env.VM_NAME }} "sudo -E /root/init-harbor.sh" || exit $?
+
+      - name: Deploy OpenShift 4 Baremetal on KVM
+        run: | 
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_NAME=${{ env.VM_NAME }}
+          export VM_PROFILE=${{ env.VM_NAME }}
+          export ACTION=${{ env.ACTION }}
+          export DEPLOY_OPENSHIFT=${{ env.DEPLOY_OPENSHIFT }}
+          export LAUNCH_STEPS=${{ env.LAUNCH_STEPS }}
+          export TAG=${{ env.TAG }}
+          export DISCONNECTED_INSTALL=${{ env.DISCONNECTED_INSTALL }}
+          export DEPLOYMENT_CONFIG=${{ env.DEPLOYMENT_CONFIG }}
+          export COMMUNITY_VERSION=${{ env.COMMUNITY_VERSION }}
+          /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/deploy-vm.sh

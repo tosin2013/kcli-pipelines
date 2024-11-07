@@ -2,3 +2,4 @@ aider-env/bin/activate
 aider_setup.sh
 .aider*
 aider-env/
+.env
