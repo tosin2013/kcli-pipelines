@@ -1,0 +1,6 @@
+  - name: Destroy OpenShift 4 Baremetal on KVM
+    run: |
+      oc delete deployment openshift-baremetal-kvm || true
+  - name: Destroy Registry
+    run: |
+      oc delete deployment registry || true
