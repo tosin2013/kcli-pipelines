@@ -9,7 +9,7 @@ on:
       runner_tag:
         description: 'Runner'
         required: true
-        default: kxb2h-github-runner
+        default: z2r22-github-runner
       action:
         description: 'Action'
         required: true
