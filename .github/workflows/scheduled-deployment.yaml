@@ -2,20 +2,19 @@ name: Scheduled Deployment
 
 on:
   schedule:
-    - cron: '0 */4 * * *'  # Run every four hours at minute 0
+    - cron: '*/5 * * * *'  # Run every five minutes
   workflow_dispatch:
     inputs:
       runner_tag:
         description: 'Runner'
         required: true
-        default: 'z2r22-github-runner'
+        default: 'z2r22-github-runner'  # Ensure default value is set
         type: string
       action:
         description: 'Action'
         required: true
         default: 'create'
         type: string
-
 
 jobs:
   clean-up-deploy-registry:
