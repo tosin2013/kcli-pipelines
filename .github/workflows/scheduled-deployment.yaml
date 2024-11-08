@@ -42,8 +42,7 @@ jobs:
       runner_tag: ${{ inputs.runner_tag }}
       DOWNLOAD_TO_TAR: 'true'  # Passed as string
       PUSH_TAR_TO_REGISTRY: 'true'  # Passed as string
-    secrets:
-      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
+
 
   deploy-openshift:
     needs: configure-ocp4-disconnected-helper
@@ -59,5 +58,4 @@ jobs:
       disconnected_install: 'false'  # Passed as string
       community_version: 'false'  # Passed as string
       runner_tag: ${{ inputs.runner_tag }}
-    secrets:
-      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
+
