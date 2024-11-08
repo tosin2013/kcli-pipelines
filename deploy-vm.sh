@@ -252,16 +252,22 @@ function delete_vm() {
         echo "VM $vm_name does not exist."
       fi
 
-     $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \
-          --vault-password-file /root/.vault_password \
-          --extra-vars "@${ANSIBLE_VAULT_FILE}" \
-          --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
-          --extra-vars "key=${vm_name}" \
-          --extra-vars "freeipa_server_fqdn=idm.${domain_name}" \
-          --extra-vars "value=${ip_address}" \
-          --extra-vars "freeipa_server_domain=${domain_name}" \
-          --extra-vars "action=absent" -vvv
-      sudo sed -i  '/\['$vm_name'\]/,+2d' /opt/kcli-pipelines/helper_scripts/hosts
+    export free_ip_address=$(sudo kcli info vm "freeipa" "freeipa" | grep ip: | awk '{print $2}' | head -1)
+    if [ ! -z $free_ip_address ];
+    then 
+      $ANSIBLE_PLAYBOOK /opt/kcli-pipelines/helper_scripts/add_ipa_entry.yaml \
+            --vault-password-file /root/.vault_password \
+            --extra-vars "@${ANSIBLE_VAULT_FILE}" \
+            --extra-vars "@${ANSIBLE_ALL_VARIABLES}" \
+            --extra-vars "key=${vm_name}" \
+            --extra-vars "freeipa_server_fqdn=idm.${domain_name}" \
+            --extra-vars "value=${ip_address}" \
+            --extra-vars "freeipa_server_domain=${domain_name}" \
+            --extra-vars "action=absent" -vvv
+        sudo sed -i  '/\['$vm_name'\]/,+2d' /opt/kcli-pipelines/helper_scripts/hosts
+      else
+        echo "Freeipa server not found"
+      fi 
     fi
 }
 
