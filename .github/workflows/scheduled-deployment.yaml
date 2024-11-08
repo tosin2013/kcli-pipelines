@@ -30,8 +30,7 @@ jobs:
       guid: 'z2r22'
       runner_tag: ${{ inputs.runner_tag }}
       community_version: 'false'  # Passed as string
-    secrets:
-      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
+
 
   configure-ocp4-disconnected-helper:
     needs: deploy-registry
