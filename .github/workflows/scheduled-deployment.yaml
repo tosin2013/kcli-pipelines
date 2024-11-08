@@ -43,20 +43,3 @@ jobs:
       DOWNLOAD_TO_TAR: 'true'  # Passed as string
       PUSH_TAR_TO_REGISTRY: 'true'
       HARBOR_PASSWORD: Harbor12345  # Passed as string
-
-
-  deploy-openshift:
-    needs: configure-ocp4-disconnected-helper
-    uses: ./.github/workflows/kcli-openshift4-baremetal-external-workflow-call.yaml
-    with:
-      deployment_config: 'cnv-kcli-openshift4-baremetal.yml'
-      target_server: 'rhel9-equinix'
-      vm_name: 'kcli-openshift4-baremetal'
-      action: ${{ inputs.action }}
-      deploy_openshift: 'true'  # Passed as string
-      auto_launch_steps: 'true'  # Passed as string
-      deployment_tag: '4.17'
-      disconnected_install: 'false'  # Passed as string
-      community_version: 'false'  # Passed as string
-      runner_tag: ${{ inputs.runner_tag }}
-
