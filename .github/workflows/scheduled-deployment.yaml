@@ -41,7 +41,8 @@ jobs:
       guid: 'z2r22'
       runner_tag: ${{ inputs.runner_tag }}
       DOWNLOAD_TO_TAR: 'true'  # Passed as string
-      PUSH_TAR_TO_REGISTRY: 'true'  # Passed as string
+      PUSH_TAR_TO_REGISTRY: 'true'
+      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}  # Passed as string
 
 
   deploy-openshift:
