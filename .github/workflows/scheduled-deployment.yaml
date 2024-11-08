@@ -18,7 +18,21 @@ on:
 
 
 jobs:
+  clean-up-deploy-registry:
+    uses: ./.github/workflows/deploy-registry-workflow-call.yaml
+    with:
+      target_server: 'rhel9-equinix'
+      vm_name: 'harbor'
+      action: delete
+      harbor_version: 'v2.11.1'
+      quay_version: 'v3.12.3'
+      email: 'vasaga9759@craftapk.com'
+      guid: 'z2r22'
+      runner_tag: ${{ inputs.runner_tag }}
+      community_version: false
+
   deploy-registry:
+    needs: clean-up-deploy-registry
     uses: ./.github/workflows/deploy-registry-workflow-call.yaml
     with:
       target_server: 'rhel9-equinix'
