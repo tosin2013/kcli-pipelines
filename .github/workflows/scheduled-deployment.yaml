@@ -10,10 +10,15 @@ on:
         required: true
         default: 'z2r22-github-runner'  # Ensure default value is set
         type: string
+      guid:
+        description: 'GUID'
+        required: true
+        default: 'z2r22'
+        type: string
       action:
         description: 'Action'
         required: true
-        default: 'create'
+        default: 'create' 
         type: string
 
 jobs:
@@ -26,8 +31,8 @@ jobs:
       harbor_version: 'v2.11.1'
       quay_version: 'v3.12.3'
       email: 'vasaga9759@craftapk.com'
-      guid: 'z2r22'
-      runner_tag: ${{ inputs.runner_tag }}
+      guid: ${{ github.event_name == 'schedule' && 'z2r22' || inputs.guid }}
+      runner_tag: ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }}
       community_version: false
 
   deploy-registry:
@@ -40,8 +45,8 @@ jobs:
       harbor_version: 'v2.11.1'
       quay_version: 'v3.12.3'
       email: 'vasaga9759@craftapk.com'
-      guid: 'z2r22'
-      runner_tag: ${{ inputs.runner_tag }}
+      guid: ${{ github.event_name == 'schedule' && 'z2r22' || inputs.guid }}
+      runner_tag: ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }}
       community_version: false
 
 
@@ -51,8 +56,8 @@ jobs:
     with:
       target_server: 'rhel9-equinix'
       action: ${{ inputs.action }}
-      guid: 'z2r22'
-      runner_tag: ${{ inputs.runner_tag }}
+      guid: ${{ github.event_name == 'schedule' && 'z2r22' || inputs.guid }}
+      runner_tag: ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }}
       DOWNLOAD_TO_TAR: 'true'  # Passed as string
       PUSH_TAR_TO_REGISTRY: 'true'
       HARBOR_PASSWORD: Harbor12345  # Passed as string

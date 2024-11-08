@@ -68,6 +68,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Configure kcli profiles
+        runs-on: ${{ inputs.runner_tag }}
         run: | 
           echo "Running on ${{ inputs.runner_tag }}..."
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
@@ -117,7 +118,7 @@ jobs:
           sudo -E /opt/kcli-pipelines/deploy-vm.sh || exit $?
 
   deploy-registry-vm:
-    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    runs-on: ${{ inputs.runner_tag }} # Ensure runner_tag is properly used here
     timeout-minutes: 45
     if: ${{ inputs.action == 'create' }}
     needs: deploy-dns # Ensure the previous job runs first
