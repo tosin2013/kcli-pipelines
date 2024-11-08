@@ -3,38 +3,47 @@ on:
   workflow_call:
     inputs:
       target_server:
+        type: string
         description: 'Target server'
         required: true
         default: rhel9-equinix
       action:
+        type: string
         description: 'Action'
         required: true
         default: create
       vm_name:
+        type: string
         description: 'VM Deployment'
         required: true
         default: 'harbor'
       harbor_version:
+        type: string
         description: 'Harbor version'
         required: true
         default: 'v2.11.1'
       quay_version:
+        type: string
         description: 'Quay version'
         required: true
         default: 'v3.12.3'
       email:
+        type: string
         description: 'Email'
         required: true
         default: 'vasaga9759@craftapk.com' #''
       guid:
+        type: string
         description: 'GUID'
         required: true
-        default: 'mjffm' # ''
+        default: 'z2r22' # ''
       runner_tag:
+        type: string
         description: 'Runner'
         required: true
-        default: 'mjffm-github-runner' #'changeme-github-runner'
+        default: 'z2r22-github-runner' #'changeme-github-runner'
       community_version:
+        type: boolean
         description: 'Use community version of software (true/false)'
         required: true
         default: 'false'
