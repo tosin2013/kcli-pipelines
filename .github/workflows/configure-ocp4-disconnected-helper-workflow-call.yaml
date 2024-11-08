@@ -10,10 +10,6 @@ on:
         description: 'Action'
         required: true
         default: create
-        type: choice
-        options:
-          - create
-          - delete
       guid:
         description: 'GUID'
         required: true
@@ -26,34 +22,18 @@ on:
         description: 'Download to TAR'
         required: true
         default: 'true'
-        type: choice
-        options:
-          - true
-          - false
       PUSH_TAR_TO_REGISTRY:
         description: 'Push TAR to Registry'
         required: true
         default: 'true'
-        type: choice
-        options:
-          - true
-          - false
       SETUP_QUAY_REGISTRY:
         description: 'Setup Quay Registry'
         required: false
         default: 'false'
-        type: choice
-        options:
-          - true
-          - false
       SETUP_HARBER_REGISTRY:
         description: 'Setup Harbor Registry'
         required: false
         default: 'false'
-        type: choice
-        options:
-          - true
-          - false
       HARBOR_PASSWORD:
         description: 'Harbor Registry Password'
         required: true
