@@ -62,7 +62,7 @@ env:
 
 jobs:
   configure-kcli-profiles:
-    runs-on: ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }}# Use the runner name at the job level
+    runs-on: ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -89,7 +89,7 @@ jobs:
           sudo -E /opt/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
   deploy-dns:
-    runs-on: ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }}# Use the runner name at the job level
+    runs-on: ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
     if: ${{ inputs.action == 'create' }}
     needs: configure-kcli-profiles # Ensure the previous job runs first
@@ -149,7 +149,7 @@ jobs:
           sudo kcli ssh ${{ env.VM_NAME }} "sudo -E /root/init-harbor.sh" || exit $?
 
   delete-registry-vm:
-    runs-on: ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }}# Use the runner name at the job level
+    runs-on: ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
     needs: configure-kcli-profiles # Ensure the previous job runs first
     if: ${{ inputs.action == 'delete' }}

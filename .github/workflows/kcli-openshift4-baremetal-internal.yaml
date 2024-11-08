@@ -100,12 +100,12 @@ jobs:
           fi
 
       - name: Configure kcli profiles
-        run: | 
+        run: |
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
           export VM_PROFILE=${{ env.VM_NAME }}
           if [ "${{ inputs.vm_name }}" != "freeipa" ]; then
             export CUSTOM_PROFILE=false
-          else 
+          else
             export CUSTOM_PROFILE=true
           fi
           if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
@@ -116,7 +116,7 @@ jobs:
             cd /home/${{ env.DEFAULT_RUNNER_USER }}/
             git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
-          
+
           /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines/configure-kcli-profiles.sh || exit $?
 
   kcli-openshift4-baremetal:
@@ -128,7 +128,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Deploying OpenShift 4 Baremetal on KVM
-        run: | 
+        run: |
           if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
             cd /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
             git config pull.rebase false
@@ -160,7 +160,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Deploying ${{ inputs.vm_name }} on KVM
-        run: | 
+        run: |
           if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
             cd /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
             git config pull.rebase false
@@ -187,7 +187,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Deploying ${{ inputs.vm_name }} on KVM
-        run: | 
+        run: |
           if [ -d "/home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines" ]; then
             cd /home/${{ env.DEFAULT_RUNNER_USER }}/kcli-pipelines
             git config pull.rebase false
@@ -204,7 +204,7 @@ jobs:
             export VM_NAME=${{ inputs.custom_vm_name }}
           fi
           if [ ${{ env.ACTION }} == "create" ];
-          then 
+          then
             cd /home/${{ env.DEFAULT_RUNNER_USER }}/
             ./kcli-openshift4-baremetal/configure_dns_entries.sh
           fi
