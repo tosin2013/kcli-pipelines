@@ -15,9 +15,7 @@ on:
         required: true
         default: 'create'
         type: string
-        options:
-          - create
-          - delete
+
 
 jobs:
   deploy-registry:
