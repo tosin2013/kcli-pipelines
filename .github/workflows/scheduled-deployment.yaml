@@ -8,12 +8,12 @@ on:
       runner_tag:
         description: 'Runner'
         required: true
-        default: z2r22-github-runner
+        default: 'z2r22-github-runner'
         type: string
       action:
         description: 'Action'
         required: true
-        default: create
+        default: 'create'
         type: string
         options:
           - create
@@ -29,9 +29,11 @@ jobs:
       harbor_version: 'v2.11.1'
       quay_version: 'v3.12.3'
       email: 'vasaga9759@craftapk.com'
-      guid: 'mjffm'
+      guid: 'z2r22'
       runner_tag: ${{ inputs.runner_tag }}
-      community_version: 'false'
+      community_version: 'false'  # Passed as string
+    secrets:
+      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
 
   configure-ocp4-disconnected-helper:
     needs: deploy-registry
@@ -39,25 +41,26 @@ jobs:
     with:
       target_server: 'rhel9-equinix'
       action: ${{ inputs.action }}
-      guid: 'mjffm'
+      guid: 'z2r22'
       runner_tag: ${{ inputs.runner_tag }}
-      DOWNLOAD_TO_TAR: 'true'
-      PUSH_TAR_TO_REGISTRY: 'true'
-      SETUP_QUAY_REGISTRY: 'false'
-      SETUP_HARBOR_REGISTRY: 'false'  # Corrected typo
-      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}  # Secured password
+      DOWNLOAD_TO_TAR: 'true'  # Passed as string
+      PUSH_TAR_TO_REGISTRY: 'true'  # Passed as string
+    secrets:
+      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
 
-  # deploy-openshift:
-  #   needs: configure-ocp4-disconnected-helper
-  #   uses: ./.github/workflows/kcli-openshift4-baremetal-external.yaml
-  #   with:
-  #     deployment_config: 'cnv-kcli-openshift4-baremetal.yml'
-  #     target_server: 'rhel9-equinix'
-  #     vm_name: 'kcli-openshift4-baremetal'
-  #     action: ${{ inputs.action }}
-  #     deploy_openshift: 'true'
-  #     auto_launch_steps: 'true'
-  #     deployment_tag: '4.17'
-  #     disconnected_install: 'false'
-  #     community_version: 'false'
-  #     runner_tag: ${{ inputs.runner_tag }}
+  deploy-openshift:
+    needs: configure-ocp4-disconnected-helper
+    uses: ./.github/workflows/kcli-openshift4-baremetal-external.yaml
+    with:
+      deployment_config: 'cnv-kcli-openshift4-baremetal.yml'
+      target_server: 'rhel9-equinix'
+      vm_name: 'kcli-openshift4-baremetal'
+      action: ${{ inputs.action }}
+      deploy_openshift: 'true'  # Passed as string
+      auto_launch_steps: 'true'  # Passed as string
+      deployment_tag: '4.17'
+      disconnected_install: 'false'  # Passed as string
+      community_version: 'false'  # Passed as string
+      runner_tag: ${{ inputs.runner_tag }}
+    secrets:
+      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
