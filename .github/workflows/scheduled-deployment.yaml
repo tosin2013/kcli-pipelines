@@ -36,7 +36,7 @@ jobs:
     uses: ./.github/workflows/deploy-registry-workflow-call.yaml
     with:
       target_server: 'rhel9-equinix'
-      vm_name: 'freeipa'
+      vm_name: 'harbor'
       action: ${{ inputs.action }}
       harbor_version: 'v2.11.1'
       quay_version: 'v3.12.3'
