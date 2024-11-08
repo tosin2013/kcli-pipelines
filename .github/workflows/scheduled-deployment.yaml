@@ -42,7 +42,7 @@ jobs:
       runner_tag: ${{ inputs.runner_tag }}
       DOWNLOAD_TO_TAR: 'true'  # Passed as string
       PUSH_TAR_TO_REGISTRY: 'true'
-      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}  # Passed as string
+      HARBOR_PASSWORD: Harbor12345  # Passed as string
 
 
   deploy-openshift:
