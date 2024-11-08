@@ -10,18 +10,10 @@ on:
         description: 'Action'
         required: true
         default: create
-        type: choice
-        options:
-          - create
-          - delete
       vm_name:
         description: 'VM Deployment'
         required: true
-        default: 'freeipa'
-        type: choice
-        options:
-          - harbor
-          - mirror-registry
+        default: 'harbor'
       harbor_version:
         description: 'Harbor version'
         required: true
@@ -46,10 +38,7 @@ on:
         description: 'Use community version of software (true/false)'
         required: true
         default: 'false'
-        type: choice
-        options:
-          - true
-          - false
+
 env:
   TARGET_SERVER: ${{ inputs.target_server }}
   VM_NAME: ${{ inputs.vm_name }}
