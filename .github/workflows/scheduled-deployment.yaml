@@ -29,7 +29,7 @@ jobs:
       email: 'vasaga9759@craftapk.com'
       guid: 'z2r22'
       runner_tag: ${{ inputs.runner_tag }}
-      community_version: 'false'
+      community_version: false
 
 
   configure-ocp4-disconnected-helper:
