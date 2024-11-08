@@ -46,7 +46,7 @@ on:
         type: boolean
         description: 'Use community version of software (true/false)'
         required: true
-        default: 'false'
+        default: false
 
 env:
   TARGET_SERVER: ${{ inputs.target_server }}
