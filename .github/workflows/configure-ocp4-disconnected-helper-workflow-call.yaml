@@ -6,39 +6,47 @@ on:
         description: 'Target server'
         required: true
         default: rhel9-equinix
+        type: string
       action:
         description: 'Action'
         required: true
         default: create
+        type: string
       guid:
         description: 'GUID'
         required: true
         default: ''
+        type: string
       runner_tag:
         description: 'Runner'
         required: true
         default: 'changeme-github-runner'
+        type: string
       DOWNLOAD_TO_TAR:
         description: 'Download to TAR'
         required: true
         default: 'true'
+        type: string
       PUSH_TAR_TO_REGISTRY:
         description: 'Push TAR to Registry'
         required: true
         default: 'true'
+        type: string
       SETUP_QUAY_REGISTRY:
         description: 'Setup Quay Registry'
         required: false
         default: 'false'
+        type: string
       SETUP_HARBER_REGISTRY:
         description: 'Setup Harbor Registry'
         required: false
         default: 'false'
+        type: string
       HARBOR_PASSWORD:
         description: 'Harbor Registry Password'
         required: true
         default: 'Harbor12345'
-        type: password
+        type: string
 
 env:
   TARGET_SERVER: ${{ inputs.target_server }}
