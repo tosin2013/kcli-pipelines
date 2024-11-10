@@ -170,8 +170,8 @@ jobs:
             sudo -E git clone https://github.com/tosin2013/kcli-pipelines.git
           fi
           export TARGET_SERVER=${{ env.TARGET_SERVER }}
-          export VM_NAME=freepia
-          export VM_PROFILE=freepia
+          export VM_NAME=freeipa
+          export VM_PROFILE=freeipa
           export ACTION=${{ env.ACTION }}
           sudo -E /opt/kcli-pipelines/deploy-vm.sh
 
