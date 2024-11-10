@@ -63,7 +63,7 @@ if [ -z $HARBORVERSION ]; then
 fi
 
 
-hostnamectl set-hostname harbor.$GUID.${DOMAIN}
+hostnamectl set-hostname harbor.${DOMAIN}
 
 check_and_start_docker
 
@@ -78,11 +78,11 @@ then
         certbot/dns-route53 \
         certonly \
         --dns-route53 \
-        -d "harbor.$GUID.${DOMAIN}"  \
+        -d "harbor.${DOMAIN}"  \
         --agree-tos \
         --email "${EMAIL}" \
         --non-interactive
-    CERTDIR="/etc/letsencrypt/live/harbor.$GUID.${DOMAIN}"
+    CERTDIR="/etc/letsencrypt/live/harbor.${DOMAIN}"
     ls -lath $CERTDIR 
 fi
 
@@ -127,8 +127,8 @@ cd /root/harbor
 cp harbor.yml.tmpl harbor.yml
 sed -i "s/reg.mydomain.com/$IPorFQDN/g" harbor.yml
 sed -i "s|# external_url:.*|external_url: https://$IPorFQDN|g" harbor.yml
-sed -i "s|certificate: /your/certificate/path|certificate: /etc/letsencrypt/live/harbor.$GUID.${DOMAIN}/fullchain.pem|" harbor.yml
-sed -i "s|private_key: /your/private/key/path|private_key: /etc/letsencrypt/live/harbor.$GUID.${DOMAIN}/privkey.pem|"  harbor.yml
+sed -i "s|certificate: /your/certificate/path|certificate: /etc/letsencrypt/live/harbor.${DOMAIN}/fullchain.pem|" harbor.yml
+sed -i "s|private_key: /your/private/key/path|private_key: /etc/letsencrypt/live/harbor.${DOMAIN}/privkey.pem|"  harbor.yml
 cat harbor.yml
 ./install.sh
 echo -e "Harbor Installation Complete \n\nPlease log out and log in or run the command 'newgrp docker' to use Docker without sudo\n\nLogin to your harbor instance:\n docker login -u admin -p Harbor12345 $IPorFQDN"
