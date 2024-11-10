@@ -77,7 +77,7 @@ jobs:
 
   ocp4-disconnected-helper:
     runs-on: 
-      - ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }} # Use the runner name at the job level
+      - ${{ inputs.runner_tag }}  # Use the runner name at the job level
     timeout-minutes: 240 # Ensure the previous job runs first
     if: ${{ inputs.action == 'create' }}
     steps:
@@ -101,7 +101,7 @@ jobs:
 
   delete-ocp4-disconnected-helper:
     runs-on: 
-      - ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }} # Use the runner name at the job level
+      - ${{ inputs.runner_tag }}  # Use the runner name at the job level
     timeout-minutes: 10 # Ensure the previous job runs first
     if: ${{ inputs.action == 'delete' }}
     steps:

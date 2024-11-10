@@ -117,7 +117,7 @@ jobs:
           sudo -E /opt/kcli-pipelines/deploy-vm.sh || exit $?
 
   deploy-registry-vm:
-    runs-on: ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }}# Ensure runner_tag is properly used here
+    runs-on: ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }} # Ensure runner_tag is properly used here
     timeout-minutes: 45
     if: ${{ inputs.action == 'create' }}
     needs: deploy-dns # Ensure the previous job runs first
