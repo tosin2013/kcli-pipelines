@@ -148,10 +148,36 @@ jobs:
           /opt/kcli-pipelines/deploy-vm.sh
           sudo kcli ssh ${{ env.VM_NAME }} "sudo -E /root/init-harbor.sh" || exit $?
 
+
+
+  delete-dns:
+    runs-on: ${{ inputs.runner_tag }} # Use the runner name at the job level
+    timeout-minutes: 45
+    if: ${{ inputs.action == 'delete' }}
+    needs: configure-kcli-profiles # Ensure the previous job runs first
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploying ${{ inputs.vm_name }} on KVM
+        run: | 
+          if [ -d "/opt/kcli-pipelines" ]; then
+            sudo -E cd /opt/kcli-pipelines
+            sudo -E git config pull.rebase false
+            sudo -E git pull
+          else
+            sudo -E cd /opt
+            sudo -E git clone https://github.com/tosin2013/kcli-pipelines.git
+          fi
+          export TARGET_SERVER=${{ env.TARGET_SERVER }}
+          export VM_NAME=freepia
+          export VM_PROFILE=freepia
+          export ACTION=${{ env.ACTION }}
+          sudo -E /opt/kcli-pipelines/deploy-vm.sh
+
   delete-registry-vm:
     runs-on: ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }} # Use the runner name at the job level
     timeout-minutes: 45
-    needs: configure-kcli-profiles # Ensure the previous job runs first
+    needs: delete-dns # Ensure the previous job runs first
     if: ${{ inputs.action == 'delete' }}
     steps:
       - uses: actions/checkout@v4
