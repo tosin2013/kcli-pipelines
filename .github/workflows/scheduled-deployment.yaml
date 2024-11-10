@@ -18,7 +18,7 @@ on:
       action:
         description: 'Action'
         required: true
-        default: 'create' 
+        default: 'create'
         type: string
 
 jobs:
@@ -41,7 +41,7 @@ jobs:
     with:
       target_server: 'rhel9-equinix'
       vm_name: 'harbor'
-      action: ${{ inputs.action }}
+      action: create
       harbor_version: 'v2.11.1'
       quay_version: 'v3.12.3'
       email: 'vasaga9759@craftapk.com'
@@ -55,7 +55,7 @@ jobs:
     uses: ./.github/workflows/configure-ocp4-disconnected-helper-workflow-call.yaml
     with:
       target_server: 'rhel9-equinix'
-      action: ${{ inputs.action }}
+      action: create
       guid: ${{ github.event_name == 'schedule' && 'z2r22' || inputs.guid }}
       runner_tag: ${{ github.event_name == 'schedule' && 'z2r22-github-runner' || inputs.runner_tag }}
       DOWNLOAD_TO_TAR: 'true'  # Passed as string
