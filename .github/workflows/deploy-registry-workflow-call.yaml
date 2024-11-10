@@ -111,7 +111,7 @@ jobs:
           export COMMUNITY_VERSION=${{ env.COMMUNITY_VERSION }}
           export ACTION=${{ env.ACTION }}
           export VM_NAME=freeipa
-          FQ_DOMAIN=$(sudo -E yq eval '.domain' "g${{ inputs.target_server }}/group_vars/all.yml")
+          FQ_DOMAIN=$(sudo -E yq eval '.domain' "${{ inputs.target_server }}/group_vars/all.yml")
           export DOMAIN=${FQ_DOMAIN}
           echo "Domain: $DOMAIN"
           sudo yq e -i '.domain = "'${DOMAIN}'"' /opt/qubinode_navigator/inventories/${TARGET_SERVER}/group_vars/all.yml
